@@ -1,0 +1,88 @@
+/* src/app/pages/public/cart/cart.component.css */
+.cart-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: sans-serif;
+}
+h1 {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.cart-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+}
+.item-details { flex-grow: 1; }
+.item-details h4 { margin: 0 0 5px 0; }
+.item-details p { margin: 0; color: #888; }
+.item-controls { display: flex; align-items: center; gap: 15px; }
+.item-controls span { font-weight: bold; font-size: 1.1em; }
+.item-controls button { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #ccc; }
+.item-subtotal { width: 100px; text-align: right; font-weight: bold; font-size: 1.1em; }
+.remove-btn {
+  margin-left: 20px;
+  background: none;
+  border: none;
+  color: #dc3545;
+  font-size: 1.5em;
+  cursor: pointer;
+}
+.cart-summary {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+.summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.summary-row.total { font-size: 1.3em; font-weight: bold; border-top: 2px solid #ccc; padding-top: 10px; }
+.confirm-btn {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.2em;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+.empty-cart-message { text-align: center; padding: 50px; }
+.btn-primary {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.cart-header h1 {
+  margin: 0; /* Quitamos el margen del h1 para alinearlo */
+}
+
+.continue-shopping-btn {
+  background-color: #6c757d;
+  color: white;
+  padding: 10px 15px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.continue-shopping-btn:hover {
+  background-color: #5a6268;
+}

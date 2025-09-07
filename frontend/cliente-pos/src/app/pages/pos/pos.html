@@ -1,0 +1,47 @@
+<div class="pos-container">
+
+  <div class="product-grid">
+    <button *ngFor="let product of products" 
+            class="product-card" 
+            (click)="orderService.addItem(product)"
+            [disabled]="product.stock === 0">
+      <div class="product-name">{{ product.nombre }}</div>
+      <div class="product-price">{{ product.precio | currency:'MXN' }}</div>
+      <div class="product-stock" [class.out-of-stock]="product.stock === 0">
+        Stock: {{ product.stock }}
+      </div>
+    </button>
+  </div>
+
+  <div class="ticket">
+    <h2>Orden Actual</h2>
+    <div class="ticket-items" *ngIf="(orderItems$ | async)?.length; else emptyTicket">
+      <div *ngFor="let item of (orderItems$ | async)" class="ticket-item">
+        <span class="item-name">{{ item.nombre }}</span>
+        <div class="item-controls">
+          <button (click)="orderService.updateItemQuantity(item.producto_id, -1)">-</button>
+          <span>{{ item.cantidad }}</span>
+          <button (click)="orderService.updateItemQuantity(item.producto_id, 1)" [disabled]="item.cantidad >= item.stock">+</button>
+        </div>
+        <span class="item-total">{{ (item.precio * item.cantidad) | currency:'MXN' }}</span>
+      </div>
+    </div>
+
+    <ng-template #emptyTicket>
+      <p class="empty-message">Seleccione un producto para comenzar.</p>
+    </ng-template>
+
+    <div class="ticket-summary">
+      <div class="total">
+        <span>TOTAL</span>
+        <strong>{{ (orderTotal$ | async) | currency:'MXN' }}</strong>
+      </div>
+      <button class="checkout-btn" 
+              [disabled]="(orderItems$ | async)?.length === 0" 
+              (click)="onCheckout()">
+        Cobrar
+      </button>
+    </div>
+  </div>
+
+</div>

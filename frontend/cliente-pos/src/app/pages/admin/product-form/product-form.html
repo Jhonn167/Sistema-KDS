@@ -1,0 +1,41 @@
+<div class="form-container">
+  <div class="header">
+    <h1>{{ pageTitle }}</h1>
+    <a routerLink="/admin/products" class="btn btn-secondary">Volver a la Lista</a>
+  </div>
+  
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="nombre">Nombre del Producto</label>
+      <input type="text" id="nombre" formControlName="nombre">
+      <div *ngIf="productForm.get('nombre')?.invalid && productForm.get('nombre')?.touched" class="error-text">
+        <small>El nombre es requerido.</small>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción</label>
+      <textarea id="descripcion" formControlName="descripcion" rows="3"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="precio">Precio</label>
+      <input type="number" id="precio" formControlName="precio">
+      <div *ngIf="productForm.get('precio')?.invalid && productForm.get('precio')?.touched" class="error-text">
+        <small>El precio es requerido y debe ser mayor o igual a 0.</small>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="stock">Cantidad en Inventario (Stock)</label>
+      <input type="number" id="stock" formControlName="stock">
+       <div *ngIf="productForm.get('stock')?.invalid && productForm.get('stock')?.touched" class="error-text">
+        <small>El stock es requerido y debe ser mayor o igual a 0.</small>
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="productForm.invalid" class="btn btn-primary">
+      {{ isEditMode ? 'Actualizar Producto' : 'Guardar Producto' }}
+    </button>
+  </form>
+</div>

@@ -1,0 +1,58 @@
+<div class="cart-container">
+  <h1>Tu Pedido</h1>
+  
+  <div *ngIf="(orderItems$ | async)?.length; else emptyCart" class="cart-content">
+    <div class="cart-items">
+      <div *ngFor="let item of (orderItems$ | async)" class="cart-item">
+        <div class="item-details">
+          <h4>{{ item.nombre }}</h4>
+          <p>{{ item.precio | currency:'MXN' }}</p>
+        </div>
+        <div class="item-controls">
+          <button (click)="orderService.updateItemQuantity(item.producto_id, -1)">-</button>
+          <span>{{ item.cantidad }}</span>
+          <button (click)="orderService.updateItemQuantity(item.producto_id, 1)" [disabled]="item.cantidad >= item.stock">+</button>
+        </div>
+        <div class="item-subtotal">
+          {{ (item.precio * item.cantidad) | currency:'MXN' }}
+        </div>
+        <button class="remove-btn" (click)="orderService.removeItem(item.producto_id)">&times;</button>
+      </div>
+    </div>
+
+    <div class="cart-summary">
+      <h3>Resumen</h3>
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <span>{{ (orderTotal$ | async) | currency:'MXN' }}</span>
+      </div>
+      <div class="summary-row total">
+        <span>Total</span>
+        <span>{{ (orderTotal$ | async) | currency:'MXN' }}</span>
+      </div>
+      <button class="confirm-btn" (click)="confirmOrder()">
+        Confirmar Pedido y Enviar a Cocina
+      </button>
+    </div>
+  </div>
+
+  <ng-template #emptyCart>
+    <div class="empty-cart-message">
+      <p>Tu carrito está vacío.</p>
+      <a routerLink="/menu" class="btn-primary">Ver el Menú</a>
+    </div>
+  </ng-template>
+</div>
+
+<div class="cart-container">
+  <div class="cart-header">
+
+    <a routerLink="/menu" class="continue-shopping-btn">← Seguir Comprando</a>
+  </div>
+  
+  <div *ngIf="(orderItems$ | async)?.length; else emptyCart" class="cart-content">
+    </div>
+
+  <ng-template #emptyCart>
+    </ng-template>
+</div>

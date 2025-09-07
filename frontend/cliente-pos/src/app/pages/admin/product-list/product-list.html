@@ -1,0 +1,34 @@
+<div class="product-list-container">
+  <div class="header">
+    <h1>Gestión de Productos</h1>
+    <a routerLink="/admin/products/new" class="btn btn-primary">Crear Nuevo Producto</a>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    Cargando productos...
+  </div>
+
+  <div *ngIf="!isLoading && products.length === 0" class="no-products">
+    No hay productos para mostrar. ¡Crea el primero usando el botón de arriba!
+  </div>
+
+  <table *ngIf="!isLoading && products.length > 0">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Precio</th>
+        <th>Stock</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let product of products">
+        <td>{{ product.nombre }}</td>
+        <td>{{ product.precio | currency:'MXN' }}</td> <td>{{ product.stock }}</td>
+        <td>
+          <a [routerLink]="['/admin/products/edit', product.id_producto]" class="btn btn-secondary">Editar</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

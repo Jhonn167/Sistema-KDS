@@ -1,0 +1,22 @@
+# System Files
+.DS_Store
+Thumbs.db
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.sublime-workspace
+
+# Node / Backend
+/backend/node_modules
+/backend/.env
+npm-debug.log
+yarn-error.log
+
+# Angular / Frontend
+/frontend/node_modules
+/dist
+/tmp
+/out-tsc
+/bazel-out
+/.angular/cache

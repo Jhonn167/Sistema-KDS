@@ -16,3 +16,5 @@ module.exports = (req, res, next) => {
     res.status(401).json({ message: 'Autenticación fallida' });
   }
 };
+
+// 1656c392-2250-4393-8a42-83d40d809828// 

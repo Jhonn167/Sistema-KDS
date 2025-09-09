@@ -1,17 +1,11 @@
-// db.js
-const mysql = require('mysql2/promise');
-require('dotenv').config(); // Carga las variables de .env
+// backend/db.js - VERSIÓN PARA POSTGRESQL
+const { Pool } = require('pg');
+require('dotenv').config();
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,       // ej. 'localhost'
-  user: process.env.DB_USER,       // ej. 'root'
-  password: process.env.DB_PASSWORD, // tu contraseña
-  database: process.env.DB_NAME,   // ej. 'kds_db'
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
 });
 
-console.log('Pool de conexiones a MySQL creado.');
+console.log('Pool de conexiones a PostgreSQL creado.');
 
 module.exports = pool;

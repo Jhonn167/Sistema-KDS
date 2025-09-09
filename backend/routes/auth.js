@@ -11,24 +11,30 @@ router.post('/register', async (req, res) => {
   try {
     const { nombre, email, password, rol = 'cliente' } = req.body;
 
-    // 1. Hashear la contraseña
+    // Hashear la contraseña
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // 2. Guardar en la base de datos
-    const [result] = await pool.query(
-      'INSERT INTO usuarios (nombre, email, password, rol) VALUES (?, ?, ?, ?)',
+    // Ejecutamos la inserción, pero no necesitamos leer la respuesta.
+    await pool.query(
+      'INSERT INTO usuarios (nombre, email, password, rol) VALUES ($1, $2, $3, $4)',
       [nombre, email, passwordHash, rol]
     );
 
-    res.status(201).json({ message: 'Usuario registrado exitosamente', userId: result.insertId });
+    // Si la línea anterior no lanzó un error, sabemos que fue exitosa.
+    // Enviamos una respuesta de éxito genérica.
+    res.status(201).json({ message: 'Usuario registrado exitosamente' });
 
   } catch (error) {
-    // Manejo de error (ej. email duplicado)
-    if (error.code === 'ER_DUP_ENTRY') {
-      return res.status(409).json({ message: 'El email ya está en uso.' });
+    // Si hay un error (como email duplicado), lo atrapamos aquí.
+    console.error("ERROR DETALLADO EN POST /api/auth/register:", error);
+    
+    // Verificamos si es un error de email duplicado para dar un mensaje más amigable
+    if (error.code === '23505') { // Código de error de PostgreSQL para 'unique_violation'
+      return res.status(409).json({ message: 'El correo electrónico ya está en uso.' });
     }
-    res.status(500).json({ message: 'Error en el servidor', error: error.message });
+    
+    res.status(500).json({ message: 'Error en el servidor al registrar el usuario', error: error.message });
   }
 });
 
@@ -38,7 +44,7 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     // 1. Buscar al usuario por email
-    const [rows] = await pool.query('SELECT * FROM usuarios WHERE email = ?', [email]);
+    const { rows } = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
     if (rows.length === 0) {
       return res.status(401).json({ message: 'Credenciales inválidas' }); // Usuario no encontrado
     }

@@ -1,4 +1,4 @@
-// src/app/pages/admin/product-form/product-form.component.ts
+// src/app/pages/admin/product-form/product-form.component.ts - VERSIÓN FINAL
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -9,7 +9,6 @@ import { ProductService } from '../../../services/product';
 @Component({
   selector: 'app-product-form',
   standalone: true,
-  // ¡Ojo a todos los imports necesarios!
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './product-form.html',
   styleUrls: ['./product-form.css']
@@ -19,58 +18,79 @@ export class ProductFormComponent implements OnInit {
   isEditMode = false;
   productId: string | null = null;
   pageTitle = 'Crear Producto';
+  imageUrlPreview: string | ArrayBuffer | null = null;
 
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
     private router: Router,
-    private route: ActivatedRoute // Para leer el ID de la URL en modo edición
+    private route: ActivatedRoute
   ) {
+    // Definimos el formulario incluyendo el campo para la URL de la imagen
     this.productForm = this.fb.group({
       nombre: ['', Validators.required],
       descripcion: [''],
       precio: [null, [Validators.required, Validators.min(0)]],
-      stock: [null, [Validators.required, Validators.min(0)]]
-      // categoria_id: [null] // Puedes añadirlo si manejas categorías
+      stock: [null, [Validators.required, Validators.min(0)]],
+      categoria_id: [null],
+      imagen_url: [null] // <-- ESTA ES LA LÍNEA CLAVE QUE FALTABA
     });
   }
 
   ngOnInit(): void {
-    // Verificamos si la URL contiene un 'id'. Si es así, estamos en modo edición.
     this.productId = this.route.snapshot.paramMap.get('id');
-
-    console.log('ID del producto al cargar el componente:', this.productId);  
     
     if (this.productId) {
       this.isEditMode = true;
       this.pageTitle = 'Editar Producto';
-      // Si estamos editando, buscamos el producto por su ID y rellenamos el formulario
       this.productService.getProductById(this.productId).subscribe(product => {
         this.productForm.patchValue(product);
+        if (product.imagen_url) {
+          this.imageUrlPreview = product.imagen_url;
+        }
+      });
+    }
+  }
+
+  onFileSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+      const file = target.files[0];
+      
+      const reader = new FileReader();
+      reader.onload = () => { this.imageUrlPreview = reader.result; };
+      reader.readAsDataURL(file);
+
+      this.productService.uploadImage(file).subscribe({
+        next: (response) => {
+          console.log('Imagen subida con éxito. URL:', response.imageUrl);
+          this.productForm.patchValue({ imagen_url: response.imageUrl });
+        },
+        error: (err) => {
+          console.error('Error al subir la imagen:', err);
+          alert('Hubo un error al subir la imagen.');
+        }
       });
     }
   }
 
   onSubmit(): void {
     if (this.productForm.invalid) {
-      this.productForm.markAllAsTouched(); // Muestra los errores si el form es inválido
+      this.productForm.markAllAsTouched();
       return;
     }
 
     const productData = this.productForm.value;
-
-        console.log('ID del producto al momento de guardar:', this.productId); 
+    console.log('Enviando datos del producto:', productData);
 
     if (this.isEditMode && this.productId) {
-      // Si estamos en modo edición, llamamos al método de actualizar
       this.productService.updateProduct(this.productId, productData).subscribe({
-        next: () => this.router.navigate(['/admin/products']), // Volvemos a la lista
+        next: () => this.router.navigate(['/admin/products']),
         error: (err) => console.error('Error al actualizar:', err)
       });
     } else {
-      // Si no, llamamos al método de crear
       this.productService.createProduct(productData).subscribe({
-        next: () => this.router.navigate(['/admin/products']), // Volvemos a la lista
+        next: () => this.router.navigate(['/admin/products']),
         error: (err) => console.error('Error al crear:', err)
       });
     }

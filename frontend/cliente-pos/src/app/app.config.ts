@@ -1,15 +1,23 @@
 // src/app/app.config.ts
 
-import { ApplicationConfig } from '@angular/core';
-import { provideRouter, withDebugTracing} from '@angular/router';
-import { provideHttpClient, withInterceptors } from '@angular/common/http'; // Importa withInterceptors
+import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { provideRouter, withDebugTracing } from '@angular/router';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
-import { authInterceptor } from './interceptors/auth-interceptor'; // Importa tu interceptor
+import { authInterceptor } from './interceptors/auth-interceptor';
+
+// 1. Importa la configuración del Socket
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+
+// 2. Define la configuración de la conexión
+const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes , withDebugTracing()),
-    // Esta línea provee el HttpClient Y le dice que use tu interceptor
-    provideHttpClient(withInterceptors([authInterceptor]))
+    provideRouter(routes /*, withDebugTracing()*/ ), // Puedes comentar el debug tracing
+    provideHttpClient(withInterceptors([authInterceptor])),
+    
+    // 3. Añade el proveedor del Socket a tu aplicación
+    importProvidersFrom(SocketIoModule.forRoot(config))
   ]
 };

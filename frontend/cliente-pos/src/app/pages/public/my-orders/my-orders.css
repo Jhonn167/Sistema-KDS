@@ -1,0 +1,7 @@
+.my-orders-container { max-width: 800px; margin: 40px auto; padding: 20px; }
+.orders-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+.orders-table th, .orders-table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+.orders-table th { background-color: #f2f2f2; }
+.status { padding: 5px 10px; color: white; border-radius: 15px; font-size: 0.9em; }
+.status.pendiente { background-color: #ffc107; }
+.status.completado { background-color: #28a745; }

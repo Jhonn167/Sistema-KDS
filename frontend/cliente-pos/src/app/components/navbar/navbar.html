@@ -6,7 +6,8 @@
   <div *ngIf="authService.isAdmin()" class="navbar-links">
     <a routerLink="/pos" routerLinkActive="active-link">Punto de Venta</a>
     <a routerLink="/admin/products" routerLinkActive="active-link">Admin Productos</a>
-    </div>
+    <a routerLink="/kds" routerLinkActive="active-link">Cocina (KDS)</a>
+  </div>
 
   <div *ngIf="!authService.isAdmin()" class="navbar-links">
     <a routerLink="/menu" routerLinkActive="active-link">Menú</a>

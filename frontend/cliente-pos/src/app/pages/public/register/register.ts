@@ -40,14 +40,14 @@ export class RegisterComponent {
     this.successMessage = '';
 
     this.authService.register(this.registerForm.value).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.successMessage = '¡Registro exitoso! Ahora puedes iniciar sesión.';
         // Opcional: Redirigir al login después de unos segundos
         setTimeout(() => {
           this.router.navigate(['/login']);
         }, 2000);
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error en el registro:', err);
         this.errorMessage = err.error.message || 'Ocurrió un error. Inténtelo de nuevo.';
       }

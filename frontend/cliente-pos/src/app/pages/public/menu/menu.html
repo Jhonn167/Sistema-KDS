@@ -3,7 +3,6 @@
   <span *ngIf="(cartItemCount$ | async) as count" [class.visible]="count > 0" class="cart-badge">{{ count }}</span>
 </a>
 
-
 <div class="menu-container">
   <h1>Nuestro Menú</h1>
   <p>Elige tus platillos favoritos y recógelos en nuestro local.</p>
@@ -18,14 +17,18 @@
 
   <div class="menu-grid">
     <div *ngFor="let product of products" class="product-card">
-      <div class="product-image-placeholder"></div>
+      
+      <img [src]="product.imagen_url || 'assets/placeholder.png'" 
+           alt="Imagen de {{ product.nombre }}" 
+           class="product-image">
       <div class="product-info">
         <h3>{{ product.nombre }}</h3>
         <p class="product-description">{{ product.descripcion }}</p>
         <div class="product-footer">
           <span class="product-price">{{ product.precio | currency:'MXN' }}</span>
-          <button (click)="orderService.addItem(product)" class="add-to-cart-btn">
-            Añadir
+          <button (click)="orderService.addItem(product)" class="add-to-cart-btn" [disabled]="product.stock === 0">
+            <span *ngIf="product.stock > 0">Añadir</span>
+            <span *ngIf="product.stock === 0">Agotado</span>
           </button>
         </div>
       </div>

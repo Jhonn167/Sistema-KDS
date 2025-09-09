@@ -1,1 +1,32 @@
-<p>my-orders works!</p>
+<div class="my-orders-container">
+  <h1>Mis Pedidos</h1>
+
+  <div *ngIf="isLoading">Cargando tus pedidos...</div>
+
+  <div *ngIf="!isLoading && orders.length === 0">
+    <p>Aún no has realizado ningún pedido.</p>
+  </div>
+
+  <table *ngIf="!isLoading && orders.length > 0" class="orders-table">
+    <thead>
+      <tr>
+        <th>ID Pedido</th>
+        <th>Fecha</th>
+        <th>Total</th>
+        <th>Estatus</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let order of orders">
+        <td>#{{ order.id_pedido }}</td>
+        <td>{{ order.fecha | date:'short' }}</td>
+        <td>{{ order.total | currency:'MXN' }}</td>
+        <td>
+          <span class="status" [ngClass]="order.estatus.toLowerCase()">
+            {{ order.estatus }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

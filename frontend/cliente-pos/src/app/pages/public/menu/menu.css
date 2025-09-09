@@ -24,17 +24,23 @@ p {
 }
 
 .product-card {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  /* Asegúrate de que tu tarjeta tenga display: flex y flex-direction: column */
+  display: flex;
+  flex-direction: column;
+  /* ... otros estilos de la tarjeta ... */
 }
 
 .product-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.product-image {
+  width: 100%; /* La imagen ocupa todo el ancho de la tarjeta */
+  height: 180px; /* <--- ESTA ES LA LÍNEA CLAVE: Le damos una altura fija */
+  object-fit: cover; /* <--- Y ESTA TAMBIÉN: La imagen cubre el espacio sin deformarse (puede recortarse un poco) */
+  background-color: #f0f0f0; /* Un color de fondo mientras carga o si no hay imagen */
+  border-bottom: 1px solid #e0e0e0; /* Un pequeño borde para separarla del texto */
 }
 
 .product-image-placeholder {
@@ -45,6 +51,9 @@ p {
 
 .product-info {
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Hace que esta sección ocupe el espacio restante y empuje el footer hacia abajo */
 }
 
 .product-info h3 {

@@ -1,5 +1,5 @@
 <div class="pos-container">
-
+  
   <div class="product-grid">
     <button *ngFor="let product of products" 
             class="product-card" 
@@ -24,11 +24,12 @@
           <button (click)="orderService.updateItemQuantity(item.producto_id, 1)" [disabled]="item.cantidad >= item.stock">+</button>
         </div>
         <span class="item-total">{{ (item.precio * item.cantidad) | currency:'MXN' }}</span>
+        <button class="remove-btn" (click)="orderService.removeItem(item.producto_id)">&times;</button>
       </div>
     </div>
-
+    
     <ng-template #emptyTicket>
-      <p class="empty-message">Seleccione un producto para comenzar.</p>
+      <p class="empty-message">Seleccione un producto.</p>
     </ng-template>
 
     <div class="ticket-summary">
@@ -36,6 +37,7 @@
         <span>TOTAL</span>
         <strong>{{ (orderTotal$ | async) | currency:'MXN' }}</strong>
       </div>
+      <button class="cancel-btn" (click)="orderService.clearOrder()">Cancelar</button>
       <button class="checkout-btn" 
               [disabled]="(orderItems$ | async)?.length === 0" 
               (click)="onCheckout()">

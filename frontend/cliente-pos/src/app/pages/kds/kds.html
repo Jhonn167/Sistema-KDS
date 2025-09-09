@@ -1,0 +1,27 @@
+<div class="kds-container">
+  <h1>KDS - Pedidos para Cocina</h1>
+  <div *ngIf="isLoading" class="info-message">Cargando pedidos...</div>
+  <div *ngIf="!isLoading && pedidos.length === 0" class="info-message">No hay pedidos pendientes.</div>
+
+  <div class="pedidos-grid">
+    <div *ngFor="let pedido of pedidos" class="pedido-card">
+      <div class="card-header">
+        <h3>Pedido #{{ pedido.id_pedido }}</h3>
+        <span>{{ pedido.fecha | date:'mediumTime' }}</span>
+      </div>
+      <div class="card-body">
+        <ul>
+          <li *ngFor="let item of pedido.items">
+            <span class="cantidad">{{ item.cantidad }}x</span>
+            <span class="nombre">{{ item.producto }}</span>
+          </li>
+        </ul>
+      </div>
+      <div class="card-footer">
+         <button (click)="actualizarEstatus(pedido.id_pedido, 'Listo para Recoger')">
+          Marcar como Listo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,9 +1,9 @@
 <div class="login-container">
-  <h2>Iniciar Sesión (Admin)</h2>
+  <h2>Iniciar Sesión</h2>
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
       <label for="email">Correo Electrónico</label>
-      <input type="email" id="email" formControlName="email" placeholder="admin@correo.com">
+      <input type="email" id="email" formControlName="email" placeholder="correo@ejemplo.com">
       <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="error-text">
         <small *ngIf="loginForm.get('email')?.errors?.['required']">El correo es requerido.</small>
         <small *ngIf="loginForm.get('email')?.errors?.['email']">Formato de correo inválido.</small>
@@ -16,10 +16,17 @@
         <small *ngIf="loginForm.get('password')?.errors?.['required']">La contraseña es requerida.</small>
       </div>
     </div>
-    <button type="submit" [disabled]="loginForm.invalid">Ingresar</button>
+    
+    <button type="submit" [disabled]="loginForm.invalid || isLoading">
+      <span *ngIf="!isLoading">Ingresar</span>
+      <span *ngIf="isLoading">Cargando...</span>
+    </button>
 
     <div *ngIf="errorMessage" class="error-message">
       {{ errorMessage }}
     </div>
   </form>
+  <div class="register-link">
+    ¿No tienes una cuenta? <a routerLink="/registro">Regístrate aquí</a>
+  </div>
 </div>

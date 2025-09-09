@@ -86,3 +86,14 @@ h1 {
 .continue-shopping-btn:hover {
   background-color: #5a6268;
 }
+.clear-cart-btn {
+  display: block;
+  margin-left: auto;
+  margin-bottom: 15px;
+  background: none;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}

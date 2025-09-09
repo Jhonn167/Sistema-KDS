@@ -5,13 +5,15 @@ import { LoginComponent } from '../app/pages/login/login';
 import { ProductFormComponent } from '../app/pages/admin/product-form/product-form';
 import { AdminGuard } from './guards/admin-guard'; // Asegúrate de que la ruta sea correcta
 import { PosComponent } from '../app/pages/pos/pos';
+import { authGuard } from './guards/auth-guard';  
 
-// src/app/app.routes.ts
+
 // ... imports
 import { RegisterComponent } from './pages/public/register/register';
 import { MenuComponent } from './pages/public/menu/menu';
 import { CartComponent } from './pages/public/cart/cart';
-import { MyOrders } from './pages/public/my-orders/my-orders';
+import { MyOrdersComponent } from './pages/public/my-orders/my-orders';
+import { Kds } from './pages/kds/kds';
 
 
 
@@ -25,8 +27,9 @@ export const routes: Routes = [
   { path: 'carrito', component: CartComponent },
 
   // --- RUTAS PROTEGIDAS (Con Guard) ---
-  { path: 'mis-pedidos', component: MyOrders, canActivate: [AdminGuard] },
+  { path: 'mis-pedidos', component: MyOrdersComponent, canActivate: [authGuard] },
   { path: 'pos', component: PosComponent, canActivate: [AdminGuard] },
+  { path: 'kds', component: Kds, canActivate: [AdminGuard] },
   {
     path: 'admin',
     canActivate: [AdminGuard],

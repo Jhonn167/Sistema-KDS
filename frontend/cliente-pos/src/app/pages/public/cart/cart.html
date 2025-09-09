@@ -1,7 +1,11 @@
 <div class="cart-container">
-  <h1>Tu Pedido</h1>
+  <div class="cart-header">
+    <h1>Tu Pedido</h1>
+    <a routerLink="/menu" class="continue-shopping-btn">← Seguir Comprando</a>
+  </div>
   
   <div *ngIf="(orderItems$ | async)?.length; else emptyCart" class="cart-content">
+    
     <div class="cart-items">
       <div *ngFor="let item of (orderItems$ | async)" class="cart-item">
         <div class="item-details">
@@ -19,7 +23,6 @@
         <button class="remove-btn" (click)="orderService.removeItem(item.producto_id)">&times;</button>
       </div>
     </div>
-
     <div class="cart-summary">
       <h3>Resumen</h3>
       <div class="summary-row">
@@ -42,17 +45,4 @@
       <a routerLink="/menu" class="btn-primary">Ver el Menú</a>
     </div>
   </ng-template>
-</div>
-
-<div class="cart-container">
-  <div class="cart-header">
-
-    <a routerLink="/menu" class="continue-shopping-btn">← Seguir Comprando</a>
-  </div>
-  
-  <div *ngIf="(orderItems$ | async)?.length; else emptyCart" class="cart-content">
-    </div>
-
-  <ng-template #emptyCart>
-    </ng-template>
 </div>

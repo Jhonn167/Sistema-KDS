@@ -97,3 +97,25 @@ h1 {
   border-radius: 5px;
   cursor: pointer;
 }
+
+/* ... (tus estilos existentes) ... */
+
+/* NUEVO: Estilos para la lista de opciones en el carrito */
+.selected-options-list {
+  list-style: none;
+  padding-left: 15px;
+  margin: 8px 0 0 0;
+  font-size: 0.85em;
+  color: #555;
+}
+
+.selected-options-list li {
+  position: relative;
+}
+
+.selected-options-list li::before {
+  content: '↳';
+  position: absolute;
+  left: -15px;
+}
+/* Fin de los estilos para la lista de opciones en el carrito */

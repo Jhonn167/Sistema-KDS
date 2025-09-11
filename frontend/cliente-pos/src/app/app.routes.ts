@@ -1,32 +1,33 @@
 
 import { Routes } from '@angular/router';
-import { ProductListComponent } from '../app/pages/admin/product-list/product-list';
-import { LoginComponent } from '../app/pages/login/login';
-import { ProductFormComponent } from '../app/pages/admin/product-form/product-form';
-import { AdminGuard } from './guards/admin-guard'; // Asegúrate de que la ruta sea correcta
-import { PosComponent } from '../app/pages/pos/pos';
-import { authGuard } from './guards/auth-guard';  
 
-
-// ... imports
+// --- Importaciones Corregidas ---
+// Las rutas deben ser relativas a la carpeta 'app' (./) y terminar con su tipo (.component, .guard)
+import { LoginComponent } from './pages/login/login';
 import { RegisterComponent } from './pages/public/register/register';
 import { MenuComponent } from './pages/public/menu/menu';
 import { CartComponent } from './pages/public/cart/cart';
 import { MyOrdersComponent } from './pages/public/my-orders/my-orders';
+
+import { ProductListComponent } from './pages/admin/product-list/product-list';
+import { ProductFormComponent } from './pages/admin/product-form/product-form';
+import { ModifierListComponent, } from './pages/admin/modifier-list/modifier-list'; // <-- Se importa el COMPONENTE
+import { PosComponent } from './pages/pos/pos';
 import { Kds } from './pages/kds/kds';
 
-
+import { AdminGuard } from './guards/admin-guard';
+import { authGuard } from './guards/auth-guard';  
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/menu', pathMatch: 'full' }, // ¡Cambiemos esto para que la página principal sea el menú!
+  { path: '', redirectTo: '/menu', pathMatch: 'full' },
   
-  // --- RUTAS PÚBLICAS (Sin Guard) ---
+  // --- RUTAS PÚBLICAS ---
   { path: 'login', component: LoginComponent },
   { path: 'registro', component: RegisterComponent },
   { path: 'menu', component: MenuComponent },
   { path: 'carrito', component: CartComponent },
 
-  // --- RUTAS PROTEGIDAS (Con Guard) ---
+  // --- RUTAS PROTEGIDAS ---
   { path: 'mis-pedidos', component: MyOrdersComponent, canActivate: [authGuard] },
   { path: 'pos', component: PosComponent, canActivate: [AdminGuard] },
   { path: 'kds', component: Kds, canActivate: [AdminGuard] },
@@ -37,9 +38,12 @@ export const routes: Routes = [
       { path: 'products', component: ProductListComponent },
       { path: 'products/new', component: ProductFormComponent },
       { path: 'products/edit/:id', component: ProductFormComponent },
+      // --- CORRECCIÓN CLAVE ---
+      // La ruta ahora usa el ModifierListComponent, que es el componente de la página.
+      { path: 'modifiers', component: ModifierListComponent }, 
       { path: '', redirectTo: 'products', pathMatch: 'full' }
     ]
   },
   
-  { path: '**', redirectTo: '/menu' } // Si no encuentra la ruta, que vaya al menú
+  { path: '**', redirectTo: '/menu' }
 ];

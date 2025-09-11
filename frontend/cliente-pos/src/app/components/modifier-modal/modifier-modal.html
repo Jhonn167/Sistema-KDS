@@ -1,0 +1,37 @@
+<div class="modal-overlay" (click)="close.emit()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ product?.nombre }}</h2>
+      <button class="close-btn" (click)="close.emit()">&times;</button>
+    </div>
+    <div class="modal-body" [formGroup]="modifierForm">
+      <div *ngFor="let group of product?.modificadores" class="modifier-group">
+        <h4>{{ group.nombre }}</h4>
+        
+        <!-- Caso: Selección Única (Radio Buttons) -->
+        <div *ngIf="group.tipo_seleccion === 'seleccionar_uno'" [formGroupName]="group.id_grupo.toString()">
+          <div *ngFor="let option of group.opciones" class="option-item">
+            <input type="radio" [formControlName]="group.id_grupo.toString()" [value]="option.id_opcion" [id]="'opt-' + option.id_opcion">
+            <label [for]="'opt-' + option.id_opcion">
+              {{ option.nombre }} <span class="price">(+{{ option.precio_adicional | currency:'MXN' }})</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Caso: Múltiples Opciones (Checkboxes) -->
+        <div *ngIf="group.tipo_seleccion === 'seleccionar_varios'" [formGroupName]="group.id_grupo.toString()">
+           <div *ngFor="let option of group.opciones" class="option-item">
+            <input type="checkbox" [formControlName]="option.id_opcion.toString()" [id]="'opt-' + option.id_opcion">
+            <label [for]="'opt-' + option.id_opcion">
+              {{ option.nombre }} <span class="price">(+{{ option.precio_adicional | currency:'MXN' }})</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="close.emit()">Cancelar</button>
+      <button class="btn btn-primary" (click)="onConfirm()">Confirmar y Añadir</button>
+    </div>
+  </div>
+</div>

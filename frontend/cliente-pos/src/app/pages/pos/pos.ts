@@ -2,22 +2,26 @@
 
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../../services/product';
-import { OrderService, OrderItem } from '../../services/order'; // Asegúrate de que OrderItem esté exportado
+import { OrderService, CartItem } from '../../services/order'; // Asegúrate de que OrderItem esté exportado
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { ModifierModalComponent } from '../../components/modifier-modal/modifier-modal';
+
 
 @Component({
   selector: 'app-pos',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ModifierModalComponent],
   templateUrl: './pos.html',
   styleUrls: ['./pos.css']
 })
 export class PosComponent implements OnInit {
   products: any[] = [];
-  
-  orderItems$: Observable<OrderItem[]>;
+  orderItems$: Observable<CartItem[]>;
   orderTotal$: Observable<number>;
+
+   isModalOpen = false; 
+  selectedProduct: any | null = null;
 
   constructor(
     private productService: ProductService,
@@ -40,6 +44,18 @@ export class PosComponent implements OnInit {
     });
   }
 
+  // --- FUNCIÓN MEJORADA PARA AÑADIR ITEMS ---
+  handleAddItem(product: any): void {
+    // Por ahora, el POS solo añade productos simples sin modificadores.
+    // Creamos un objeto "configurado" para ser compatible con el OrderService.
+    const configuredProduct = {
+        ...product,
+        finalPrice: product.precio,
+        selectedOptions: []
+    };
+    this.orderService.addItem(configuredProduct);
+  }
+
   onCheckout(): void {
     this.orderService.checkout().subscribe({
       next: (response) => {
@@ -51,7 +67,7 @@ export class PosComponent implements OnInit {
         });
       },
       error: (err) => {
-        alert('Error al registrar la venta: ' + err.error.message);
+        alert('Error al registrar la venta: ' + (err.error.message || 'Error desconocido'));
         console.error(err);
       }
     });

@@ -58,12 +58,15 @@ const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const pedidoRoutes = require('./routes/pedidos');
 const uploadRoutes = require('./routes/upload'); 
+const modifierRoutes = require('./routes/ modifiers');
 
 // Usar las rutas (esto se queda igual)
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/pedidos', pedidoRoutes(io, () => onlineUsers)); // 6. Pasamos 'io' y 'onlineUsers' a las rutas de pedidos
 app.use('/api/upload', uploadRoutes);
+app.use('/api/modifiers', modifierRoutes); // <-- 2. USA LAS NUEVAS RUTAS
+
 
 // 7. En lugar de app.listen, ahora iniciamos el servidor http
 server.listen(PORT, () => {

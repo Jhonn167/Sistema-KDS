@@ -1,0 +1,167 @@
+:host {
+  display: block;
+  padding: 40px;
+  background-color: #f4f7f6;
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header, .form-card {
+  padding: 25px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  margin-bottom: 30px;
+}
+
+.header {
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+}
+
+.header h1, .form-card h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.form-card h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.group-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+}
+
+.group-form input, .group-form select {
+  flex: 1 1 200px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.groups-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+
+  /* Al eliminarlo, las tarjetas en la misma fila volverán a tener la misma altura. */
+}
+
+.group-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.group-header {
+  padding: 15px 20px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.group-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.options-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.option-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.no-options {
+  padding: 30px 20px;
+  text-align: center;
+  color: #888;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #dc3545;
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+.option-form {
+  display: flex;
+  gap: 10px;
+  padding: 15px 20px;
+  background-color: #b9c2ca;
+  border-top: 1px solid #e0e0e0;
+  /* =====> CAMBIO CLAVE #2: La Magia del Margen Automático <===== */
+  /* 'margin-top: auto;' actúa como un resorte, empujando este formulario
+     hacia la parte inferior de la tarjeta, sin importar la altura de la lista de opciones. */
+  margin-top: auto;
+}
+
+.option-form input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.option-name-input {
+  flex-grow: 1;
+}
+
+.option-price-input {
+  width: 50px;
+  text-align: right;
+}
+
+.btn {
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  border: 1px solid transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: #047504;
+  color: white;
+}
+
+.btn-secondary {
+  background-color: #0b5495;
+  color: white;
+  font-size: 0.9em;
+}
+
+  

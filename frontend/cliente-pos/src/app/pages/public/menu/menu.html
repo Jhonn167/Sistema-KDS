@@ -17,16 +17,15 @@
 
   <div class="menu-grid">
     <div *ngFor="let product of products" class="product-card">
-      
-      <img [src]="product.imagen_url || 'assets/placeholder.png'" 
-           alt="Imagen de {{ product.nombre }}" 
-           class="product-image">
+      <img [src]="product.imagen_url || 'assets/placeholder.png'" alt="Imagen de {{ product.nombre }}"
+        class="product-image">
       <div class="product-info">
         <h3>{{ product.nombre }}</h3>
         <p class="product-description">{{ product.descripcion }}</p>
         <div class="product-footer">
           <span class="product-price">{{ product.precio | currency:'MXN' }}</span>
-          <button (click)="orderService.addItem(product)" class="add-to-cart-btn" [disabled]="product.stock === 0">
+          <!-- El botón ahora llama a la nueva función handleAddItem -->
+          <button (click)="handleAddItem(product)" class="add-to-cart-btn" [disabled]="product.stock === 0">
             <span *ngIf="product.stock > 0">Añadir</span>
             <span *ngIf="product.stock === 0">Agotado</span>
           </button>
@@ -35,3 +34,6 @@
     </div>
   </div>
 </div>
+<app-modifier-modal *ngIf="isModalOpen" [product]="selectedProduct" (confirm)="onConfirmProduct($event)"
+  (close)="closeModal()">
+</app-modifier-modal>

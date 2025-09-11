@@ -1,4 +1,4 @@
-/* src/app/pages/public/menu/menu.component.css */
+/* src/app/pages/public/menu/menu.component.css - VERSIÓN CON SIMETRÍA CORREGIDA */
 
 .menu-container {
   padding: 20px 40px;
@@ -24,10 +24,15 @@ p {
 }
 
 .product-card {
-  /* Asegúrate de que tu tarjeta tenga display: flex y flex-direction: column */
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  /* =====> CAMBIO CLAVE #1: Convertimos la tarjeta en un contenedor flexible vertical <===== */
   display: flex;
   flex-direction: column;
-  /* ... otros estilos de la tarjeta ... */
 }
 
 .product-card:hover {
@@ -36,35 +41,32 @@ p {
 }
 
 .product-image {
-  width: 100%; /* La imagen ocupa todo el ancho de la tarjeta */
-  height: 180px; /* <--- ESTA ES LA LÍNEA CLAVE: Le damos una altura fija */
-  object-fit: cover; /* <--- Y ESTA TAMBIÉN: La imagen cubre el espacio sin deformarse (puede recortarse un poco) */
-  background-color: #f0f0f0; /* Un color de fondo mientras carga o si no hay imagen */
-  border-bottom: 1px solid #e0e0e0; /* Un pequeño borde para separarla del texto */
-}
-
-.product-image-placeholder {
-  height: 150px;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
   background-color: #f0f0f0;
-  /* Aquí podrías poner una imagen de fondo si tuvieras URLs */
 }
 
 .product-info {
   padding: 20px;
+  /* =====> CAMBIO CLAVE #2: Hacemos que esta sección sea flexible y crezca <===== */
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Hace que esta sección ocupe el espacio restante y empuje el footer hacia abajo */
+  flex-grow: 1; /* Esta es la propiedad mágica que empuja el footer hacia abajo */
 }
 
 .product-info h3 {
   margin: 0 0 10px 0;
   font-size: 1.25rem;
+  /* Damos una altura mínima para evitar saltos si un título es más corto */
+  min-height: 2.5em; /* Aprox. para dos líneas de texto */
 }
 
 .product-description {
   font-size: 0.9rem;
   color: #777;
-  height: 40px; /* Limita la altura para alinear las tarjetas */
+  /* =====> CAMBIO CLAVE #3: Hacemos que la descripción ocupe el espacio sobrante <===== */
+  flex-grow: 1; 
   margin-bottom: 15px;
   text-align: left;
 }
@@ -98,7 +100,7 @@ p {
   background-color: #0056b3;
 }
 
-/* Estilos para el botón flotante del carrito */
+/* ... (tus otros estilos para el botón del carrito, etc., se quedan igual) ... */
 .cart-fab {
   position: fixed;
   bottom: 30px;
@@ -127,8 +129,8 @@ p {
   padding: 2px 8px;
   font-size: 0.8rem;
   font-weight: bold;
-  display: none; /* Se oculta por defecto */
+  display: none;
 }
 .cart-badge.visible {
-  display: block; /* Se muestra si tiene la clase 'visible' */
+  display: block;
 }

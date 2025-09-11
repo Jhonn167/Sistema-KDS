@@ -1,3 +1,5 @@
+<!-- src/app/pages/admin/product-form/product-form.component.html -->
+
 <div class="form-container">
   <div class="header">
     <h1>{{ pageTitle }}</h1>
@@ -5,40 +7,41 @@
   </div>
   
   <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+    <!-- ... (Tus campos existentes para nombre, descripción, etc.) ... -->
     <div class="form-group">
       <label for="nombre">Nombre del Producto</label>
       <input type="text" id="nombre" formControlName="nombre" placeholder="Ej. Tacos al Pastor">
-      <div *ngIf="productForm.get('nombre')?.invalid && productForm.get('nombre')?.touched" class="error-text">
-        <small>El nombre es requerido.</small>
-      </div>
     </div>
-
     <div class="form-group">
       <label for="descripcion">Descripción</label>
-      <textarea id="descripcion" formControlName="descripcion" rows="3" placeholder="Ej. Tortilla de maíz con carne adobada..."></textarea>
+      <textarea id="descripcion" formControlName="descripcion" rows="3" placeholder="Ej. Tortilla de maíz..."></textarea>
     </div>
-
-    <div class="form-group">
-    <label for="imagen">Imagen del Producto</label>
-    <img [src]="imageUrlPreview" *ngIf="imageUrlPreview" class="image-preview">
-    <input type="file" (change)="onFileSelected($event)">
-    </div>
-
     <div class="form-group">
       <label for="precio">Precio</label>
       <input type="number" id="precio" formControlName="precio" placeholder="Ej. 120.50">
-      <div *ngIf="productForm.get('precio')?.invalid && productForm.get('precio')?.touched" class="error-text">
-        <small>El precio es requerido y debe ser un número positivo.</small>
-      </div>
     </div>
-
     <div class="form-group">
       <label for="stock">Cantidad en Inventario (Stock)</label>
       <input type="number" id="stock" formControlName="stock" placeholder="Ej. 100">
-       <div *ngIf="productForm.get('stock')?.invalid && productForm.get('stock')?.touched" class="error-text">
-        <small>El stock es requerido y debe ser un número positivo.</small>
-      </div>
     </div>
+    <div class="form-group">
+      <label for="imagen">Imagen del Producto</label>
+      <img [src]="imageUrlPreview" *ngIf="imageUrlPreview" class="image-preview">
+      <input type="file" (change)="onFileSelected($event)">
+    </div>
+
+
+    <!-- --- SECCIÓN NUEVA: ASIGNAR MODIFICADORES --- -->
+    <div class="form-group" formArrayName="modifierGroups" *ngIf="allModifierGroups.length > 0">
+        <label>Asignar Grupos de Modificadores</label>
+        <div class="modifiers-checklist">
+            <div *ngFor="let group of allModifierGroups; let i = index" class="checkbox-item">
+                <input type="checkbox" [formControlName]="i" [id]="'group-' + group.id_grupo">
+                <label [for]="'group-' + group.id_grupo">{{ group.nombre }}</label>
+            </div>
+        </div>
+    </div>
+    <!-- --- FIN DE SECCIÓN NUEVA --- -->
 
     <button type="submit" [disabled]="productForm.invalid" class="submit-btn">
       {{ isEditMode ? 'Actualizar Producto' : 'Guardar Producto' }}

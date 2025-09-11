@@ -1,9 +1,11 @@
+<!-- src/app/pages/pos/pos.component.html -->
 <div class="pos-container">
   
   <div class="product-grid">
+    <!-- El click ahora llama a la nueva función handleAddItem -->
     <button *ngFor="let product of products" 
             class="product-card" 
-            (click)="orderService.addItem(product)"
+            (click)="handleAddItem(product)"
             [disabled]="product.stock === 0">
       <div class="product-name">{{ product.nombre }}</div>
       <div class="product-price">{{ product.precio | currency:'MXN' }}</div>
@@ -17,14 +19,22 @@
     <h2>Orden Actual</h2>
     <div class="ticket-items" *ngIf="(orderItems$ | async)?.length; else emptyTicket">
       <div *ngFor="let item of (orderItems$ | async)" class="ticket-item">
-        <span class="item-name">{{ item.nombre }}</span>
-        <div class="item-controls">
-          <button (click)="orderService.updateItemQuantity(item.producto_id, -1)">-</button>
-          <span>{{ item.cantidad }}</span>
-          <button (click)="orderService.updateItemQuantity(item.producto_id, 1)" [disabled]="item.cantidad >= item.stock">+</button>
+        <div class="item-details">
+            <span class="item-name">{{ item.nombre }}</span>
+            <!-- Mostramos las opciones si existen -->
+            <ul *ngIf="item.selectedOptions.length > 0" class="selected-options-list">
+                <li *ngFor="let option of item.selectedOptions">+ {{ option.nombre }}</li>
+            </ul>
         </div>
-        <span class="item-total">{{ (item.precio * item.cantidad) | currency:'MXN' }}</span>
-        <button class="remove-btn" (click)="orderService.removeItem(item.producto_id)">&times;</button>
+        <div class="item-controls">
+          <!-- Los botones ahora usan el cartItemId único -->
+          <button (click)="orderService.updateItemQuantity(item.cartItemId, -1)">-</button>
+          <span>{{ item.cantidad }}</span>
+          <button (click)="orderService.updateItemQuantity(item.cartItemId, 1)" [disabled]="item.cantidad >= item.stock">+</button>
+        </div>
+        <!-- Usamos precioFinal para el subtotal -->
+        <span class="item-total">{{ (item.precioFinal * item.cantidad) | currency:'MXN' }}</span>
+        <button class="remove-btn" (click)="orderService.removeItem(item.cartItemId)">&times;</button>
       </div>
     </div>
     
@@ -45,5 +55,4 @@
       </button>
     </div>
   </div>
-
 </div>

@@ -6,39 +6,41 @@
     </a>
   </div>
 
-  <div *ngIf="isLoading" class="info-message">
-    Cargando productos...
-  </div>
-
-  <div *ngIf="!isLoading && products.length === 0" class="info-message">
-    No hay productos para mostrar. ¡Crea el primero usando el botón de arriba!
-  </div>
-
   <div class="table-wrapper" *ngIf="!isLoading && products.length > 0">
     <table class="products-table">
       <thead>
         <tr>
           <th>Nombre</th>
-          <th>Descripción</th>
           <th>Precio</th>
           <th>Stock</th>
+          <th>Estatus</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let product of products">
+        <tr *ngFor="let product of products" [class.suspended]="!product.activo">
           <td data-label="Nombre">{{ product.nombre }}</td>
-          <td data-label="Descripción" class="description-cell">{{ product.descripcion }}</td>
           <td data-label="Precio">{{ product.precio | currency:'MXN' }}</td>
           <td data-label="Stock">
-            <span class="stock-badge" 
-                  [class.low-stock]="product.stock < 10" 
-                  [class.no-stock]="product.stock === 0">
+            <span class="stock-badge" [class.low-stock]="product.stock < 10 && product.stock > 0" [class.no-stock]="product.stock === 0">
               {{ product.stock }}
             </span>
           </td>
+          <td data-label="Estatus">
+            <span class="status-badge" [class.active]="product.activo">
+                {{ product.activo ? 'Activo' : 'Suspendido' }}
+            </span>
+          </td>
           <td data-label="Acciones">
-            <a [routerLink]="['/admin/products/edit', product.id_producto]" class="btn btn-secondary">Editar</a>
+            <div class="actions-cell">
+              <a [routerLink]="['/admin/products/edit', product.id_producto]" class="btn btn-secondary">Editar</a>
+              <button (click)="toggleStatus(product)" class="btn btn-warning">
+                  {{ product.activo ? 'Suspender' : 'Activar' }}
+              </button>
+              <button (click)="deleteProduct(product)" class="btn btn-danger">
+                  Eliminar
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>

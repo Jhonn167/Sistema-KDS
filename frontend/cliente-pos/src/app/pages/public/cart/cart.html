@@ -5,24 +5,34 @@
   </div>
   
   <div *ngIf="(orderItems$ | async)?.length; else emptyCart" class="cart-content">
-    
     <div class="cart-items">
+      <button class="clear-cart-btn" (click)="orderService.clearOrder()">Vaciar Carrito</button>
+
       <div *ngFor="let item of (orderItems$ | async)" class="cart-item">
         <div class="item-details">
           <h4>{{ item.nombre }}</h4>
-          <p>{{ item.precio | currency:'MXN' }}</p>
+          <p>{{ item.precioFinal | currency:'MXN' }} (Precio unitario)</p>
+          
+          <!-- NUEVO: Lista de opciones seleccionadas -->
+          <ul *ngIf="item.selectedOptions.length > 0" class="selected-options-list">
+            <li *ngFor="let option of item.selectedOptions">
+              + {{ option.nombre }} ({{ option.precio_adicional | currency:'MXN' }})
+            </li>
+          </ul>
         </div>
         <div class="item-controls">
-          <button (click)="orderService.updateItemQuantity(item.producto_id, -1)">-</button>
+          <!-- Los botones ahora usan el cartItemId único -->
+          <button (click)="orderService.updateItemQuantity(item.cartItemId, -1)">-</button>
           <span>{{ item.cantidad }}</span>
-          <button (click)="orderService.updateItemQuantity(item.producto_id, 1)" [disabled]="item.cantidad >= item.stock">+</button>
+          <button (click)="orderService.updateItemQuantity(item.cartItemId, 1)" [disabled]="item.cantidad >= item.stock">+</button>
         </div>
         <div class="item-subtotal">
-          {{ (item.precio * item.cantidad) | currency:'MXN' }}
+          {{ (item.precioFinal * item.cantidad) | currency:'MXN' }}
         </div>
-        <button class="remove-btn" (click)="orderService.removeItem(item.producto_id)">&times;</button>
+        <button class="remove-btn" (click)="orderService.removeItem(item.cartItemId)">&times;</button>
       </div>
     </div>
+
     <div class="cart-summary">
       <h3>Resumen</h3>
       <div class="summary-row">

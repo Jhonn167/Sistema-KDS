@@ -1,4 +1,5 @@
 /* src/app/components/navbar/navbar.component.css */
+
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -6,13 +7,26 @@
   background-color: #343a40;
   padding: 0.5rem 2rem;
   color: white;
+  position: relative; /* Necesario para el menú desplegable */
 }
+
 .navbar-brand a {
   color: white;
   text-decoration: none;
   font-weight: bold;
   font-size: 1.5rem;
 }
+
+/* Estilos del botón de hamburguesa */
+.hamburger-button {
+  display: none; /* Oculto por defecto en escritorio */
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
 .navbar-links a {
   color: #adb5bd;
   text-decoration: none;
@@ -20,9 +34,11 @@
   font-size: 1.1rem;
   transition: color 0.2s;
 }
+
 .navbar-links a:hover, .navbar-links a.active-link {
   color: white;
 }
+
 .navbar-actions button {
   background-color: #dc3545;
   color: white;
@@ -30,4 +46,58 @@
   padding: 0.5rem 1rem;
   border-radius: 5px;
   cursor: pointer;
+}
+
+/* --- ESTILOS PARA MÓVIL (PANTALLAS PEQUEÑAS) --- */
+/* Media Query: Aplica estos estilos si el ancho de la pantalla es 768px o menos */
+@media (max-width: 768px) {
+  .hamburger-button {
+    display: block; /* Hacemos visible el botón de hamburguesa */
+  }
+
+  .navbar-links-container {
+    display: none; /* Ocultamos el contenedor de enlaces por defecto */
+    position: absolute;
+    top: 100%; /* Justo debajo de la navbar */
+    left: 0;
+    right: 0;
+    background-color: #343a40;
+    flex-direction: column;
+    padding: 1rem;
+    border-top: 1px solid #495057;
+  }
+
+  .navbar-links-container.is-active {
+    display: flex; /* Lo mostramos cuando se hace clic */
+  }
+
+  .navbar-links {
+    display: flex;
+    flex-direction: column; /* Enlaces en vertical */
+    align-items: center;
+    width: 100%;
+  }
+
+  .navbar-links a {
+    margin: 0.8rem 0; /* Espaciado vertical */
+    width: 100%;
+    text-align: center;
+  }
+  
+  .navbar-actions {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #495057;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* --- ESTILOS PARA ESCRITORIO (PANTALLAS GRANDES) --- */
+/* Media Query: Aplica estos estilos si el ancho de la pantalla es mayor a 768px */
+@media (min-width: 769px) {
+  .navbar-links-container {
+    display: flex; /* Mostramos el contenedor de enlaces */
+    align-items: center;
+  }
 }

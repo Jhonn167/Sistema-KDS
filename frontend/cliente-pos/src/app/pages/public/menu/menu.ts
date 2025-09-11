@@ -1,31 +1,32 @@
 // src/app/pages/public/menu/menu.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProductService } from '../../../services/product';
 import { OrderService } from '../../../services/order';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
+import { ModifierModalComponent } from '../../../components/modifier-modal/modifier-modal'; // <-- Importa el modal
 
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ModifierModalComponent], // <-- Añade el modal a los imports
   templateUrl: './menu.html',
   styleUrls: ['./menu.css']
 })
 export class MenuComponent implements OnInit {
   products: any[] = [];
   isLoading = true;
-
-  // Observable para mostrar el número de items en el carrito
   cartItemCount$: Observable<number>;
+
+  // Nuevas propiedades para manejar el modal
+  isModalOpen = false;
+  selectedProduct: any | null = null;
 
   constructor(
     private productService: ProductService,
-    public orderService: OrderService // Lo hacemos público para usarlo en el HTML
+    public orderService: OrderService
   ) {
-    // Nos suscribimos al stream de la orden para saber cuántos items únicos hay
     this.cartItemCount$ = this.orderService.totalItemCount$;
   }
 
@@ -40,5 +41,37 @@ export class MenuComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  // Nueva función para manejar el clic en "Añadir"
+  handleAddItem(product: any): void {
+    // Primero, obtenemos la versión completa del producto con sus modificadores
+    this.productService.getProductById(product.id_producto).subscribe(fullProduct => {
+      // Si el producto tiene modificadores, abrimos el modal
+      if (fullProduct.modificadores && fullProduct.modificadores.length > 0) {
+        this.selectedProduct = fullProduct;
+        this.isModalOpen = true;
+      } else {
+        // Si no tiene, lo añadimos directamente al carrito como antes
+        const configuredProduct = {
+            ...fullProduct,
+            finalPrice: fullProduct.precio,
+            selectedOptions: []
+        };
+        this.orderService.addItem(configuredProduct);
+      }
+    });
+  }
+
+  // Función para cerrar el modal
+  closeModal(): void {
+    this.isModalOpen = false;
+    this.selectedProduct = null;
+  }
+
+  // Función que se ejecuta cuando el modal confirma la selección
+  onConfirmProduct(configuredProduct: any): void {
+    this.orderService.addItem(configuredProduct);
+    this.closeModal();
   }
 }

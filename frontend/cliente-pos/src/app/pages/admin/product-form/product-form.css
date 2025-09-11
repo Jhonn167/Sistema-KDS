@@ -119,3 +119,28 @@ textarea {
   object-fit: contain; /* Asegura que la imagen completa sea visible dentro de las dimensiones */
   background-color: #f9f9f9;
    }
+
+   /* --- ESTILOS NUEVOS PARA MODIFICADORES --- */
+.modifiers-checklist {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.checkbox-item input[type="checkbox"] {
+    margin-right: 10px;
+    width: auto; /* Anula el width: 100% de los otros inputs */
+}
+
+.checkbox-item label {
+    margin-bottom: 0;
+    font-weight: normal;
+}

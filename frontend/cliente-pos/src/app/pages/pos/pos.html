@@ -56,3 +56,9 @@
     </div>
   </div>
 </div>
+<app-modifier-modal 
+  *ngIf="isModalOpen" 
+  [product]="selectedProduct"
+  (confirm)="onConfirmProduct($event)"
+  (close)="closeModal()">
+</app-modifier-modal>

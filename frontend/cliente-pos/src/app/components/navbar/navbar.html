@@ -13,6 +13,7 @@
       <a routerLink="/admin/products" routerLinkActive="active-link" (click)="closeMenu()">Admin Productos</a>
       <a routerLink="/kds" routerLinkActive="active-link" (click)="closeMenu()">Cocina (KDS)</a>
       <a routerLink="/admin/modifiers" routerLinkActive="active-link">Modificadores</a>
+      <a routerLink="/admin/reports" routerLinkActive="active-link">Reportes</a>
     </div>
 
     <div *ngIf="!authService.isAdmin()" class="navbar-links">
@@ -25,3 +26,4 @@
     </div>
   </div>
 </nav>
+

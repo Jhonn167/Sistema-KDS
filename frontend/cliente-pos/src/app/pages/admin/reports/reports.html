@@ -1,0 +1,53 @@
+<div class="reports-container">
+  <div class="header">
+    <h1>Reportes de Ventas</h1>
+    <!-- NUEVO: Contenedor para los botones de acción -->
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="onCloseDay()" [disabled]="isClosingDay">
+        {{ isClosingDay ? 'Guardando...' : 'Cerrar Día' }}
+      </button>
+      <button class="btn btn-primary" (click)="onExportExcel()">Exportar a Excel</button>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="info-message">Cargando reportes...</div>
+
+  <div *ngIf="!isLoading">
+    <!-- Resumen del Día -->
+    <div class="summary-section card">
+      <h2>Resumen del Día</h2>
+      <div class="summary-cards">
+        <div class="summary-card">
+          <span class="value">{{ salesSummary?.ingresos_totales | currency:'MXN' }}</span>
+          <span class="label">Ingresos Totales</span>
+        </div>
+        <div class="summary-card">
+          <span class="value">{{ salesSummary?.numero_pedidos }}</span>
+          <span class="label">Pedidos Completados</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico de Productos Más Vendidos -->
+    <div class="chart-section card">
+      <h2>Top 10 Productos Más Vendidos (Hoy)</h2>
+      <div *ngIf="topProducts.length > 0; else noChartData">
+        <ngx-charts-bar-vertical
+          [view]="[700, 400]"
+          [scheme]="colorScheme"
+          [results]="topProducts"
+          [xAxis]="true"
+          [yAxis]="true"
+          [legend]="false"
+          [showXAxisLabel]="true"
+          [showYAxisLabel]="true"
+          xAxisLabel="Producto"
+          yAxisLabel="Cantidad Vendida">
+        </ngx-charts-bar-vertical>
+      </div>
+      <ng-template #noChartData>
+        <p class="info-message">No hay suficientes datos de ventas para mostrar el gráfico.</p>
+      </ng-template>
+    </div>
+  </div>
+</div>

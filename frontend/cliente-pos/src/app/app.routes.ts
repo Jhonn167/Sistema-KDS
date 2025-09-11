@@ -14,9 +14,9 @@ import { ProductFormComponent } from './pages/admin/product-form/product-form';
 import { ModifierListComponent, } from './pages/admin/modifier-list/modifier-list'; // <-- Se importa el COMPONENTE
 import { PosComponent } from './pages/pos/pos';
 import { Kds } from './pages/kds/kds';
-
 import { AdminGuard } from './guards/admin-guard';
 import { authGuard } from './guards/auth-guard';  
+import { ReportsComponent } from './pages/admin/reports/reports';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/menu', pathMatch: 'full' },
@@ -41,6 +41,7 @@ export const routes: Routes = [
       // --- CORRECCIÓN CLAVE ---
       // La ruta ahora usa el ModifierListComponent, que es el componente de la página.
       { path: 'modifiers', component: ModifierListComponent }, 
+       { path: 'reports', component: ReportsComponent },
       { path: '', redirectTo: 'products', pathMatch: 'full' }
     ]
   },

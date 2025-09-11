@@ -5,6 +5,8 @@ import { provideRouter, withDebugTracing } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
 import { authInterceptor } from './interceptors/auth-interceptor';
+import { provideAnimations } from '@angular/platform-browser/animations'; // <-- 1. Importa esto
+import { NgxChartsModule } from '@swimlane/ngx-charts'; 
 
 // 1. Importa la configuración del Socket
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
@@ -14,10 +16,12 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes /*, withDebugTracing()*/ ), // Puedes comentar el debug tracing
+    provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),
-    
-    // 3. Añade el proveedor del Socket a tu aplicación
-    importProvidersFrom(SocketIoModule.forRoot(config))
+    provideAnimations(), // <-- 3. Añade el proveedor de animaciones
+    importProvidersFrom(
+      SocketIoModule.forRoot(config),
+      NgxChartsModule // <-- 4. Añade el módulo de gráficos
+    )
   ]
 };

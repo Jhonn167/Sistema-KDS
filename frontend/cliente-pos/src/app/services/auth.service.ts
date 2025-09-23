@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Socket } from 'ngx-socket-io';
+import { jwtDecode } from 'jwt-decode';
+import { NotificationService } from './notification';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +18,28 @@ export class AuthService {
   constructor(
     private http: HttpClient, 
     private router: Router,
-    private socket: Socket
+    private socket: Socket,
+    private notificationService: NotificationService
   ) {}
 
+  // --- NUEVA FUNCIÓN: VERIFICACIÓN PROACTIVA ---
+  checkTokenExpiration(): void {
+    const token = this.getToken();
+    if (token) {
+      const decodedToken: { exp: number } = jwtDecode(token);
+      // La expiración está en segundos, Date.now() en milisegundos
+      if (decodedToken.exp * 1000 < Date.now()) {
+        this.logout();
+        this.notificationService.add('Tu sesión ha caducado. Por favor, inicia sesión de nuevo.', 'error');
+      }
+    }
+  }
+
+  logout() {
+    this.disconnectSocket();
+    localStorage.clear(); // Limpia todo el storage
+    this.router.navigate(['/login']);
+  }
   // --- MÉTODOS DE WEBSOCKETS ---
   connectSocket(): void {
     const userId = this.getUserId();
@@ -52,13 +73,7 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/register`, userData);
   }
 
-  logout(): void {
-    this.disconnectSocket();
-    localStorage.removeItem('token');
-    localStorage.removeItem('user_role');
-    localStorage.removeItem('user_id');
-    this.router.navigate(['/login']);
-  }
+
   
   // --- MÉTODOS AUXILIARES ---
   getToken(): string | null {

@@ -7,13 +7,10 @@
   <div *ngIf="(orderItems$ | async)?.length; else emptyCart" class="cart-content">
     <div class="cart-items">
       <button class="clear-cart-btn" (click)="orderService.clearOrder()">Vaciar Carrito</button>
-
       <div *ngFor="let item of (orderItems$ | async)" class="cart-item">
         <div class="item-details">
           <h4>{{ item.nombre }}</h4>
           <p>{{ item.precioFinal | currency:'MXN' }} (Precio unitario)</p>
-          
-          <!-- NUEVO: Lista de opciones seleccionadas -->
           <ul *ngIf="item.selectedOptions.length > 0" class="selected-options-list">
             <li *ngFor="let option of item.selectedOptions">
               + {{ option.nombre }} ({{ option.precio_adicional | currency:'MXN' }})
@@ -21,7 +18,6 @@
           </ul>
         </div>
         <div class="item-controls">
-          <!-- Los botones ahora usan el cartItemId único -->
           <button (click)="orderService.updateItemQuantity(item.cartItemId, -1)">-</button>
           <span>{{ item.cantidad }}</span>
           <button (click)="orderService.updateItemQuantity(item.cartItemId, 1)" [disabled]="item.cantidad >= item.stock">+</button>
@@ -43,9 +39,41 @@
         <span>Total</span>
         <span>{{ (orderTotal$ | async) | currency:'MXN' }}</span>
       </div>
-      <button class="confirm-btn" (click)="confirmOrder()">
-        Confirmar Pedido y Enviar a Cocina
-      </button>
+
+      <div class="order-type-section">
+        <label class="section-label">¿Cuándo quieres recoger tu pedido?</label>
+        <div class="radio-group">
+          <div class="radio-item">
+            <input type="radio" id="inmediato" name="orderType" value="inmediato" [(ngModel)]="orderType">
+            <label for="inmediato">Lo antes posible</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" id="futuro" name="orderType" value="futuro" [(ngModel)]="orderType">
+            <label for="futuro">Programar pedido</label>
+          </div>
+        </div>
+        
+        <div *ngIf="orderType === 'futuro'" class="pickup-time-section">
+          <label for="pickupDate">Selecciona fecha y hora:</label>
+          <!-- CAMBIO CLAVE: Añadimos (change) para llamar a nuestra función de validación -->
+          <input type="datetime-local" id="pickupDate" [(ngModel)]="pickupDate" [min]="minPickupDate" class="time-input" (change)="validatePickupTime()">
+        </div>
+      </div>
+      
+      <div class="payment-options">
+        <button class="confirm-btn cash" (click)="confirmOrder()" [disabled]="isProcessingPayment">
+          <span *ngIf="!isProcessingPayment">Pagar en Efectivo</span>
+          <span *ngIf="isProcessingPayment">Procesando...</span>
+        </button>
+        <button class="confirm-btn card" (click)="proceedToCheckout()" [disabled]="isProcessingPayment">
+          <span *ngIf="!isProcessingPayment">Pagar con Tarjeta</span>
+          <span *ngIf="isProcessingPayment">Procesando...</span>
+        </button>
+        <button class="confirm-btn transfer" (click)="startTransferPayment()" [disabled]="isProcessingPayment">
+          <span *ngIf="!isProcessingPayment">Pagar por Transferencia</span>
+          <span *ngIf="isProcessingPayment">Procesando...</span>
+        </button>
+      </div>
     </div>
   </div>
 

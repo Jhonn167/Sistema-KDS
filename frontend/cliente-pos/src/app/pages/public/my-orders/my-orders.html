@@ -1,32 +1,38 @@
 <div class="my-orders-container">
   <h1>Mis Pedidos</h1>
+  <p>Aquí puedes ver el historial y el estado actual de tus pedidos.</p>
 
-  <div *ngIf="isLoading">Cargando tus pedidos...</div>
+  <div *ngIf="isLoading" class="info-message">Cargando tus pedidos...</div>
 
-  <div *ngIf="!isLoading && orders.length === 0">
+  <div *ngIf="!isLoading && orders.length === 0" class="info-message">
     <p>Aún no has realizado ningún pedido.</p>
+    <a routerLink="/menu" class="btn-primary">Ver el Menú</a>
   </div>
 
-  <table *ngIf="!isLoading && orders.length > 0" class="orders-table">
-    <thead>
-      <tr>
-        <th>ID Pedido</th>
-        <th>Fecha</th>
-        <th>Total</th>
-        <th>Estatus</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let order of orders">
-        <td>#{{ order.id_pedido }}</td>
-        <td>{{ order.fecha | date:'short' }}</td>
-        <td>{{ order.total | currency:'MXN' }}</td>
-        <td>
-          <span class="status" [ngClass]="order.estatus.toLowerCase()">
-            {{ order.estatus }}
-          </span>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-wrapper" *ngIf="!isLoading && orders.length > 0">
+    <table class="orders-table">
+      <thead>
+        <tr>
+          <th>ID Pedido</th>
+          <th>Fecha</th>
+          <th>Total</th>
+          <th>Estatus</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of orders">
+          <td>#{{ order.id_pedido }}</td>
+          <td>{{ order.fecha | date:'short' }}</td>
+          <td>{{ order.total | currency:'MXN' }}</td>
+          <td>
+            <!-- CORRECCIÓN: Ahora llamamos a la nueva función getStatusClass() -->
+            <span class="status" [ngClass]="getStatusClass(order.estatus)">
+              {{ order.estatus }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
+

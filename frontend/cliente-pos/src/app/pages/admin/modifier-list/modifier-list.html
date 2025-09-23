@@ -1,12 +1,9 @@
-<!-- src/app/pages/admin/modifier-list/modifier-list.component.html -->
-
 <div class="list-container">
   <div class="header">
     <h1>Gestión de Modificadores</h1>
   </div>
-
   <div class="form-card">
-    <h2>Crear Nuevo Grupo de Modificadores</h2>
+    <h2>Crear Nuevo Grupo</h2>
     <form [formGroup]="newGroupForm" (ngSubmit)="onAddNewGroup()" class="group-form">
       <input type="text" formControlName="nombre" placeholder="Nombre del Grupo (ej. Elige tu salsa)">
       <select formControlName="tipo_seleccion">
@@ -16,23 +13,23 @@
       <button type="submit" [disabled]="newGroupForm.invalid" class="btn btn-primary">Crear Grupo</button>
     </form>
   </div>
-
   <div class="groups-grid" *ngIf="modifierGroups.length > 0">
     <div *ngFor="let group of modifierGroups" class="group-card">
       <div class="group-header">
         <h3>{{ group.nombre }}</h3>
-        <span class="group-type">{{ group.tipo_seleccion === 'seleccionar_uno' ? 'Selección Única' : 'Múltiples Opciones' }}</span>
+        <div class="group-actions">
+          <span class="group-type">{{ group.tipo_seleccion === 'seleccionar_uno' ? 'Selección Única' : 'Múltiples Opciones' }}</span>
+          <!-- BOTÓN NUEVO PARA ELIMINAR GRUPO -->
+          <button class="delete-group-btn" (click)="onDeleteGroup(group.id_grupo)" title="Eliminar Grupo Completo">&times;</button>
+        </div>
       </div>
       <ul class="options-list">
-        <li *ngIf="group.opciones.length === 0" class="no-options">
-          No hay opciones en este grupo.
-        </li>
+        <li *ngIf="group.opciones.length === 0" class="no-options">No hay opciones en este grupo.</li>
         <li *ngFor="let option of group.opciones" class="option-item">
           <span>{{ option.nombre }} (+{{ option.precio_adicional | currency:'MXN' }})</span>
-          <button class="delete-btn" (click)="onDeleteOption(option.id_opcion, group.id_grupo)">&times;</button>
+          <button class="delete-btn" (click)="onDeleteOption(option.id_opcion)" title="Eliminar Opción">&times;</button>
         </li>
       </ul>
-      <!-- Este formulario se quedará pegado en la parte inferior de la tarjeta -->
       <form [formGroup]="getOptionForm(group.id_grupo)" (ngSubmit)="onAddNewOption(group.id_grupo)" class="option-form">
         <input class="option-name-input" type="text" formControlName="nombre" placeholder="Nombre de la opción">
         <input class="option-price-input" type="number" formControlName="precio_adicional" placeholder="Precio">

@@ -1,0 +1,41 @@
+<!-- src/app/components/receipt-ticket/receipt-ticket.component.html -->
+<div class="ticket-container" *ngIf="ticketData">
+  <div class="header">
+    <h2>{{ ticketData.businessName }}</h2>
+    <p>Fecha: {{ ticketData.date | date:'short' }}</p>
+  </div>
+  <div class="items">
+    <table>
+      <thead>
+        <tr>
+          <th>Cant.</th>
+          <th>Descripción</th>
+          <th>Precio</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let item of ticketData.items">
+          <!-- Fila principal del producto -->
+          <tr>
+            <td>{{ item.cantidad }}</td>
+            <td>{{ item.nombre }}</td>
+            <td>{{ (item.precioBase * item.cantidad) | currency:'MXN' }}</td>
+          </tr>
+          <!-- Filas para los modificadores de este producto -->
+          <tr *ngFor="let option of item.selectedOptions" class="modifier-row">
+            <td></td>
+            <td class="modifier-name">+ {{ option.nombre }}</td>
+            <td>{{ (option.precio_adicional * item.cantidad) | currency:'MXN' }}</td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+  <div class="summary">
+    <div class="total">
+      <strong>TOTAL:</strong>
+      <strong>{{ ticketData.total | currency:'MXN' }}</strong>
+    </div>
+    <p class="footer-message">¡Gracias por su compra!</p>
+  </div>
+</div>

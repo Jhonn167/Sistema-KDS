@@ -48,24 +48,27 @@ io.on('connection', (socket) => {
 
 
 const PORT = process.env.PORT || 3000;
+app.use(cors());
+// IMPORTANTE: Esta línea debe ir ANTES de las rutas que la necesitan
+// Es para que el webhook de Stripe funcione correctamente.
+app.use('/api/payments/webhook', express.raw({type: 'application/json'}));
+app.use(express.json());
 
 // Middlewares (esto se queda igual)
-app.use(cors());
-app.use(express.json());
 
 // Importar rutas (esto se queda igual)
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
-const pedidoRoutes = require('./routes/pedidos');
+const pedidoRoutes = require('./routes/pedidos')(io, () => onlineUsers);
 const uploadRoutes = require('./routes/upload'); 
 const modifierRoutes = require('./routes/ modifiers');
 const reportRoutes = require('./routes/reports'); 
-const paymentRoutes = require('./routes/payments'); 
+const paymentRoutes = require('./routes/payments')(io);
 
 // Usar las rutas (esto se queda igual)
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
-app.use('/api/pedidos', pedidoRoutes(io, () => onlineUsers)); // 6. Pasamos 'io' y 'onlineUsers' a las rutas de pedidos
+app.use('/api/pedidos', pedidoRoutes); // 6. Pasamos 'io' y 'onlineUsers' a las rutas de pedidos
 app.use('/api/upload', uploadRoutes);
 app.use('/api/modifiers', modifierRoutes); // <-- 2. USA LAS NUEVAS RUTAS
 app.use('/api/reports', reportRoutes); // Rutas para reportes

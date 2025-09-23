@@ -8,17 +8,21 @@
       <div *ngFor="let group of product?.modificadores" class="modifier-group">
         <h4>{{ group.nombre }}</h4>
         
+        <!-- =====> ESTA ES LA SECCIÓN CORREGIDA <===== -->
         <!-- Caso: Selección Única (Radio Buttons) -->
-        <div *ngIf="group.tipo_seleccion === 'seleccionar_uno'" [formGroupName]="group.id_grupo.toString()">
+        <!-- Eliminamos [formGroupName] porque el control es un FormControl, no un FormGroup -->
+        <div *ngIf="group.tipo_seleccion === 'seleccionar_uno'">
           <div *ngFor="let option of group.opciones" class="option-item">
+            <!-- El formControlName ahora apunta directamente al control del grupo -->
             <input type="radio" [formControlName]="group.id_grupo.toString()" [value]="option.id_opcion" [id]="'opt-' + option.id_opcion">
             <label [for]="'opt-' + option.id_opcion">
               {{ option.nombre }} <span class="price">(+{{ option.precio_adicional | currency:'MXN' }})</span>
             </label>
           </div>
         </div>
+        <!-- ============================================= -->
 
-        <!-- Caso: Múltiples Opciones (Checkboxes) -->
+        <!-- Caso: Múltiples Opciones (Checkboxes) - Esta parte ya estaba correcta -->
         <div *ngIf="group.tipo_seleccion === 'seleccionar_varios'" [formGroupName]="group.id_grupo.toString()">
            <div *ngFor="let option of group.opciones" class="option-item">
             <input type="checkbox" [formControlName]="option.id_opcion.toString()" [id]="'opt-' + option.id_opcion">

@@ -7,6 +7,7 @@ import { routes } from './app.routes';
 import { authInterceptor } from './interceptors/auth-interceptor';
 import { provideAnimations } from '@angular/platform-browser/animations'; // <-- 1. Importa esto
 import { NgxChartsModule } from '@swimlane/ngx-charts'; 
+import { NgxStripeModule } from 'ngx-stripe';
 
 // 1. Importa la configuración del Socket
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
@@ -21,7 +22,8 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(), // <-- 3. Añade el proveedor de animaciones
     importProvidersFrom(
       SocketIoModule.forRoot(config),
-      NgxChartsModule // <-- 4. Añade el módulo de gráficos
+      NgxChartsModule, // <-- 4. Añade el módulo de gráficos
+       NgxStripeModule.forRoot('pk_test_51S5YwPHFYNdvynTwSkohK0o9FmnZ2L8Xfj3Xza4jeXNNXQ5FSYJl44hklm1AoWzw3AGLq3SNMt5F55rpSgTzkhw5002hf8BXFY')
     )
   ]
 };

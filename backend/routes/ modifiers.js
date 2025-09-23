@@ -1,5 +1,4 @@
 // backend/routes/modifiers.js
-
 const express = require('express');
 const pool = require('../db');
 const checkAuth = require('../middleware/check-auth');
@@ -7,33 +6,23 @@ const checkAuth = require('../middleware/check-auth');
 const router = express.Router();
 
 // --- GESTIÓN DE GRUPOS DE MODIFICADORES ---
-
-// OBTENER TODOS LOS GRUPOS CON SUS OPCIONES
 router.get('/groups', checkAuth, async (req, res) => {
     try {
         const query = `
             SELECT 
-                g.id_grupo, 
-                g.nombre, 
-                g.tipo_seleccion,
+                g.id_grupo, g.nombre, g.tipo_seleccion,
                 COALESCE(
                     json_agg(
                         json_build_object(
-                            'id_opcion', o.id_opcion,
-                            'nombre', o.nombre,
-                            'precio_adicional', o.precio_adicional
+                            'id_opcion', o.id_opcion, 'nombre', o.nombre, 'precio_adicional', o.precio_adicional
                         ) ORDER BY o.id_opcion ASC
                     ) FILTER (WHERE o.id_opcion IS NOT NULL), 
                     '[]'
                 ) AS opciones
-            FROM 
-                modificador_grupos g
-            LEFT JOIN 
-                modificador_opciones o ON g.id_grupo = o.id_grupo
-            GROUP BY 
-                g.id_grupo
-            ORDER BY 
-                g.nombre ASC;
+            FROM modificador_grupos g
+            LEFT JOIN modificador_opciones o ON g.id_grupo = o.id_grupo
+            GROUP BY g.id_grupo
+            ORDER BY g.nombre ASC;
         `;
         const { rows } = await pool.query(query);
         res.status(200).json(rows);
@@ -43,7 +32,6 @@ router.get('/groups', checkAuth, async (req, res) => {
     }
 });
 
-// CREAR UN NUEVO GRUPO
 router.post('/groups', checkAuth, async (req, res) => {
     try {
         const { nombre, tipo_seleccion } = req.body;
@@ -56,9 +44,20 @@ router.post('/groups', checkAuth, async (req, res) => {
     }
 });
 
-// --- GESTIÓN DE OPCIONES DE MODIFICADORES ---
+// --- RUTA NUEVA: ELIMINAR UN GRUPO COMPLETO ---
+router.delete('/groups/:id', checkAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        // Gracias a ON DELETE CASCADE, esto eliminará el grupo, sus opciones y sus asignaciones.
+        await pool.query('DELETE FROM modificador_grupos WHERE id_grupo = $1', [id]);
+        res.status(200).json({ message: 'Grupo de modificadores eliminado exitosamente.' });
+    } catch (error) {
+        console.error("Error al eliminar grupo:", error);
+        res.status(500).json({ message: 'Error en el servidor.' });
+    }
+});
 
-// AÑADIR UNA OPCIÓN A UN GRUPO
+// --- GESTIÓN DE OPCIONES DE MODIFICADORES ---
 router.post('/options', checkAuth, async (req, res) => {
     try {
         const { id_grupo, nombre, precio_adicional } = req.body;
@@ -71,7 +70,6 @@ router.post('/options', checkAuth, async (req, res) => {
     }
 });
 
-// ELIMINAR UNA OPCIÓN
 router.delete('/options/:id', checkAuth, async (req, res) => {
     try {
         const { id } = req.params;

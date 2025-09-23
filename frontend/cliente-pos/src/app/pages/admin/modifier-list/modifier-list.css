@@ -164,4 +164,25 @@
   font-size: 0.9em;
 }
 
-  
+/* ... (estilos existentes) ... */
+.group-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.delete-group-btn {
+    background: none;
+    border: none;
+    color: #dc3545;
+    font-size: 1.8em;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+.delete-group-btn:hover {
+    color: #a71d2a;
+}
+/* Reutilizamos el estilo para el botón de eliminar opción */
+.option-item .delete-btn {
+    line-height: 1;
+}

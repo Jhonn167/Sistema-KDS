@@ -1,11 +1,11 @@
-// src/app/pages/pos/pos.component.ts - VERSIÓN FINAL CON MODAL
-
+// src/app/pages/pos/pos.component.ts
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ProductService } from '../../services/product';
 import { OrderService, CartItem } from '../../services/order';
 import { Observable } from 'rxjs';
-import { CommonModule } from '@angular/common';
 import { ModifierModalComponent } from '../../components/modifier-modal/modifier-modal';
+import { PrintService } from '../../services/print';
 
 @Component({
   selector: 'app-pos',
@@ -18,26 +18,32 @@ export class PosComponent implements OnInit {
   products: any[] = [];
   orderItems$: Observable<CartItem[]>;
   orderTotal$: Observable<number>;
-
-  // --- NUEVAS PROPIEDADES PARA MANEJAR EL MODAL ---
   isModalOpen = false;
   selectedProduct: any | null = null;
 
   constructor(
     private productService: ProductService,
-    public orderService: OrderService
+    public orderService: OrderService,
+    private printService: PrintService
   ) {
     this.orderItems$ = this.orderService.orderItems$;
     this.orderTotal$ = this.orderService.orderTotal$;
   }
 
   ngOnInit(): void {
+    this.loadProducts();
+  }
+
+  loadProducts(): void {
     this.productService.getProducts().subscribe(data => {
       this.products = data;
     });
   }
 
-  // --- LÓGICA DE AÑADIR ITEM ACTUALIZADA (IGUAL QUE EN EL MENÚ) ---
+  refreshProducts(): void {
+    this.loadProducts();
+  }
+
   handleAddItem(product: any): void {
     this.productService.getProductById(product.id_producto.toString()).subscribe(fullProduct => {
       if (fullProduct.modificadores && fullProduct.modificadores.length > 0) {
@@ -54,7 +60,6 @@ export class PosComponent implements OnInit {
     });
   }
 
-  // --- NUEVAS FUNCIONES PARA CONTROLAR EL MODAL ---
   closeModal(): void {
     this.isModalOpen = false;
     this.selectedProduct = null;
@@ -65,14 +70,28 @@ export class PosComponent implements OnInit {
     this.closeModal();
   }
 
+  // En src/app/pages/pos/pos.component.ts
+
   onCheckout(): void {
+    const itemsToPrint = this.orderService.getCurrentOrderItems();
+    const totalToPrint = itemsToPrint.reduce((sum, item) => sum + (item.precioFinal * item.cantidad), 0);
+
     this.orderService.checkout().subscribe({
       next: (response) => {
         alert('¡Venta registrada exitosamente!');
+        
+        const ticketData = {
+          businessName: 'Restaurante Mi Casita',
+          date: new Date(),
+          items: itemsToPrint,
+          total: totalToPrint
+        };
+        // Esta llamada ahora guarda los datos en localStorage, listo para la nueva pestaña
+        this.printService.setTicketData(ticketData);
+        window.open('/imprimir-ticket', '_blank');
+
         this.orderService.clearOrder();
-        this.productService.getProducts().subscribe(data => {
-          this.products = data;
-        });
+        this.loadProducts();
       },
       error: (err) => {
         alert('Error al registrar la venta: ' + (err.error.message || 'Error desconocido'));

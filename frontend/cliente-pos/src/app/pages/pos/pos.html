@@ -1,18 +1,26 @@
-<!-- src/app/pages/pos/pos.component.html -->
 <div class="pos-container">
   
-  <div class="product-grid">
-    <!-- El click ahora llama a la nueva función handleAddItem -->
-    <button *ngFor="let product of products" 
-            class="product-card" 
-            (click)="handleAddItem(product)"
-            [disabled]="product.stock === 0">
-      <div class="product-name">{{ product.nombre }}</div>
-      <div class="product-price">{{ product.precio | currency:'MXN' }}</div>
-      <div class="product-stock" [class.out-of-stock]="product.stock === 0">
-        Stock: {{ product.stock }}
-      </div>
-    </button>
+  <div class="product-grid-container">
+    <!-- NUEVO: Encabezado para la cuadrícula -->
+    <div class="product-grid-header">
+      <h3>Productos Disponibles</h3>
+      <button (click)="refreshProducts()" class="btn-refresh">Refrescar</button>
+    </div>
+
+    <div class="product-grid">
+      <button *ngFor="let product of products" 
+              class="product-card" 
+              (click)="handleAddItem(product)"
+              [disabled]="product.stock === 0">
+        <!-- Añadimos una clase a la imagen para poder estilizarla -->
+        <img [src]="product.imagen_url || 'assets/placeholder.png'" alt="{{ product.nombre }}" class="product-image-pos">
+        <div class="product-name">{{ product.nombre }}</div>
+        <div class="product-price">{{ product.precio | currency:'MXN' }}</div>
+        <div class="product-stock" [class.out-of-stock]="product.stock === 0">
+          Stock: {{ product.stock }}
+        </div>
+      </button>
+    </div>
   </div>
 
   <div class="ticket">

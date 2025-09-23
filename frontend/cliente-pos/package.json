@@ -30,8 +30,11 @@
     "@angular/forms": "^20.2.0",
     "@angular/platform-browser": "^20.2.0",
     "@angular/router": "^20.2.0",
+    "@stripe/stripe-js": "^7.9.0",
     "@swimlane/ngx-charts": "^23.0.1",
+    "jwt-decode": "^4.0.0",
     "ngx-socket-io": "^4.9.3",
+    "ngx-stripe": "^20.7.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

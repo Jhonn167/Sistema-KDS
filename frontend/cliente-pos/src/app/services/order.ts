@@ -24,7 +24,7 @@ export class OrderService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/pedidos`;
   private storageKey = 'kds_cart';
-
+  
   private orderItems = new BehaviorSubject<CartItem[]>([]);
   orderItems$ = this.orderItems.asObservable();
 
@@ -117,4 +117,8 @@ export class OrderService {
   getMyOrders(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/mis-pedidos`);
   }
+  public getCurrentOrderItems(): CartItem[] {
+  return this.orderItems.getValue();
+}
+
 }

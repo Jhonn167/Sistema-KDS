@@ -17,6 +17,7 @@ import { Kds } from './pages/kds/kds';
 import { AdminGuard } from './guards/admin-guard';
 import { authGuard } from './guards/auth-guard';  
 import { ReportsComponent } from './pages/admin/reports/reports';
+import { OrderSuccessComponent } from './pages/public/order-success/order-';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/menu', pathMatch: 'full' },

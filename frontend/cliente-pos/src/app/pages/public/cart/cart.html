@@ -43,6 +43,9 @@
         <span>Total</span>
         <span>{{ (orderTotal$ | async) | currency:'MXN' }}</span>
       </div>
+      <button class="confirm-btn" (click)="proceedToCheckout()">
+      Pagar con Tarjeta
+      </button>
       <button class="confirm-btn" (click)="confirmOrder()">
         Confirmar Pedido y Enviar a Cocina
       </button>

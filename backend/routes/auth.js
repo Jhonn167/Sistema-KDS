@@ -88,7 +88,7 @@ router.post('/forgot-password', async (req, res) => {
         const resetUrl = `http://localhost:4200/restablecer-contrasena/${resetToken}`;
         const msg = {
             to: user.email,
-            from: 'juanitomanuelgarciahdz@gmail.com',
+            from: process.env.SENDGRID_FROM_EMAIL,
             subject: 'Restablecimiento de Contraseña - Sistema KDS',
             html: `<p>Has solicitado restablecer tu contraseña. Haz clic en el siguiente enlace (válido por 1 hora): <a href="${resetUrl}">${resetUrl}</a></p>`,
         };

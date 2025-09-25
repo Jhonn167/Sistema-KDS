@@ -9,12 +9,14 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-// --- CORRECCIÓN CLAVE: Configuración de CORS para Socket.IO ---
+// --- CORRECCIÓN CLAVE: Configuración de CORS Unificada ---
+const corsOptions = {
+  origin: "http://localhost:4200", // Permite explícitamente la conexión desde tu app de Angular
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"] // Métodos permitidos
+};
+
 const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:4200", // Permite explícitamente la conexión desde tu app de Angular
-    methods: ["GET", "POST"]
-  }
+  cors: corsOptions // Usamos la misma configuración para Socket.IO
 });
 // -----------------------------------------------------------
 
@@ -23,25 +25,21 @@ let onlineUsers = {};
 io.on('connection', (socket) => {
   console.log(`[Socket.IO] Un usuario se ha conectado con ID: ${socket.id}`);
   socket.on('join', (userId) => {
-    console.log(`[Socket.IO] Usuario con ID ${userId} intenta unirse.`);
     onlineUsers[userId] = socket.id;
-    console.log('[Socket.IO] Estado actual de onlineUsers:', onlineUsers);
   });
   socket.on('disconnect', () => {
-    console.log(`[Socket.IO] Socket ${socket.id} se ha desconectado.`);
     for (let userId in onlineUsers) {
       if (onlineUsers[userId] === socket.id) {
         delete onlineUsers[userId];
         break;
       }
     }
-    console.log('[Socket.IO] Estado actual de onlineUsers:', onlineUsers);
   });
 });
 
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors(corsOptions)); // Usamos la configuración de CORS para Express
 app.use('/api/payments/webhook', express.raw({type: 'application/json'}));
 app.use(express.json());
 

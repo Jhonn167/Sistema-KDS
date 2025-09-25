@@ -1,39 +1,32 @@
-// backend/index.js - VERSIÓN CON SOCKET.IO
+// backend/index.js
 
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const http = require('http'); // 1. Requerimos el módulo http de Node
-const { Server } = require("socket.io"); // 2. Importamos el Servidor de socket.io
+const http = require('http');
+const { Server } = require("socket.io");
 
 const app = express();
-const server = http.createServer(app); // 3. Creamos un servidor http usando nuestra app de express
+const server = http.createServer(app);
 
-// 4. Creamos una instancia de Socket.IO y la conectamos a nuestro servidor http
-//    Configuramos CORS para permitir la conexión desde nuestra app de Angular.
+// --- CORRECCIÓN CLAVE: Configuración de CORS para Socket.IO ---
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:4200", // La URL de tu frontend
+    origin: "http://localhost:4200", // Permite explícitamente la conexión desde tu app de Angular
     methods: ["GET", "POST"]
   }
 });
+// -----------------------------------------------------------
 
-// Un objeto simple para rastrear qué usuario está conectado a qué socket
 let onlineUsers = {};
-
-// 5. Lógica de Socket.IO: qué hacer cuando un cliente se conecta
-// backend/index.js
 
 io.on('connection', (socket) => {
   console.log(`[Socket.IO] Un usuario se ha conectado con ID: ${socket.id}`);
-
   socket.on('join', (userId) => {
     console.log(`[Socket.IO] Usuario con ID ${userId} intenta unirse.`);
     onlineUsers[userId] = socket.id;
-    // Imprimimos el estado actual de los usuarios en línea
     console.log('[Socket.IO] Estado actual de onlineUsers:', onlineUsers);
   });
-
   socket.on('disconnect', () => {
     console.log(`[Socket.IO] Socket ${socket.id} se ha desconectado.`);
     for (let userId in onlineUsers) {
@@ -46,36 +39,30 @@ io.on('connection', (socket) => {
   });
 });
 
-
 const PORT = process.env.PORT || 3000;
+
 app.use(cors());
-// IMPORTANTE: Esta línea debe ir ANTES de las rutas que la necesitan
-// Es para que el webhook de Stripe funcione correctamente.
 app.use('/api/payments/webhook', express.raw({type: 'application/json'}));
 app.use(express.json());
 
-// Middlewares (esto se queda igual)
-
-// Importar rutas (esto se queda igual)
+// Importar y usar todas tus rutas
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
+const modifierRoutes = require('./routes/modifiers');
+const reportRoutes = require('./routes/reports');
+const uploadRoutes = require('./routes/upload');
 const pedidoRoutes = require('./routes/pedidos')(io, () => onlineUsers);
-const uploadRoutes = require('./routes/upload'); 
-const modifierRoutes = require('./routes/ modifiers');
-const reportRoutes = require('./routes/reports'); 
 const paymentRoutes = require('./routes/payments')(io);
 
-// Usar las rutas (esto se queda igual)
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
-app.use('/api/pedidos', pedidoRoutes); // 6. Pasamos 'io' y 'onlineUsers' a las rutas de pedidos
+app.use('/api/modifiers', modifierRoutes);
+app.use('/api/reports', reportRoutes);
 app.use('/api/upload', uploadRoutes);
-app.use('/api/modifiers', modifierRoutes); // <-- 2. USA LAS NUEVAS RUTAS
-app.use('/api/reports', reportRoutes); // Rutas para reportes
-app.use('/api/payments', paymentRoutes); // Rutas para pagos
+app.use('/api/pedidos', pedidoRoutes);
+app.use('/api/payments', paymentRoutes);
 
-
-// 7. En lugar de app.listen, ahora iniciamos el servidor http
 server.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
+

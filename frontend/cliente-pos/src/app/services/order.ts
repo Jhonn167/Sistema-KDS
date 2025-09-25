@@ -21,7 +21,7 @@ export interface CartItem {
 })
 export class OrderService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/pedidos`;
+  private apiUrl = `${environment.apiUrl}/api/pedidos`;
   private storageKey = 'kds_cart';
 
   private orderItems = new BehaviorSubject<CartItem[]>([]);

@@ -1,5 +1,6 @@
-// src/environments/environment.ts
+// src/environments/environment.prod.ts
+
 export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:3000/api'
+  production: true,
+  apiUrl: 'https://sistema-kds.onrender.com' // <-- TU URL DE RENDER
 };

@@ -5,7 +5,7 @@ const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
 
-// --- GESTIÓN DE GRUPOS DE MODIFICADORES ---
+// --- GESTIÓN DE GRUPOS DE MODIFICADORES ----
 router.get('/groups', checkAuth, async (req, res) => {
     try {
         const query = `

@@ -1,4 +1,5 @@
 // src/app/services/report.service.ts
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -26,7 +27,7 @@ export class ReportService {
 
   exportDailyReport(): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/export-daily`, {
-      responseType: 'blob' // Es crucial que responseType sea 'blob'
+      responseType: 'blob'
     });
   }
 }

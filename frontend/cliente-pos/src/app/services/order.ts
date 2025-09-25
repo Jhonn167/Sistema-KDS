@@ -1,3 +1,5 @@
+// src/app/services/order.service.ts
+
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, map } from 'rxjs';
@@ -44,26 +46,20 @@ export class OrderService {
     localStorage.setItem(this.storageKey, JSON.stringify(items));
   }
 
-  // --- MÉTODO addItem ACTUALIZADO CON VERIFICACIÓN DE STOCK ---
   addItem(configuredProduct: any): void {
     const currentItems = this.orderItems.getValue();
-    
-    // Buscamos si ya existe un item idéntico (mismo producto Y mismas opciones)
     const existingItem = currentItems.find(item => 
         item.producto_id === configuredProduct.id_producto &&
         JSON.stringify(item.selectedOptions) === JSON.stringify(configuredProduct.selectedOptions || [])
     );
-
     if (existingItem) {
-      // Si ya existe, solo incrementamos la cantidad SI HAY STOCK DISPONIBLE
       if (existingItem.cantidad < existingItem.stock) {
         existingItem.cantidad++;
       } else {
         alert(`No puedes añadir más de este producto. Stock disponible: ${existingItem.stock}`);
-        return; // Detenemos la función aquí
+        return;
       }
     } else {
-      // Si no existe, creamos un nuevo item
       const newItem: CartItem = {
         cartItemId: Date.now().toString(),
         producto_id: configuredProduct.id_producto,
@@ -76,7 +72,6 @@ export class OrderService {
       };
       currentItems.push(newItem);
     }
-    
     const updatedItems = [...currentItems];
     this.orderItems.next(updatedItems);
     this.saveCartToStorage(updatedItems);
@@ -112,26 +107,14 @@ export class OrderService {
     localStorage.removeItem(this.storageKey);
   }
 
-  // en src/app/services/order.service.ts
-
-checkout(additionalData: { hora_recogida?: string | null, estatus?: string, tipo_pedido?: string, fecha_recogida?: string | null } = {}): Observable<any> {
+  checkout(additionalData: any = {}): Observable<any> {
     const currentItems = this.orderItems.getValue();
-    
-    // El payload ahora es completamente dinámico
     const payload = {
-      items: currentItems.map(item => ({
-        // Enviamos todos los datos del item para un cálculo de total seguro en el backend
-        producto_id: item.producto_id,
-        cantidad: item.cantidad,
-        precioFinal: item.precioFinal, 
-        selectedOptions: item.selectedOptions
-      })),
+      items: currentItems,
       ...additionalData
     };
-    
     return this.http.post(this.apiUrl, payload);
-}
-
+  }
   
   getMyOrders(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/mis-pedidos`);
@@ -140,19 +123,12 @@ checkout(additionalData: { hora_recogida?: string | null, estatus?: string, tipo
   public getCurrentOrderItems(): CartItem[] {
     return this.orderItems.getValue();
   }
-  // en src/app/services/order.service.ts
 
-// ... (otros métodos)
+  getPendingConfirmationOrders(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/pending-confirmation`);
+  }
 
-// --- MÉTODOS NUEVOS PARA EL ADMIN ---
-getPendingConfirmationOrders(): Observable<any[]> {
-  return this.http.get<any[]>(`${this.apiUrl}/pending-confirmation`);
+  confirmTransferPayment(orderId: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/confirm-transfer/${orderId}`, {});
+  }
 }
-
-confirmTransferPayment(orderId: string): Observable<any> {
-  return this.http.post<any>(`${this.apiUrl}/confirm-transfer/${orderId}`, {});
-}
-
-}
-
-

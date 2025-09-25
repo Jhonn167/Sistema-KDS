@@ -9,10 +9,10 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-// --- CORRECCIÓN CLAVE: Configuración de CORS Unificada ---
+// --- CORRECCIÓN CLAVE: Configuración de CORS para Socket.IO ---
 const corsOptions = {
   origin: "http://localhost:4200", // Permite explícitamente la conexión desde tu app de Angular
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"] // Métodos permitidos
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
 };
 
 const io = new Server(server, {
@@ -39,7 +39,7 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.use(cors(corsOptions)); // Usamos la configuración de CORS para Express
+app.use(cors(corsOptions)); // Usamos la configuración de CORS para Express también
 app.use('/api/payments/webhook', express.raw({type: 'application/json'}));
 app.use(express.json());
 

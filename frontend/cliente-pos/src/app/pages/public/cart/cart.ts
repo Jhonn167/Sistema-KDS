@@ -1,3 +1,5 @@
+// src/app/pages/public/cart/cart.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -43,7 +45,7 @@ export class CartComponent implements OnInit {
 
   private setMinPickupDate(): void {
     const now = new Date();
-    now.setMinutes(now.getMinutes() + 30);
+    now.setMinutes(now.getMinutes() + 30); // Margen de 30 minutos
     const year = now.getFullYear();
     const month = (now.getMonth() + 1).toString().padStart(2, '0');
     const day = now.getDate().toString().padStart(2, '0');
@@ -53,21 +55,19 @@ export class CartComponent implements OnInit {
     this.minPickupDate = localDateTimeString;
     this.pickupDate = localDateTimeString;
   }
-
-  // --- LÓGICA DE PAGO CORREGIDA ---
+  
+  // --- FUNCIÓN DE VALIDACIÓN RESTAURADA ---
+  validatePickupTime(): void {
+    if (this.pickupDate && this.minPickupDate && this.pickupDate < this.minPickupDate) {
+      alert('La hora de recogida no puede ser en el pasado. Hemos ajustado la hora a la más cercana disponible.');
+      this.pickupDate = this.minPickupDate;
+    }
+  }
 
   // Flujo para pago en EFECTIVO
   confirmOrder(): void {
-    // 1. Primero, verificamos si el usuario está logueado
-    if (!this.authService.isLoggedIn()) {
-      alert('Por favor, inicia sesión para confirmar tu pedido.');
-      this.router.navigate(['/login']);
-      return;
-    }
-    // 2. Si lo está, verificamos si ya hay un pago en proceso
-    if (this.isProcessingPayment) return;
+    if (!this.authService.isLoggedIn() || this.isProcessingPayment) { return; }
     this.isProcessingPayment = true;
-
     const orderData = {
       tipo_pedido: this.orderType,
       fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null
@@ -87,14 +87,8 @@ export class CartComponent implements OnInit {
 
   // Flujo para pago con TARJETA
   proceedToCheckout(): void {
-    if (!this.authService.isLoggedIn()) {
-      alert('Por favor, inicia sesión para pagar.');
-      this.router.navigate(['/login']);
-      return;
-    }
-    if (this.isProcessingPayment) return;
+    if (!this.authService.isLoggedIn() || this.isProcessingPayment) { return; }
     this.isProcessingPayment = true;
-
     const items = this.orderService.getCurrentOrderItems();
     const orderData = {
       tipo_pedido: this.orderType,
@@ -122,14 +116,8 @@ export class CartComponent implements OnInit {
 
   // Flujo para pago por TRANSFERENCIA
   startTransferPayment(): void {
-    if (!this.authService.isLoggedIn()) {
-      alert('Por favor, inicia sesión para continuar.');
-      this.router.navigate(['/login']);
-      return;
-    }
-    if (this.isProcessingPayment) return;
+    if (!this.authService.isLoggedIn() || this.isProcessingPayment) { return; }
     this.isProcessingPayment = true;
-    
     const orderData = {
       tipo_pedido: this.orderType,
       fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null,
@@ -148,4 +136,4 @@ export class CartComponent implements OnInit {
     });
   }
 }
-
+// src/app/pages/public/upload-receipt/upload-receipt.component.ts

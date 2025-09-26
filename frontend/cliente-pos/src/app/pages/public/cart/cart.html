@@ -55,11 +55,11 @@
         
         <div *ngIf="orderType === 'futuro'" class="pickup-time-section">
           <label for="pickupDate">Selecciona fecha y hora:</label>
-          <!-- CORRECCIÓN: Añadimos (change)="validatePickupTime()" -->
-          <input type="datetime-local" id="pickupDate" [(ngModel)]="pickupDate" [min]="minPickupDate" class="time-input" (change)="validatePickupTime()">
+          <!-- CORRECCIÓN: Eliminamos (change)="validatePickupTime()" -->
+          <input type="datetime-local" id="pickupDate" [(ngModel)]="pickupDate" [min]="minPickupDate" class="time-input">
         </div>
       </div>
-      <!--  -->
+      
       <div class="payment-options">
         <button class="confirm-btn cash" (click)="confirmOrder()" [disabled]="isProcessingPayment">
           <span *ngIf="!isProcessingPayment">Pagar en Efectivo</span>

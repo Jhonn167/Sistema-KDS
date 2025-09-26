@@ -1,4 +1,5 @@
 // src/app/pages/public/reset-password/reset-password.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -11,7 +12,7 @@ import { environment } from '../../../../environments/environments';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './reset-password.html',
-  styleUrls: ['./reset-password.css'] // Usaremos los mismos estilos
+  styleUrls: ['./reset-password.css']
 })
 export class ResetPasswordComponent implements OnInit {
   resetForm: FormGroup;
@@ -32,7 +33,6 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Obtenemos el token de la URL
     this.token = this.route.snapshot.paramMap.get('token');
   }
 
@@ -43,7 +43,9 @@ export class ResetPasswordComponent implements OnInit {
     this.isLoading = true;
     this.message = '';
 
-    const apiUrl = `${environment.apiUrl}/auth/reset-password/${this.token}`;
+    // --- CORRECCIÓN CLAVE: Añadimos /api/ a la URL ---
+    const apiUrl = `${environment.apiUrl}/api/auth/reset-password/${this.token}`;
+
     this.http.post<any>(apiUrl, this.resetForm.value).subscribe({
       next: (response) => {
         this.isLoading = false;

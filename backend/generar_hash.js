@@ -2,7 +2,7 @@
 const bcrypt = require('bcryptjs');
 
 // Elige la contraseña que quieres para tu cuenta de admin
-const miContrasenaAdmin = 'contraseñaSegura123!'; 
+const miContrasenaAdmin = 'contraseña123'; // <-- Cambia esto por la contraseña que desees
 
 console.log(`Encriptando la contraseña: "${miContrasenaAdmin}"...`);
 

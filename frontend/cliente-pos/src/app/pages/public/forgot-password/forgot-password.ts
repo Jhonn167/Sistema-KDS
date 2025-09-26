@@ -1,4 +1,5 @@
 // src/app/pages/public/forgot-password/forgot-password.component.ts
+
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -11,7 +12,7 @@ import { environment } from '../../../../environments/environments';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './forgot-password.html',
-  styleUrls: ['./forgot-password.css'] // Usaremos los mismos estilos del login
+  styleUrls: ['./forgot-password.css']
 })
 export class ForgotPasswordComponent {
   forgotForm: FormGroup;
@@ -32,7 +33,9 @@ export class ForgotPasswordComponent {
     this.isLoading = true;
     this.message = '';
 
-    const apiUrl = `${environment.apiUrl}/auth/forgot-password`;
+    // --- CORRECCIÓN CLAVE: Añadimos /api/ a la URL ---
+    const apiUrl = `${environment.apiUrl}/api/auth/forgot-password`;
+    
     this.http.post<any>(apiUrl, this.forgotForm.value).subscribe({
       next: (response) => {
         this.isLoading = false;

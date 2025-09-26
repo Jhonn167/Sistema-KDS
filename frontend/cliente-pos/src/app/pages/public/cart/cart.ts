@@ -1,5 +1,4 @@
 // src/app/pages/public/cart/cart.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -11,7 +10,6 @@ import { switchMap } from 'rxjs/operators';
 import { StripeService } from 'ngx-stripe';
 import { environment } from '../../../../environments/environments';
 import { FormsModule } from '@angular/forms';
-import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-cart',
@@ -23,7 +21,6 @@ import { inject } from '@angular/core';
 export class CartComponent implements OnInit {
   orderItems$: Observable<CartItem[]>;
   orderTotal$: Observable<number>;
-  
   orderType: 'inmediato' | 'futuro' = 'inmediato';
   pickupDate: string = '';
   minPickupDate: string = '';
@@ -56,6 +53,12 @@ export class CartComponent implements OnInit {
     this.minPickupDate = localDateTimeString;
     this.pickupDate = localDateTimeString;
   }
+
+  
+
+  // ... (el resto de tus funciones como confirmOrder y startTransferPayment se mantienen igual)
+
+
   
   // Flujo para pago en EFECTIVO
   confirmOrder(): void {

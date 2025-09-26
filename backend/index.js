@@ -1,5 +1,4 @@
 // backend/index.js
-
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
@@ -9,15 +8,12 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-// --- CONFIGURACIÓN DE CORS FINAL Y ROBUSTA ---
 const allowedOrigins = [
-  "http://localhost:4200", // Para tu desarrollo local
-  "https://spontaneous-selkie-fb61b4.netlify.app" // Tu URL de producción en Netlify
+  "http://localhost:4200",
+  "[https://spontaneous-selkie-fb61b4.netlify.app](https://spontaneous-selkie-fb61b4.netlify.app)"
 ];
-
 const corsOptions = {
   origin: function (origin, callback) {
-    // Permite las peticiones si el origen está en la lista o si no hay origen (como en Postman)
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
@@ -26,34 +22,23 @@ const corsOptions = {
   },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
 };
-
-const io = new Server(server, {
-  cors: corsOptions // Usamos la misma configuración para Socket.IO
-});
-// ---------------------------------------------
+const io = new Server(server, { cors: corsOptions });
 
 let onlineUsers = {};
-
 io.on('connection', (socket) => {
-  console.log(`[Socket.IO] Un usuario se ha conectado con ID: ${socket.id}`);
   socket.on('join', (userId) => { onlineUsers[userId] = socket.id; });
   socket.on('disconnect', () => {
     for (let userId in onlineUsers) {
-      if (onlineUsers[userId] === socket.id) {
-        delete onlineUsers[userId];
-        break;
-      }
+      if (onlineUsers[userId] === socket.id) { delete onlineUsers[userId]; break; }
     }
   });
 });
 
 const PORT = process.env.PORT || 3000;
-
-app.use(cors(corsOptions)); // Usamos la configuración de CORS para Express
+app.use(cors(corsOptions));
 app.use('/api/payments/webhook', express.raw({type: 'application/json'}));
 app.use(express.json());
 
-// Importar y usar todas tus rutas
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const modifierRoutes = require('./routes/modifiers');
@@ -73,4 +58,3 @@ app.use('/api/payments', paymentRoutes);
 server.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
-

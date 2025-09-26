@@ -59,7 +59,7 @@
           <input type="datetime-local" id="pickupDate" [(ngModel)]="pickupDate" [min]="minPickupDate" class="time-input" (change)="validatePickupTime()">
         </div>
       </div>
-      
+      <!--  -->
       <div class="payment-options">
         <button class="confirm-btn cash" (click)="confirmOrder()" [disabled]="isProcessingPayment">
           <span *ngIf="!isProcessingPayment">Pagar en Efectivo</span>

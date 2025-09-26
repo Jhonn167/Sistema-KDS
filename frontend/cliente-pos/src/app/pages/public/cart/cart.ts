@@ -1,5 +1,4 @@
 // src/app/pages/public/cart/cart.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -22,15 +21,12 @@ import { FormsModule } from '@angular/forms';
 export class CartComponent implements OnInit {
   orderItems$: Observable<CartItem[]>;
   orderTotal$: Observable<number>;
-  
   orderType: 'inmediato' | 'futuro' = 'inmediato';
   pickupDate: string = '';
   minPickupDate: string = '';
+  private pickupDateAux: string = '';
   isProcessingPayment = false;
   
-  // Propiedad auxiliar para restaurar la fecha si la selección es inválida
-  private pickupDateAux: string = '';
-
   constructor(
     public orderService: OrderService,
     private authService: AuthService,
@@ -48,45 +44,32 @@ export class CartComponent implements OnInit {
 
   private setMinPickupDate(): void {
     const now = new Date();
-    now.setMinutes(now.getMinutes() + 30); // Margen de 30 minutos
+    now.setMinutes(now.getMinutes() + 30);
     const year = now.getFullYear();
     const month = (now.getMonth() + 1).toString().padStart(2, '0');
     const day = now.getDate().toString().padStart(2, '0');
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
     const localDateTimeString = `${year}-${month}-${day}T${hours}:${minutes}`;
-
     this.minPickupDate = localDateTimeString;
     this.pickupDate = localDateTimeString;
-    this.pickupDateAux = localDateTimeString; // Inicializamos la fecha auxiliar
+    this.pickupDateAux = localDateTimeString;
   }
-  
-  // --- FUNCIÓN DE VALIDACIÓN RESTAURADA ---
+
   validatePickupTime(): void {
     if (this.pickupDate && this.minPickupDate && this.pickupDate < this.minPickupDate) {
-      alert('La hora de recogida no puede ser en el pasado. Hemos ajustado la hora a la más cercana disponible.');
-      // Restablece la hora a la última válida conocida
+      alert('La hora de recogida no puede ser en el pasado. Se ha ajustado la hora a la más cercana disponible.');
       this.pickupDate = this.pickupDateAux;
     } else {
-      // Si la hora es válida, la guardamos como la última correcta
       this.pickupDateAux = this.pickupDate;
     }
   }
 
-  // Flujo para pago en EFECTIVO
   confirmOrder(): void {
-    if (!this.authService.isLoggedIn()) {
-      alert('Por favor, inicia sesión para confirmar tu pedido.');
-      this.router.navigate(['/login']);
-      return;
-    }
+    if (!this.authService.isLoggedIn()) { alert('Por favor, inicia sesión para confirmar tu pedido.'); this.router.navigate(['/login']); return; }
     if (this.isProcessingPayment) return;
     this.isProcessingPayment = true;
-
-    const orderData = {
-      tipo_pedido: this.orderType,
-      fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null
-    };
+    const orderData = { tipo_pedido: this.orderType, fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null };
     this.orderService.checkout(orderData).subscribe({
         next: () => {
             alert('¡Pedido enviado a la cocina! Pagarás en efectivo al recoger.');
@@ -100,22 +83,12 @@ export class CartComponent implements OnInit {
     });
   }
 
-  // Flujo para pago con TARJETA
   proceedToCheckout(): void {
-    if (!this.authService.isLoggedIn()) {
-      alert('Por favor, inicia sesión para pagar.');
-      this.router.navigate(['/login']);
-      return;
-    }
+    if (!this.authService.isLoggedIn()) { alert('Por favor, inicia sesión para pagar.'); this.router.navigate(['/login']); return; }
     if (this.isProcessingPayment) return;
     this.isProcessingPayment = true;
-
     const items = this.orderService.getCurrentOrderItems();
-    const orderData = {
-      tipo_pedido: this.orderType,
-      fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null,
-      estatus: 'Esperando Pago'
-    };
+    const orderData = { tipo_pedido: this.orderType, fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null, estatus: 'Esperando Pago' };
     this.orderService.checkout(orderData).subscribe({
       next: (orderResponse) => {
         const orderId = orderResponse.pedidoId;
@@ -135,21 +108,11 @@ export class CartComponent implements OnInit {
     });
   }
 
-  // Flujo para pago por TRANSFERENCIA
   startTransferPayment(): void {
-    if (!this.authService.isLoggedIn()) {
-      alert('Por favor, inicia sesión para continuar.');
-      this.router.navigate(['/login']);
-      return;
-    }
+    if (!this.authService.isLoggedIn()) { alert('Por favor, inicia sesión para continuar.'); this.router.navigate(['/login']); return; }
     if (this.isProcessingPayment) return;
     this.isProcessingPayment = true;
-    
-    const orderData = {
-      tipo_pedido: this.orderType,
-      fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null,
-      estatus: 'Esperando Comprobante'
-    };
+    const orderData = { tipo_pedido: this.orderType, fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null, estatus: 'Esperando Comprobante' };
     this.orderService.checkout(orderData).subscribe({
       next: (response) => {
         const newOrderId = response.pedidoId;

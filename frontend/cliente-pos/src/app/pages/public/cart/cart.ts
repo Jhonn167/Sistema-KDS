@@ -43,6 +43,8 @@ export class CartComponent implements OnInit {
     this.setMinPickupDate();
   }
 
+
+
   private setMinPickupDate(): void {
     const now = new Date();
     now.setMinutes(now.getMinutes() + 30); // Margen de 30 minutos

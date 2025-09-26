@@ -11,10 +11,9 @@ const server = http.createServer(app);
 
 // --- CONFIGURACIÓN DE CORS FINAL Y ROBUSTA ---
 const allowedOrigins = [
-  "http://localhost:4200", // Para tu desarrollo local
-  "https://sistema-kds-git-main-jhonn167s-projects.vercel.app" // Tu URL de producción en Vercel
+  "http://localhost:4200",
+  "https://sistema-kds-git-main-jhonn167s-projects.vercel.app https://sistema-kds-git-main-jhonn167s-projects.vercel.app" // <-- AÑADE TU URL DE VERCEL
 ];
-
 const corsOptions = {
   origin: function (origin, callback) {
     // Permite las peticiones si el origen está en la lista o si no hay origen (como en Postman)

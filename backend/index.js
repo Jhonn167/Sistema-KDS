@@ -12,7 +12,7 @@ const server = http.createServer(app);
 // --- CONFIGURACIÓN DE CORS FINAL Y ROBUSTA ---
 const allowedOrigins = [
   "http://localhost:4200", // Para tu desarrollo local
-  "https://spontaneous-selkie-fb61b4.netlify.app" // Tu URL de producción en Netlify
+  "https://sistema-kds.vercel.app" // Tu URL de producción en Vercel
 ];
 
 const corsOptions = {

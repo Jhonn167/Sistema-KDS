@@ -55,40 +55,44 @@ export class CartComponent implements OnInit {
     this.minPickupDate = localDateTimeString;
     this.pickupDate = localDateTimeString;
   }
-  
-  // --- FUNCIÓN DE VALIDACIÓN RESTAURADA ---
-  validatePickupTime(): void {
-    if (this.pickupDate && this.minPickupDate && this.pickupDate < this.minPickupDate) {
-      alert('La hora de recogida no puede ser en el pasado. Hemos ajustado la hora a la más cercana disponible.');
-      this.pickupDate = this.minPickupDate;
-    }
-  }
 
   // Flujo para pago en EFECTIVO
   confirmOrder(): void {
-    if (!this.authService.isLoggedIn() || this.isProcessingPayment) { return; }
+    if (!this.authService.isLoggedIn()) {
+      alert('Por favor, inicia sesión para confirmar tu pedido.');
+      this.router.navigate(['/login']);
+      return;
+    }
+    if (this.isProcessingPayment) return;
     this.isProcessingPayment = true;
+
     const orderData = {
       tipo_pedido: this.orderType,
       fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null
     };
     this.orderService.checkout(orderData).subscribe({
-      next: () => {
-          alert('¡Pedido enviado a la cocina! Pagarás en efectivo al recoger.');
-          this.orderService.clearOrder();
-          this.router.navigate(['/mis-pedidos']);
-      },
-      error: (err) => {
-          alert('Error al enviar el pedido: ' + err.error.message);
-          this.isProcessingPayment = false;
-      }
+        next: () => {
+            alert('¡Pedido enviado a la cocina! Pagarás en efectivo al recoger.');
+            this.orderService.clearOrder();
+            this.router.navigate(['/mis-pedidos']);
+        },
+        error: (err) => {
+            alert('Error al enviar el pedido: ' + err.error.message);
+            this.isProcessingPayment = false;
+        }
     });
   }
 
   // Flujo para pago con TARJETA
   proceedToCheckout(): void {
-    if (!this.authService.isLoggedIn() || this.isProcessingPayment) { return; }
+    if (!this.authService.isLoggedIn()) {
+      alert('Por favor, inicia sesión para pagar.');
+      this.router.navigate(['/login']);
+      return;
+    }
+    if (this.isProcessingPayment) return;
     this.isProcessingPayment = true;
+
     const items = this.orderService.getCurrentOrderItems();
     const orderData = {
       tipo_pedido: this.orderType,
@@ -116,8 +120,14 @@ export class CartComponent implements OnInit {
 
   // Flujo para pago por TRANSFERENCIA
   startTransferPayment(): void {
-    if (!this.authService.isLoggedIn() || this.isProcessingPayment) { return; }
+    if (!this.authService.isLoggedIn()) {
+      alert('Por favor, inicia sesión para continuar.');
+      this.router.navigate(['/login']);
+      return;
+    }
+    if (this.isProcessingPayment) return;
     this.isProcessingPayment = true;
+    
     const orderData = {
       tipo_pedido: this.orderType,
       fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null,
@@ -136,4 +146,3 @@ export class CartComponent implements OnInit {
     });
   }
 }
-// src/app/pages/public/upload-receipt/upload-receipt.component.ts

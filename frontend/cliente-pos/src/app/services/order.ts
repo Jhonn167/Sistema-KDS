@@ -131,4 +131,14 @@ export class OrderService {
   confirmTransferPayment(orderId: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/confirm-transfer/${orderId}`, {});
   }
+
+// --- MÉTODO NUEVO PARA EL KDS ---
+  getKitchenOrders(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/cocina`);
+  }
+  
+  // --- MÉTODO NUEVO PARA ACTUALIZAR ESTATUS DESDE EL KDS ---
+  updateOrderStatus(orderId: number, newStatus: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/cocina/${orderId}`, { estatus: newStatus });
+  }
 }

@@ -9,9 +9,12 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-// --- CORRECCIÓN CLAVE: Configuración de CORS para Socket.IO ---
+// --- CORRECCIÓN CLAVE: Configuración de CORS Unificada ---
 const corsOptions = {
-  origin: "http://localhost:4200", // Permite explícitamente la conexión desde tu app de Angular
+  origin: [
+    "http://localhost:4200", // Para desarrollo local
+    "https://spontaneous-selkie-fb61b4.netlify.app/" // ¡IMPORTANTE! Reemplaza esto con tu URL de Netlify cuando la tengas
+  ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
 };
 
@@ -39,7 +42,7 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.use(cors(corsOptions)); // Usamos la configuración de CORS para Express también
+app.use(cors(corsOptions)); // Usamos la configuración de CORS para Express
 app.use('/api/payments/webhook', express.raw({type: 'application/json'}));
 app.use(express.json());
 

@@ -9,9 +9,10 @@ import { authInterceptor } from './interceptors/auth-interceptor';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxStripeModule } from 'ngx-stripe';
+import { environment } from '../environments/environments';
 
 // Define la configuración de la conexión para WebSockets
-const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
+const config: SocketIoConfig = { url: environment.apiUrl, options: {} };
 
 export const appConfig: ApplicationConfig = {
   providers: [

@@ -11,6 +11,7 @@ import { switchMap } from 'rxjs/operators';
 import { StripeService } from 'ngx-stripe';
 import { environment } from '../../../../environments/environments';
 import { FormsModule } from '@angular/forms';
+import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-cart',

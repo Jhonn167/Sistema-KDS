@@ -1,3 +1,4 @@
+// backend/routes/payments.js
 const express = require('express');
 const Stripe = require('stripe');
 const checkAuth = require('../middleware/check-auth');
@@ -12,6 +13,9 @@ module.exports = function(io) {
     router.post('/create-checkout-session', checkAuth, async (req, res) => {
       try {
         const { items, orderId } = req.body;
+        
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
+
         const line_items = items.map(item => ({
           price_data: {
             currency: 'mxn',
@@ -19,18 +23,22 @@ module.exports = function(io) {
               name: item.nombre,
               description: (item.selectedOptions || []).map(opt => opt.nombre).join(', ') || undefined,
             },
-            unit_amount: Math.round(item.precioFinal * 100),
+            unit_amount: Math.round(parseFloat(item.precioFinal) * 100),
           },
           quantity: item.cantidad,
         }));
+
         const session = await stripe.checkout.sessions.create({
           payment_method_types: ['card'],
           line_items,
           mode: 'payment',
-          success_url: `http://localhost:4200/orden-exitosa`,
-          cancel_url: `http://localhost:4200/carrito`,
-          metadata: { orderId: orderId }
+          success_url: `${frontendUrl}/orden-exitosa`,
+          cancel_url: `${frontendUrl}/carrito`,
+          metadata: {
+            orderId: orderId
+          }
         });
+
         res.json({ id: session.id });
       } catch (error) {
         console.error("[Stripe] ERROR al crear la sesión:", error);
@@ -38,7 +46,6 @@ module.exports = function(io) {
       }
     });
 
-    // --- RUTA WEBHOOK ACTUALIZADA CON LÓGICA DE STOCK ---
     router.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
       const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
       if (!endpointSecret) {
@@ -65,16 +72,13 @@ module.exports = function(io) {
             try {
                 await client.query('BEGIN');
 
-                // 1. Obtenemos los detalles del pedido (qué productos y cuántos)
                 const detailsResult = await client.query('SELECT producto_id, cantidad FROM detalles_pedido WHERE pedido_id = $1', [orderId]);
                 const orderDetails = detailsResult.rows;
 
-                // 2. Iteramos sobre cada producto para actualizar el stock
                 for (const item of orderDetails) {
                     await client.query('UPDATE productos SET stock = stock - $1 WHERE id_producto = $2', [item.cantidad, item.producto_id]);
                 }
                 
-                // 3. Finalmente, actualizamos el estatus del pedido principal
                 await client.query("UPDATE pedidos SET estatus = 'Pendiente', payment_intent_id = $1 WHERE id_pedido = $2", [session.payment_intent, orderId]);
                 
                 await client.query('COMMIT');
@@ -98,4 +102,3 @@ module.exports = function(io) {
 
     return router;
 };
-

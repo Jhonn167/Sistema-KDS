@@ -1,4 +1,5 @@
 // src/app/pages/public/cart/cart.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -21,6 +22,7 @@ import { FormsModule } from '@angular/forms';
 export class CartComponent implements OnInit {
   orderItems$: Observable<CartItem[]>;
   orderTotal$: Observable<number>;
+  
   orderType: 'inmediato' | 'futuro' = 'inmediato';
   pickupDate: string = '';
   minPickupDate: string = '';
@@ -43,26 +45,30 @@ export class CartComponent implements OnInit {
 
   private setMinPickupDate(): void {
     const now = new Date();
-    now.setMinutes(now.getMinutes() + 30);
+    now.setMinutes(now.getMinutes() + 30); // Margen de 30 minutos
+
     const year = now.getFullYear();
     const month = (now.getMonth() + 1).toString().padStart(2, '0');
     const day = now.getDate().toString().padStart(2, '0');
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
     const localDateTimeString = `${year}-${month}-${day}T${hours}:${minutes}`;
+
     this.minPickupDate = localDateTimeString;
     this.pickupDate = localDateTimeString;
   }
-
   
+  // --- FUNCIÓN DE VALIDACIÓN RESTAURADA ---
+  validatePickupTime(): void {
+    if (this.pickupDate && this.minPickupDate && this.pickupDate < this.minPickupDate) {
+      alert('La hora de recogida no puede ser en el pasado. Hemos ajustado la hora a la más cercana disponible.');
+      this.pickupDate = this.minPickupDate;
+    }
+  }
 
-  // ... (el resto de tus funciones como confirmOrder y startTransferPayment se mantienen igual)
-
-
-  
   // Flujo para pago en EFECTIVO
   confirmOrder(): void {
-    if (!this.authService.isLoggedIn() || this.isProcessingPayment) { /*...*/ return; }
+    if (!this.authService.isLoggedIn() || this.isProcessingPayment) { return; }
     this.isProcessingPayment = true;
     const orderData = {
       tipo_pedido: this.orderType,
@@ -83,7 +89,7 @@ export class CartComponent implements OnInit {
 
   // Flujo para pago con TARJETA
   proceedToCheckout(): void {
-    if (!this.authService.isLoggedIn() || this.isProcessingPayment) { /*...*/ return; }
+    if (!this.authService.isLoggedIn() || this.isProcessingPayment) { return; }
     this.isProcessingPayment = true;
     const items = this.orderService.getCurrentOrderItems();
     const orderData = {
@@ -94,7 +100,7 @@ export class CartComponent implements OnInit {
     this.orderService.checkout(orderData).subscribe({
       next: (orderResponse) => {
         const orderId = orderResponse.pedidoId;
-        this.http.post<{ id: string }>(`${environment.apiUrl}/payments/create-checkout-session`, { items, orderId })
+        this.http.post<{ id: string }>(`${environment.apiUrl}/api/payments/create-checkout-session`, { items, orderId })
           .pipe(switchMap(session => this.stripeService.redirectToCheckout({ sessionId: session.id })))
           .subscribe(result => {
             if (result.error) {
@@ -112,7 +118,7 @@ export class CartComponent implements OnInit {
 
   // Flujo para pago por TRANSFERENCIA
   startTransferPayment(): void {
-    if (!this.authService.isLoggedIn() || this.isProcessingPayment) { /*...*/ return; }
+    if (!this.authService.isLoggedIn() || this.isProcessingPayment) { return; }
     this.isProcessingPayment = true;
     const orderData = {
       tipo_pedido: this.orderType,

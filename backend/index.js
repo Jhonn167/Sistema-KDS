@@ -12,7 +12,7 @@ const server = http.createServer(app);
 // --- CONFIGURACIÓN DE CORS FINAL Y ROBUSTA ---
 const allowedOrigins = [
   "http://localhost:4200",
-  "https://sistema-kds-git-main-jhonn167s-projects.vercel.app" // URL de Vercel
+  "https://sistema-kds.vercel.app" // URL de Vercel
 ];
 const corsOptions = {
   origin: function (origin, callback) {

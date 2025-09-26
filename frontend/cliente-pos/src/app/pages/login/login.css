@@ -1,16 +1,15 @@
 /* src/app/pages/login/login.component.css */
 
-/* Contenedor principal para centrar todo en la página */
 :host {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   background-color: #f4f7f6;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
 }
 
-/* El contenedor del formulario con estilo de "tarjeta" */
 .login-container {
   width: 100%;
   max-width: 400px;
@@ -28,7 +27,6 @@ h2 {
   font-size: 2rem;
 }
 
-/* Estilo para los grupos de formulario (label + input) */
 .form-group {
   margin-bottom: 20px;
   text-align: left;
@@ -46,16 +44,15 @@ input {
   padding: 12px 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
+  box-sizing: border-box;
   transition: border-color 0.3s;
 }
 
 input:focus {
   outline: none;
-  border-color: #007bff; /* Resalta el input cuando está seleccionado */
+  border-color: #007bff;
 }
 
-/* Botón de envío */
 button {
   width: 100%;
   padding: 12px;
@@ -67,24 +64,13 @@ button {
   font-weight: bold;
   cursor: pointer;
   transition: opacity 0.3s;
+  margin-top: 10px; /* Añade espacio sobre el botón */
 }
 
-button:hover {
-  opacity: 0.9;
-}
+button:hover { opacity: 0.9; }
+button:disabled { background: #aaa; cursor: not-allowed; }
 
-button:disabled {
-  background: #aaa;
-  cursor: not-allowed;
-}
-
-/* Mensajes de error y éxito */
-.error-text {
-  color: #dc3545;
-  font-size: 0.85rem;
-  margin-top: 5px;
-}
-
+.error-text { color: #dc3545; font-size: 0.85rem; margin-top: 5px; }
 .error-message {
   color: #721c24;
   background-color: #f8d7da;
@@ -94,19 +80,25 @@ button:disabled {
   margin-top: 20px;
 }
 
-/* Enlace para registrarse */
-.register-link {
-  margin-top: 25px;
+/* --- ESTILOS CORREGIDOS Y MEJORADOS --- */
+.forgot-password-link {
+  text-align: right;
   font-size: 0.9rem;
-  color: #555;
+  margin-bottom: 20px; /* Espacio entre el enlace y el botón */
 }
 
-.register-link a {
+.forgot-password-link a, .register-link a {
   color: #007bff;
   text-decoration: none;
   font-weight: bold;
 }
 
-.register-link a:hover {
+.forgot-password-link a:hover, .register-link a:hover {
   text-decoration: underline;
+}
+
+.register-link {
+  margin-top: 25px;
+  font-size: 0.9rem;
+  color: #555;
 }

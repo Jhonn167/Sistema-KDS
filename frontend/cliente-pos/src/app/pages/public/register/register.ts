@@ -1,5 +1,3 @@
-// src/app/pages/public/register/register.component.ts
-
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -23,10 +21,12 @@ export class RegisterComponent {
     private authService: AuthService,
     private router: Router
   ) {
+    // AÑADIMOS EL CAMPO 'telefono' AL FORMULARIO
     this.registerForm = this.fb.group({
       nombre: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      telefono: ['', [Validators.required]]// El teléfono es requerido, pero no haremos validaciones por números de otros paises, al ser una empresa extranjera.
     });
   }
 
@@ -39,10 +39,10 @@ export class RegisterComponent {
     this.errorMessage = '';
     this.successMessage = '';
 
+    // El objeto del formulario ya incluye el teléfono, así que no necesitamos más cambios aquí.
     this.authService.register(this.registerForm.value).subscribe({
       next: (response: any) => {
         this.successMessage = '¡Registro exitoso! Ahora puedes iniciar sesión.';
-        // Opcional: Redirigir al login después de unos segundos
         setTimeout(() => {
           this.router.navigate(['/login']);
         }, 2000);

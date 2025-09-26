@@ -1,0 +1,5 @@
+# Regla de redirección para Aplicaciones de Página Única (SPA)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -87,9 +87,10 @@
   .navbar-actions {
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid #495057;
+    border-top: 1px solid #064079;
     width: 100%;
     text-align: center;
+    color: #dc3545;
   }
 }
 
@@ -99,5 +100,123 @@
   .navbar-links-container {
     display: flex; /* Mostramos el contenedor de enlaces */
     align-items: center;
+  }
+}
+
+/* ... (tus estilos existentes para .navbar, .hamburger-button, etc.) ... */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #343a40;
+  padding: 0.5rem 2rem;
+  color: white;
+  position: relative;
+}
+
+.navbar-brand a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.hamburger-button {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.navbar-links-container {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-links a {
+  color: #adb5bd;
+  text-decoration: none;
+  margin: 0 1rem;
+  font-size: 1.1rem;
+  transition: color 0.2s;
+}
+
+.navbar-links a:hover, .navbar-links a.active-link {
+  color: white;
+}
+
+.navbar-actions {
+  margin-left: 1rem;
+}
+
+.navbar-actions button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* --- ESTILOS NUEVOS Y CORREGIDOS --- */
+/* Estilo para el enlace de Iniciar Sesión que parece un botón */
+.btn-login {
+  background-color: #007bff;
+  color: white !important; /* !important anula el color morado de :visited */
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.btn-login:hover {
+  background-color: #0056b3;
+  color: white !important;
+}
+/* ---------------------------------- */
+
+
+@media (max-width: 992px) { /* Ajustamos el breakpoint para que se active antes */
+  .hamburger-button {
+    display: block;
+  }
+  .navbar-links-container {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #343a40;
+    flex-direction: column;
+    padding: 1rem;
+    border-top: 1px solid #495057;
+  }
+  .navbar-links-container.is-active {
+    display: flex;
+  }
+  .navbar-links {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  .navbar-links a {
+    margin: 0.8rem 0;
+    width: 100%;
+    text-align: center;
+  }
+  .navbar-actions {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #495057;
+    width: 100%;
+    text-align: center;
   }
 }

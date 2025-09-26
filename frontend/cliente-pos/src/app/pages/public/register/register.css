@@ -1,10 +1,94 @@
 /* src/app/pages/public/register/register.component.css */
-/* Puedes usar estilos similares a los de login.component.css */
-.register-container { max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
-.form-group { margin-bottom: 15px; }
-label { display: block; margin-bottom: 5px; }
-input { width: 100%; padding: 8px; box-sizing: border-box; }
-button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px; }
-.error-message { color: red; margin-top: 10px; }
-.success-message { color: green; margin-top: 10px; }
-.login-link { text-align: center; margin-top: 20px; }
+
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f4f7f6;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
+}
+
+.register-container {
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 2rem;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(90deg, #28a745, #218838);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.3s;
+  margin-top: 10px;
+}
+
+button:hover { opacity: 0.9; }
+button:disabled { background: #aaa; cursor: not-allowed; }
+
+.error-text { color: #dc3545; font-size: 0.85rem; margin-top: 5px; }
+.error-message {
+  color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb;
+  border-radius: 5px; padding: 10px; margin-top: 20px;
+}
+.success-message {
+  color: #155724; background-color: #d4edda; border: 1px solid #c3e6cb;
+  border-radius: 5px; padding: 10px; margin-top: 20px;
+}
+
+.login-link {
+  margin-top: 25px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.login-link a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+.login-link a:hover { text-decoration: underline; }

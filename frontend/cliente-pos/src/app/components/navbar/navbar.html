@@ -1,29 +1,48 @@
 <nav class="navbar">
   <div class="navbar-brand">
-    <a [routerLink]="authService.isAdmin() ? '/pos' : '/menu'">Sistema KDS</a>
+    <a [routerLink]="authService.isLoggedIn() ? (authService.isAdmin() ? '/pos' : '/menu') : '/menu'">Sistema KDS</a>
   </div>
-
-  <button class="hamburger-button" (click)="toggleMenu()">
-    ☰
-  </button>
 
   <div class="navbar-links-container" [class.is-active]="isMenuOpen">
-    <div *ngIf="authService.isAdmin()" class="navbar-links">
-      <a routerLink="/pos" routerLinkActive="active-link" (click)="closeMenu()">Punto de Venta</a>
-      <a routerLink="/admin/products" routerLinkActive="active-link" (click)="closeMenu()">Admin Productos</a>
-      <a routerLink="/kds" routerLinkActive="active-link" (click)="closeMenu()">Cocina (KDS)</a>
-      <a routerLink="/admin/modifiers" routerLinkActive="active-link">Modificadores</a>
-      <a routerLink="/admin/reports" routerLinkActive="active-link">Reportes</a>
-    </div>
+    
+    <ng-container *ngIf="authService.isLoggedIn(); else publicLinks">
+      <!-- Links para Administradores -->
+      <div *ngIf="authService.isAdmin()" class="navbar-links">
+        <a routerLink="/pos" routerLinkActive="active-link" (click)="closeMenu()">Punto de Venta</a>
+        <a routerLink="/admin/products" routerLinkActive="active-link" (click)="closeMenu()">Admin Productos</a>
+        <a routerLink="/admin/modifiers" routerLinkActive="active-link" (click)="closeMenu()">Modificadores</a>
+        <a routerLink="/admin/reports" routerLinkActive="active-link" (click)="closeMenu()">Reportes</a>
+        <a routerLink="/kds" routerLinkActive="active-link" (click)="closeMenu()">Cocina (KDS)</a>
+        <a routerLink="/admin/confirmations" routerLinkActive="active-link">Confirmaciones</a>
 
-    <div *ngIf="!authService.isAdmin()" class="navbar-links">
-      <a routerLink="/menu" routerLinkActive="active-link" (click)="closeMenu()">Menú</a>
-      <a routerLink="/mis-pedidos" routerLinkActive="active-link" (click)="closeMenu()">Mis Pedidos</a>
-    </div>
+      </div>
+
+      <!-- Links para Clientes -->
+      <div *ngIf="!authService.isAdmin()" class="navbar-links">
+        <a routerLink="/menu" routerLinkActive="active-link" (click)="closeMenu()">Menú</a>
+        <a routerLink="/mis-pedidos" routerLinkActive="active-link" (click)="closeMenu()">Mis Pedidos</a>
+        <a routerLink="/galeria" routerLinkActive="active-link" (click)="closeMenu()">Galería</a>
+        <a routerLink="/nosotros" routerLinkActive="active-link" (click)="closeMenu()">Nosotros</a>
+        <a routerLink="/contacto" routerLinkActive="active-link" (click)="closeMenu()">Contacto</a>
+      </div>
+    </ng-container>
+
+    <!-- Links para Visitantes -->
+    <ng-template #publicLinks>
+        <div class="navbar-links">
+            <a routerLink="/menu" routerLinkActive="active-link" (click)="closeMenu()">Menú</a>
+            <a routerLink="/galeria" routerLinkActive="active-link" (click)="closeMenu()">Galería</a>
+            <a routerLink="/nosotros" routerLinkActive="active-link" (click)="closeMenu()">Nosotros</a>
+            <a routerLink="/contacto" routerLinkActive="active-link" (click)="closeMenu()">Contacto</a>
+        </div>
+    </ng-template>
 
     <div class="navbar-actions">
-      <button (click)="logout()">Cerrar Sesión</button>
+      <button *ngIf="authService.isLoggedIn()" (click)="logout()">Cerrar Sesión</button>
+      <!-- Usamos una clase específica para el botón de Iniciar Sesión -->
+      <a *ngIf="!authService.isLoggedIn()" routerLink="/login" class="btn-login" (click)="closeMenu()">Iniciar Sesión</a>
     </div>
   </div>
-</nav>
 
+  <button class="hamburger-button" (click)="toggleMenu()">☰</button>
+</nav>

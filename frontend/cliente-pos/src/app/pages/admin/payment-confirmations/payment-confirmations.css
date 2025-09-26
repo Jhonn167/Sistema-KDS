@@ -1,0 +1,93 @@
+/* Reutilizamos los estilos de la lista de productos para mantener la consistencia */
+:host {
+  display: block;
+  padding: 40px;
+  background-color: #f4f7f6;
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.info-message {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.confirmations-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.confirmations-table th, .confirmations-table td {
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
+}
+
+.confirmations-table thead th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
+.confirmations-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.no-receipt {
+  font-style: italic;
+  color: #888;
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: #28a745;
+  color: white;
+}
+.btn-primary:hover {
+  background-color: #218838;
+}
+
+.btn-secondary {
+  background-color: #007bff;
+  color: white;
+}
+.btn-secondary:hover {
+  background-color: #0056b3;
+}

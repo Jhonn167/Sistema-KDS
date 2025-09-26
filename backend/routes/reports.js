@@ -13,15 +13,16 @@ router.use(checkAuth, (req, res, next) => {
     next();
 });
 
-// --- RUTA: RESUMEN DE VENTAS DEL DÍA ---
+// --- RUTA: RESUMEN DE VENTAS DEL DÍA (CORREGIDA) ---
 router.get('/sales-summary', async (req, res) => {
     try {
+        // CAMBIO: Ahora contamos todos los pedidos que NO están 'Esperando Pago'.
         const query = `
             SELECT 
                 COUNT(*) AS numero_pedidos,
                 SUM(total) AS ingresos_totales
             FROM pedidos
-            WHERE fecha::date = CURRENT_DATE AND (estatus = 'Listo para Recoger' OR estatus = 'Completado');
+            WHERE fecha::date = CURRENT_DATE AND estatus != 'Esperando Pago';
         `;
         const { rows } = await pool.query(query);
         const summary = {
@@ -35,9 +36,10 @@ router.get('/sales-summary', async (req, res) => {
     }
 });
 
-// --- RUTA: PRODUCTOS MÁS VENDIDOS (HOY) ---
+// --- RUTA: PRODUCTOS MÁS VENDIDOS (HOY) (CORREGIDA) ---
 router.get('/top-products', async (req, res) => {
     try {
+        // CAMBIO: Ahora contamos todos los pedidos que NO están 'Esperando Pago'.
         const query = `
             SELECT 
                 pr.nombre,
@@ -45,7 +47,7 @@ router.get('/top-products', async (req, res) => {
             FROM detalles_pedido dp
             JOIN productos pr ON dp.producto_id = pr.id_producto
             JOIN pedidos p ON dp.pedido_id = p.id_pedido
-            WHERE p.fecha::date = CURRENT_DATE AND (p.estatus = 'Listo para Recoger' OR p.estatus = 'Completado')
+            WHERE p.fecha::date = CURRENT_DATE AND p.estatus != 'Esperando Pago'
             GROUP BY pr.nombre
             ORDER BY cantidad_vendida DESC
             LIMIT 10;
@@ -58,36 +60,29 @@ router.get('/top-products', async (req, res) => {
     }
 });
 
-// --- RUTA NUEVA: CERRAR EL DÍA Y GUARDAR REGISTRO ---
+// --- RUTA: CERRAR EL DÍA (se mantiene igual) ---
 router.post('/close-day', async (req, res) => {
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
         const today = new Date().toISOString().slice(0, 10);
-
-        // 1. Verificamos si ya existe un cierre para hoy
         const checkQuery = 'SELECT * FROM cierres_diarios WHERE fecha = $1';
         const checkResult = await client.query(checkQuery, [today]);
         if (checkResult.rows.length > 0) {
             return res.status(409).json({ message: 'El cierre del día de hoy ya ha sido realizado.' });
         }
-
-        // 2. Calculamos el resumen de ventas del día
         const summaryQuery = `
             SELECT COUNT(*) AS total_pedidos, SUM(total) AS total_ingresos
             FROM pedidos
-            WHERE fecha::date = CURRENT_DATE AND (estatus = 'Listo para Recoger' OR estatus = 'Completado');
+            WHERE fecha::date = CURRENT_DATE AND estatus != 'Esperando Pago'; -- Usamos la misma lógica aquí
         `;
         const summaryResult = await client.query(summaryQuery);
         const { total_pedidos, total_ingresos } = summaryResult.rows[0];
-
-        // 3. Guardamos el registro en la nueva tabla (CON NOMBRES CORREGIDOS)
         const insertQuery = `
             INSERT INTO cierres_diarios (fecha, ingresos_totales, pedidos_completados)
             VALUES ($1, $2, $3);
         `;
         await client.query(insertQuery, [today, total_ingresos || 0, total_pedidos || 0]);
-
         await client.query('COMMIT');
         res.status(201).json({ message: 'Cierre del día guardado exitosamente.' });
     } catch (error) {
@@ -99,21 +94,15 @@ router.post('/close-day', async (req, res) => {
     }
 });
 
-// --- RUTA NUEVA: EXPORTAR REPORTE DIARIO A EXCEL ---
+// --- RUTA: EXPORTAR A EXCEL (se mantiene igual) ---
 router.get('/export-daily', async (req, res) => {
     try {
-        // Obtenemos los datos (productos más vendidos y resumen)
-        const topProductsQuery = `SELECT pr.nombre, SUM(dp.cantidad) AS cantidad_vendida FROM detalles_pedido dp JOIN productos pr ON dp.producto_id = pr.id_producto JOIN pedidos p ON dp.pedido_id = p.id_pedido WHERE p.fecha::date = CURRENT_DATE AND (p.estatus = 'Listo para Recoger' OR p.estatus = 'Completado') GROUP BY pr.nombre ORDER BY cantidad_vendida DESC LIMIT 10;`;
+        const topProductsQuery = `SELECT pr.nombre, SUM(dp.cantidad) AS cantidad_vendida FROM detalles_pedido dp JOIN productos pr ON dp.producto_id = pr.id_producto JOIN pedidos p ON dp.pedido_id = p.id_pedido WHERE p.fecha::date = CURRENT_DATE AND p.estatus != 'Esperando Pago' GROUP BY pr.nombre ORDER BY cantidad_vendida DESC LIMIT 10;`;
         const topProductsResult = await pool.query(topProductsQuery);
-
-        const summaryQuery = `SELECT COUNT(*) AS numero_pedidos, SUM(total) AS ingresos_totales FROM pedidos WHERE fecha::date = CURRENT_DATE AND (estatus = 'Listo para Recoger' OR estatus = 'Completado');`;
+        const summaryQuery = `SELECT COUNT(*) AS numero_pedidos, SUM(total) AS ingresos_totales FROM pedidos WHERE fecha::date = CURRENT_DATE AND p.estatus != 'Esperando Pago';`;
         const summaryResult = await pool.query(summaryQuery);
-
-        // Creamos el libro de Excel
         const workbook = new excel.Workbook();
         const worksheet = workbook.addWorksheet('Reporte de Ventas');
-
-        // Añadimos el resumen
         worksheet.addRow(['Reporte de Ventas del Día:', new Date().toLocaleDateString()]);
         worksheet.addRow([]);
         worksheet.addRow(['Ingresos Totales', summaryResult.rows[0].ingresos_totales || 0]);
@@ -121,27 +110,15 @@ router.get('/export-daily', async (req, res) => {
         worksheet.addRow([]);
         worksheet.addRow(['Productos Más Vendidos']);
         worksheet.getRow(6).font = { bold: true };
-
-        // Añadimos la tabla de productos
         worksheet.columns = [
             { header: 'Producto', key: 'nombre', width: 30 },
             { header: 'Cantidad Vendida', key: 'cantidad', width: 20 }
         ];
         worksheet.addRows(topProductsResult.rows.map(p => ({ nombre: p.nombre, cantidad: p.cantidad_vendida })));
-
-        // Enviamos el archivo al cliente
-        res.setHeader(
-            'Content-Type',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        );
-        res.setHeader(
-            'Content-Disposition',
-            `attachment; filename=Reporte_Ventas_${new Date().toISOString().slice(0, 10)}.xlsx`
-        );
-
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', `attachment; filename=Reporte_Ventas_${new Date().toISOString().slice(0, 10)}.xlsx`);
         await workbook.xlsx.write(res);
         res.end();
-
     } catch (error) {
         console.error("Error al exportar a Excel:", error);
         res.status(500).json({ message: 'Error en el servidor.' });
@@ -149,3 +126,4 @@ router.get('/export-daily', async (req, res) => {
 });
 
 module.exports = router;
+

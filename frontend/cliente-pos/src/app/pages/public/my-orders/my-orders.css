@@ -1,7 +1,48 @@
-.my-orders-container { max-width: 800px; margin: 40px auto; padding: 20px; }
+:host {
+  display: block;
+  padding: 40px;
+  background-color: #f4f7f6;
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.my-orders-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+}
+
+h1 { text-align: center; margin-bottom: 10px; }
+p { text-align: center; color: #666; margin-bottom: 30px; }
+.table-wrapper { overflow-x: auto; }
 .orders-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-.orders-table th, .orders-table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-.orders-table th { background-color: #f2f2f2; }
-.status { padding: 5px 10px; color: white; border-radius: 15px; font-size: 0.9em; }
-.status.pendiente { background-color: #ffc107; }
-.status.completado { background-color: #28a745; }
+.orders-table th, .orders-table td { border-bottom: 1px solid #ddd; padding: 15px; text-align: left; }
+.orders-table th { background-color: #f8f9fa; font-weight: bold; }
+.info-message { text-align: center; padding: 40px; }
+.btn-primary { display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+
+/* --- ESTILOS COMPLETOS PARA LAS ETIQUETAS DE ESTATUS --- */
+.status {
+  padding: 6px 12px;
+  color: white;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: bold;
+  text-align: center;
+  display: inline-block;
+  min-width: 120px;
+}
+
+/* Color para cada estatus (usando guiones) */
+.status.pendiente { background-color: #ffc107; color: #333; }
+.status.en-preparacion { background-color: #17a2b8; }
+.status.listo-para-recoger { background-color: #28a745; }
+.status.completado { background-color: #6c757d; }
+.status.esperando-pago { background-color: #fd7e14; }
+.status.esperando-comprobante { background-color: #007bff; } /* <-- ESTILO AÑADIDO */
+.status.programado { background-color: #6610f2; }
+.status.cancelado { background-color: #dc3545; }

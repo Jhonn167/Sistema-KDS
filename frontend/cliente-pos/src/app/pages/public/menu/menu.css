@@ -134,3 +134,14 @@ p {
 .cart-badge.visible {
   display: block;
 }
+
+.add-to-cart-btn:hover {
+  background-color: #0056b3;
+}
+
+/* --- ESTILO NUEVO AÑADIDO --- */
+.add-to-cart-btn:disabled {
+  background-color: #6c757d; /* Color gris */
+  cursor: not-allowed; /* Cambia el cursor para indicar que no es clickeable */
+  opacity: 0.7;
+}

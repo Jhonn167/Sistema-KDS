@@ -1,3 +1,5 @@
+/* src/app/pages/kds/kds.component.css */
+
 .kds-container { padding: 20px; font-family: sans-serif; }
 h1 { text-align: center; }
 .info-message { text-align: center; font-size: 1.2em; color: #888; margin-top: 50px; }
@@ -23,15 +25,14 @@ h1 { text-align: center; }
     background-color: #f0f0f0;
     border-bottom: 1px dashed #ccc;
 }
-.card-header h3 { margin: 0; }
+.card-header h3 { margin: 0; font-size: 1.1em; }
 .card-body { padding: 15px; flex-grow: 1; }
 .card-body ul { list-style: none; padding: 0; margin: 0; }
-.card-body li { display: flex; margin-bottom: 8px; font-size: 1.1em; }
+.card-body li { margin-bottom: 8px; }
+.item-main { display: flex; font-size: 1.1em; }
 .cantidad { font-weight: bold; margin-right: 15px; }
-.card-footer {
-    padding: 15px;
-    border-top: 1px solid #eee;
-}
+.options-sublist { list-style: none; padding-left: 30px; margin-top: 5px; font-size: 0.9em; color: #555; }
+.card-footer { padding: 15px; border-top: 1px solid #eee; }
 .card-footer button {
     width: 100%;
     padding: 12px;
@@ -41,4 +42,21 @@ h1 { text-align: center; }
     border-radius: 5px;
     font-size: 1.1em;
     cursor: pointer;
+}
+
+/* --- ESTILOS MEJORADOS PARA LA HORA --- */
+.header-details {
+  text-align: right;
+  font-size: 0.9em;
+  color: #555;
+}
+.header-details span {
+  display: block;
+}
+.pickup-time {
+  color: #dc3545; /* Color rojo para destacar */
+  font-weight: bold;
+}
+.pickup-time strong {
+  font-size: 1.2em;
 }

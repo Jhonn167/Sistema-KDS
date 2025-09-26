@@ -1,0 +1,47 @@
+<div class="list-container">
+  <div class="header">
+    <h1>Confirmaciones de Pago por Transferencia</h1>
+  </div>
+
+  <div *ngIf="isLoading" class="info-message">
+    Buscando pedidos pendientes...
+  </div>
+
+  <div *ngIf="!isLoading && pendingOrders.length === 0" class="info-message">
+    No hay pagos por transferencia pendientes de confirmación.
+  </div>
+
+  <div class="table-wrapper" *ngIf="!isLoading && pendingOrders.length > 0">
+    <table class="confirmations-table">
+      <thead>
+        <tr>
+          <th>ID Pedido</th>
+          <th>Cliente</th>
+          <th>Fecha</th>
+          <th>Total</th>
+          <th>Comprobante</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of pendingOrders">
+          <td>#{{ order.id_pedido }}</td>
+          <td>{{ order.nombre_cliente }}</td>
+          <td>{{ order.fecha | date:'short' }}</td>
+          <td>{{ order.total | currency:'MXN' }}</td>
+          <td>
+            <a [href]="order.comprobante_url" target="_blank" class="btn btn-secondary" *ngIf="order.comprobante_url">
+              Ver Comprobante
+            </a>
+            <span *ngIf="!order.comprobante_url" class="no-receipt">Pendiente</span>
+          </td>
+          <td>
+            <button (click)="confirmPayment(order.id_pedido)" class="btn btn-primary">
+              Confirmar Pago
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

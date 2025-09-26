@@ -1,0 +1,22 @@
+<div class="static-page-container">
+  <h1>Nuestra Galería</h1>
+  <p>Un vistazo a los platillos que te esperan. ¡Haz clic para verlos en el menú!</p>
+
+  <div *ngIf="isLoading" class="info-message">Cargando galería...</div>
+  
+  <div *ngIf="!isLoading && products.length === 0" class="info-message">
+    No hay imágenes para mostrar en la galería en este momento.
+  </div>
+
+  <div class="gallery-grid">
+    <!-- Usamos *ngFor para crear un item por cada producto con imagen -->
+    <div *ngFor="let product of products" class="gallery-item">
+      <img [src]="product.imagen_url" [alt]="product.nombre">
+      <!-- Esta capa se mostrará al pasar el mouse por encima -->
+      <div class="gallery-overlay">
+        <h3>{{ product.nombre }}</h3>
+        <a [routerLink]="['/menu']" class="btn-view-menu">Ver en Menú</a>
+      </div>
+    </div>
+  </div>
+</div>

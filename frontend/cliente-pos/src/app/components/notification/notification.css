@@ -1,0 +1,16 @@
+.notification-container { position: fixed; top: 80px; right: 20px; z-index: 2000; }
+.notification-toast {
+  padding: 15px 20px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 250px;
+}
+.notification-toast.info { background-color: #007bff; }
+.notification-toast.success { background-color: #28a745; }
+.notification-toast.error { background-color: #dc3545; }
+.notification-toast button { background: none; border: none; color: white; font-size: 1.5rem; margin-left: 15px; cursor: pointer; }

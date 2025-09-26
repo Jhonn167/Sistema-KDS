@@ -1,0 +1,8 @@
+<div class="notification-container">
+  <div *ngFor="let notification of (notificationService.notifications$ | async)" 
+       class="notification-toast" 
+       [ngClass]="notification.type">
+    {{ notification.message }}
+    <button (click)="notificationService.remove(notification.id)">&times;</button>
+  </div>
+</div>

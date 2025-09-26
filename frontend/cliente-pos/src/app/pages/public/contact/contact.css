@@ -1,0 +1,68 @@
+:host {
+  display: block;
+  background-color: #f8f9fa;
+  padding: 40px 20px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.contact-page-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 2.8rem;
+}
+
+p {
+  text-align: center;
+  color: #666;
+  margin-bottom: 40px;
+}
+
+.contact-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr; /* El mapa es un poco más grande */
+  gap: 40px;
+  align-items: center;
+}
+
+.contact-info {
+  line-height: 1.8;
+}
+
+.contact-info h3 {
+  font-size: 1.5rem;
+  color: #333;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.contact-info p {
+  text-align: left;
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.map-container {
+  width: 100%;
+  height: 400px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+/* Hacemos el diseño responsivo para celulares */
+@media (max-width: 768px) {
+  .contact-wrapper {
+    grid-template-columns: 1fr; /* Apila las columnas en móvil */
+  }
+}

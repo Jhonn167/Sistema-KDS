@@ -10,12 +10,20 @@ const app = express();
 const server = http.createServer(app);
 
 // --- CORRECCIÓN CLAVE: Configuración de CORS Unificada ---
+const allowedOrigins = [
+  "http://localhost:4200", // Para desarrollo local
+  "https://spontaneous-selkie-fb61b4.netlify.app/" // ¡IMPORTANTE! Reemplaza esto con tu URL de Netlify cuando la tengas
+];
 const corsOptions = {
-  origin: [
-    "http://localhost:4200", // Para desarrollo local
-    "https://spontaneous-selkie-fb61b4.netlify.app/" // ¡IMPORTANTE! Reemplaza esto con tu URL de Netlify cuando la tengas
-  ],
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS'));
+    }
+    // Permitir solicitudes sin origen (como las de Postman o curl)
+  },
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
 };
 
 const io = new Server(server, {
@@ -27,9 +35,7 @@ let onlineUsers = {};
 
 io.on('connection', (socket) => {
   console.log(`[Socket.IO] Un usuario se ha conectado con ID: ${socket.id}`);
-  socket.on('join', (userId) => {
-    onlineUsers[userId] = socket.id;
-  });
+  socket.on('join', (userId) => {  onlineUsers[userId] = socket.id; });
   socket.on('disconnect', () => {
     for (let userId in onlineUsers) {
       if (onlineUsers[userId] === socket.id) {

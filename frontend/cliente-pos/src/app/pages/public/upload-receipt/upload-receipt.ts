@@ -31,7 +31,13 @@ export class UploadReceiptComponent implements OnInit {
   }
 
   onFileSelected(event: any): void {
-    // ... (esta función se mantiene igual)
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = () => { this.previewUrl = reader.result; };
+      reader.readAsDataURL(file);
+    }
   }
 
   onUpload(): void {

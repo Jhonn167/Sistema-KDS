@@ -7,6 +7,7 @@
   <div *ngIf="(orderItems$ | async)?.length; else emptyCart" class="cart-content">
     <div class="cart-items">
       <button class="clear-cart-btn" (click)="orderService.clearOrder()">Vaciar Carrito</button>
+
       <div *ngFor="let item of (orderItems$ | async)" class="cart-item">
         <div class="item-details">
           <h4>{{ item.nombre }}</h4>
@@ -55,8 +56,8 @@
         
         <div *ngIf="orderType === 'futuro'" class="pickup-time-section">
           <label for="pickupDate">Selecciona fecha y hora:</label>
-          <!-- CORRECCIÓN: Eliminamos (change)="validatePickupTime()" -->
-          <input type="datetime-local" id="pickupDate" [(ngModel)]="pickupDate" [min]="minPickupDate" class="time-input">
+          <!-- Conectamos el evento (change) a la función de validación -->
+          <input type="datetime-local" id="pickupDate" [(ngModel)]="pickupDate" [min]="minPickupDate" class="time-input" (change)="validatePickupTime()">
         </div>
       </div>
       
@@ -84,3 +85,4 @@
     </div>
   </ng-template>
 </div>
+

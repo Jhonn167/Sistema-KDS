@@ -28,6 +28,9 @@ export class CartComponent implements OnInit {
   minPickupDate: string = '';
   isProcessingPayment = false;
   
+  // Propiedad auxiliar para restaurar la fecha si la selección es inválida
+  private pickupDateAux: string = '';
+
   constructor(
     public orderService: OrderService,
     private authService: AuthService,
@@ -52,8 +55,22 @@ export class CartComponent implements OnInit {
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
     const localDateTimeString = `${year}-${month}-${day}T${hours}:${minutes}`;
+
     this.minPickupDate = localDateTimeString;
     this.pickupDate = localDateTimeString;
+    this.pickupDateAux = localDateTimeString; // Inicializamos la fecha auxiliar
+  }
+  
+  // --- FUNCIÓN DE VALIDACIÓN RESTAURADA ---
+  validatePickupTime(): void {
+    if (this.pickupDate && this.minPickupDate && this.pickupDate < this.minPickupDate) {
+      alert('La hora de recogida no puede ser en el pasado. Hemos ajustado la hora a la más cercana disponible.');
+      // Restablece la hora a la última válida conocida
+      this.pickupDate = this.pickupDateAux;
+    } else {
+      // Si la hora es válida, la guardamos como la última correcta
+      this.pickupDateAux = this.pickupDate;
+    }
   }
 
   // Flujo para pago en EFECTIVO

@@ -53,10 +53,10 @@
           </div>
         </div>
         
-        <div *ngIf="orderType === 'futuro'" class="pickup-time-section">
+         <div *ngIf="orderType === 'futuro'" class="pickup-time-section">
           <label for="pickupDate">Selecciona fecha y hora:</label>
-          <!-- CAMBIO CLAVE: Añadimos (change) para llamar a nuestra función de validación -->
-          <input type="datetime-local" id="pickupDate" [(ngModel)]="pickupDate" [min]="minPickupDate" class="time-input" (change)="validatePickupTime()">
+          <!-- CORRECCIÓN: Eliminamos (change)="validarHora()" -->
+          <input type="datetime-local" id="pickupDate" [(ngModel)]="pickupDate" [min]="minPickupDate" class="time-input">
         </div>
       </div>
       
@@ -84,3 +84,4 @@
     </div>
   </ng-template>
 </div>
+

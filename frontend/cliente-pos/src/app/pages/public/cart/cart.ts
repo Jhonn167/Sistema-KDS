@@ -11,6 +11,7 @@ import { switchMap } from 'rxjs/operators';
 import { StripeService } from 'ngx-stripe';
 import { environment } from '../../../../environments/environments';
 import { FormsModule } from '@angular/forms';
+import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-cart',
@@ -45,98 +46,76 @@ export class CartComponent implements OnInit {
 
   private setMinPickupDate(): void {
     const now = new Date();
-    // Añadimos un margen de 30 minutos para la preparación
     now.setMinutes(now.getMinutes() + 30);
-
-    // Formateamos la fecha manualmente a la zona horaria LOCAL para evitar errores con UTC
     const year = now.getFullYear();
     const month = (now.getMonth() + 1).toString().padStart(2, '0');
     const day = now.getDate().toString().padStart(2, '0');
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
-    
     const localDateTimeString = `${year}-${month}-${day}T${hours}:${minutes}`;
-
     this.minPickupDate = localDateTimeString;
     this.pickupDate = localDateTimeString;
   }
-
-  // Nueva función de validación para mayor robustez
-  validatePickupTime(): void {
-    // Comprueba si la fecha seleccionada es anterior a la mínima permitida
-    if (this.pickupDate && this.minPickupDate && this.pickupDate < this.minPickupDate) {
-      alert('La hora de recogida no puede ser en el pasado. Hemos ajustado la hora a la más cercana disponible.');
-      // Restablece la hora a la mínima permitida
-      this.pickupDate = this.minPickupDate;
-    }
-  }
-
-
-  private processOrder(isCardPayment: boolean): void {
-    if (!this.authService.isLoggedIn()) {
-      alert('Por favor, inicia sesión para continuar.');
-      this.router.navigate(['/login']);
-      return;
-    }
+  
+  // Flujo para pago en EFECTIVO
+  confirmOrder(): void {
+    if (!this.authService.isLoggedIn() || this.isProcessingPayment) { /*...*/ return; }
     this.isProcessingPayment = true;
-
-    const items = this.orderService.getCurrentOrderItems();
     const orderData = {
-      items: items,
       tipo_pedido: this.orderType,
-      fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null,
-      estatus: isCardPayment ? 'Esperando Pago' : undefined
+      fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null
     };
-
-    if (isCardPayment) {
-      this.orderService.checkout(orderData).subscribe({
-        next: (orderResponse) => {
-          this.http.post<{ id: string }>(`${environment.apiUrl}/payments/create-checkout-session`, { items, orderId: orderResponse.pedidoId })
-            .pipe(switchMap(session => this.stripeService.redirectToCheckout({ sessionId: session.id })))
-            .subscribe(result => {
-              if (result.error) {
-                alert(result.error.message);
-                this.isProcessingPayment = false;
-              }
-            });
-        },
-        error: (err) => {
-          alert('Error al crear el pedido: ' + err.error.message);
-          this.isProcessingPayment = false;
-        }
-      });
-    } else {
-      this.orderService.checkout(orderData).subscribe({
-        next: () => {
+    this.orderService.checkout(orderData).subscribe({
+      next: () => {
           alert('¡Pedido enviado a la cocina! Pagarás en efectivo al recoger.');
           this.orderService.clearOrder();
           this.router.navigate(['/mis-pedidos']);
-        },
-        error: (err) => {
+      },
+      error: (err) => {
           alert('Error al enviar el pedido: ' + err.error.message);
           this.isProcessingPayment = false;
-        }
-      });
-    }
+      }
+    });
   }
 
-  confirmOrder(): void { this.processOrder(false); }
-  proceedToCheckout(): void { this.processOrder(true); }
-
-  startTransferPayment(): void {
-    if (!this.authService.isLoggedIn()) {
-      alert('Por favor, inicia sesión para continuar.');
-      this.router.navigate(['/login']);
-      return;
-    }
+  // Flujo para pago con TARJETA
+  proceedToCheckout(): void {
+    if (!this.authService.isLoggedIn() || this.isProcessingPayment) { /*...*/ return; }
     this.isProcessingPayment = true;
+    const items = this.orderService.getCurrentOrderItems();
+    const orderData = {
+      tipo_pedido: this.orderType,
+      fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null,
+      estatus: 'Esperando Pago'
+    };
+    this.orderService.checkout(orderData).subscribe({
+      next: (orderResponse) => {
+        const orderId = orderResponse.pedidoId;
+        this.http.post<{ id: string }>(`${environment.apiUrl}/payments/create-checkout-session`, { items, orderId })
+          .pipe(switchMap(session => this.stripeService.redirectToCheckout({ sessionId: session.id })))
+          .subscribe(result => {
+            if (result.error) {
+              alert(result.error.message);
+              this.isProcessingPayment = false;
+            }
+          });
+      },
+      error: (err) => {
+        alert('Error al crear el pedido inicial: ' + err.error.message);
+        this.isProcessingPayment = false;
+      }
+    });
+  }
 
+  // Flujo para pago por TRANSFERENCIA
+  startTransferPayment(): void {
+    if (!this.authService.isLoggedIn() || this.isProcessingPayment) { /*...*/ return; }
+    this.isProcessingPayment = true;
     const orderData = {
       tipo_pedido: this.orderType,
       fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null,
       estatus: 'Esperando Comprobante'
     };
-
     this.orderService.checkout(orderData).subscribe({
       next: (response) => {
         const newOrderId = response.pedidoId;

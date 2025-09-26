@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: '[https://sistema-kds.onrender.com](https://sistema-kds.onrender.com)' // <-- TU URL DE RENDER
+  apiUrl: '[https://spontaneous-selkie-fb61b4.netlify.app](https://spontaneous-selkie-fb61b4.netlify.app)' // <-- TU URL DE RENDER
 };

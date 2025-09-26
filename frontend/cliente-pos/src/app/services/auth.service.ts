@@ -8,12 +8,13 @@ import { Observable } from 'rxjs';
 import { Socket } from 'ngx-socket-io';
 import { jwtDecode } from 'jwt-decode';
 import { NotificationService } from './notification';
+import { environment } from '../../environments/environments';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/api/auth';
+  private apiUrl = `${environment.apiUrl}/api/auth`;
 
   constructor(
     private http: HttpClient, 

@@ -2,7 +2,8 @@
   <div class="header">
     <h1>Gestión de Usuarios</h1>
   </div>
-  <div class="table-wrapper">
+  <div *ngIf="isLoading" class="info-message">Cargando usuarios...</div>
+  <div class="table-wrapper" *ngIf="!isLoading">
     <table class="users-table">
       <thead>
         <tr>
@@ -14,11 +15,12 @@
       </thead>
       <tbody>
         <tr *ngFor="let user of users">
-          <td>{{ user.nombre }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.telefono || 'N/A' }}</td>
-          <td>
-            <select [value]="user.rol" (change)="onRoleChange(user, $event)">
+          <td data-label="Nombre">{{ user.nombre }}</td>
+          <td data-label="Email">{{ user.email }}</td>
+          <td data-label="Teléfono">{{ user.telefono || 'N/A' }}</td>
+          <td data-label="Rol">
+            <!-- CAMBIO: Usamos [ngModel] para un binding correcto -->
+            <select [ngModel]="user.rol" (change)="onRoleChange(user, $event)" class="role-select">
               <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
             </select>
           </td>

@@ -1,4 +1,4 @@
-// src/app/pages/login/login.component.ts - VERSIÓN CORREGIDA
+// src/app/pages/login/login.component.ts
 
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
@@ -10,8 +10,8 @@ import { AuthService } from '../../services/auth.service';
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
-  templateUrl: './login.html', // Corregido a .component.html por convención
-  styleUrls: ['./login.css']    // Corregido a .component.css por convención
+  templateUrl: './login.html',
+  styleUrls: ['./login.css']
 })
 export class LoginComponent {
   loginForm: FormGroup;
@@ -24,15 +24,13 @@ export class LoginComponent {
     private router: Router
   ) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required]],
       password: ['', [Validators.required]]
     });
   }
 
   onSubmit(): void {
-    if (this.loginForm.invalid || this.isLoading) {
-      return;
-    }
+    if (this.loginForm.invalid || this.isLoading) { return; }
     this.isLoading = true;
     this.errorMessage = '';
 
@@ -40,14 +38,21 @@ export class LoginComponent {
       next: (response) => {
         this.isLoading = false;
         if (response && response.token) {
-          // Lógica de redirección restaurada
-          if (response.rol === 'admin') {
-            this.router.navigate(['/pos']); // Admins van al POS
-          } else if (response.rol === 'cliente') {
-            this.router.navigate(['/menu']); // Clientes van al Menú
-          } else {
-            this.errorMessage = 'Rol de usuario no reconocido.';
-            this.authService.logout();
+          // --- LÓGICA DE REDIRECCIÓN MEJORADA ---
+          switch (response.rol) {
+            case 'admin':
+            case 'empleado':
+              this.router.navigate(['/pos']);
+              break;
+            case 'cocinero':
+              this.router.navigate(['/kds']);
+              break;
+            case 'cliente':
+              this.router.navigate(['/menu']);
+              break;
+            default:
+              this.errorMessage = 'Rol de usuario no reconocido.';
+              this.authService.logout();
           }
         }
       },

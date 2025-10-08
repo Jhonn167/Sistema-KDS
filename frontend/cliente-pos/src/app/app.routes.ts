@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-
 // Guards
 import { AdminGuard } from './guards/admin-guard';
 import { authGuard } from './guards/auth-guard';
@@ -43,7 +42,7 @@ export const routes: Routes = [
   { path: 'contacto', component: Contact },
   { path: 'orden-exitosa', component: OrderSuccessComponent },
   { path: 'recuperar-contrasena', component: ForgotPasswordComponent },
-  { path: 'restablecer-contrasena/:token', component: ResetPasswordComponent }, // Ruta clave
+  { path: 'restablecer-contrasena/:token', component: ResetPasswordComponent }, 
   
 
   // --- RUTAS PROTEGIDAS (Requieren Login) ---

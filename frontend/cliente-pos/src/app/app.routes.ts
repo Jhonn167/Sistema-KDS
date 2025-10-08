@@ -62,7 +62,8 @@ export const routes: Routes = [
       { path: 'products/edit/:id', component: ProductFormComponent },
       { path: 'modifiers', component: ModifierListComponent },
       { path: 'reports', component: ReportsComponent },
-      { path: 'confirmations', component: PaymentConfirmationsComponent },
+
+      { path: 'confirmations', component: PaymentConfirmationsComponent, canActivate: [AdminGuard], data: { roles: ['admin', 'empleado'] } },
       { path: '', redirectTo: 'products', pathMatch: 'full' }
     ]
   },

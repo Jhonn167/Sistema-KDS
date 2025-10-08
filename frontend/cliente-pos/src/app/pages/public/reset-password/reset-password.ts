@@ -43,7 +43,6 @@ export class ResetPasswordComponent implements OnInit {
     this.isLoading = true;
     this.message = '';
 
-    // --- CORRECCIÓN CLAVE: Añadimos /api/ a la URL ---
     const apiUrl = `${environment.apiUrl}/api/auth/reset-password/${this.token}`;
 
     this.http.post<any>(apiUrl, this.resetForm.value).subscribe({

@@ -33,7 +33,6 @@ export class ForgotPasswordComponent {
     this.isLoading = true;
     this.message = '';
 
-    // --- CORRECCIÓN CLAVE: Añadimos /api/ a la URL ---
     const apiUrl = `${environment.apiUrl}/api/auth/forgot-password`;
     
     this.http.post<any>(apiUrl, this.forgotForm.value).subscribe({

@@ -12,7 +12,7 @@ if (process.env.SENDGRID_API_KEY) {
 
 const router = express.Router();
 
-// --- RUTA DE REGISTRO (CON VALIDACIÓN MEJORADA) ---
+// --- RUTA DE REGISTRO ---
 router.post('/register', async (req, res) => {
   try {
     const { nombre, email, password, telefono } = req.body;
@@ -24,11 +24,7 @@ router.post('/register', async (req, res) => {
     res.status(201).json({ message: 'Usuario registrado exitosamente' });
   } catch (error) {
     console.error("ERROR DETALLADO EN POST /api/auth/register:", error);
-    
-    // --- LÓGICA DE ERROR MEJORADA ---
-    // Primero, verificamos si es un error de valor único duplicado.
-    if (error.code === '23505') { 
-      // Si lo es, ahora verificamos QUÉ valor fue el duplicado.
+    if (error.code === '23505') {
       if (error.constraint === 'usuarios_email_key') {
         return res.status(409).json({ message: 'El correo electrónico ya está en uso.' });
       }
@@ -36,12 +32,11 @@ router.post('/register', async (req, res) => {
         return res.status(409).json({ message: 'El número de teléfono ya está en uso.' });
       }
     }
-    // Si es otro tipo de error, enviamos un mensaje genérico.
     res.status(500).json({ message: 'Error en el servidor al registrar el usuario' });
   }
 });
 
-// --- RUTA DE LOGIN (se mantiene igual) ---
+// --- RUTA DE LOGIN ---
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -72,7 +67,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// --- RUTAS DE RECUPERACIÓN DE CONTRASEÑA (se mantienen igual) ---
+// --- RUTA: "OLVIDÉ MI CONTRASEÑA" (LÓGICA CORREGIDA) ---
 router.post('/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;
@@ -82,10 +77,13 @@ router.post('/forgot-password', async (req, res) => {
         }
         const user = rows[0];
         const resetToken = crypto.randomBytes(32).toString('hex');
-        const tokenExpires = new Date(Date.now() + 3600000);
+        const tokenExpires = new Date(Date.now() + 3600000); // 1 hora
         await pool.query('UPDATE usuarios SET reset_token = $1, reset_token_expires = $2 WHERE id = $3', [resetToken, tokenExpires, user.id]);
 
-        const resetUrl = `http://localhost:4200/restablecer-contrasena/${resetToken}`;
+        // --- CAMBIO CLAVE: Hacemos la URL de reseteo dinámica ---
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
+        const resetUrl = `${frontendUrl}/restablecer-contrasena/${resetToken}`;
+
         const msg = {
             to: user.email,
             from: process.env.SENDGRID_FROM_EMAIL,
@@ -100,6 +98,7 @@ router.post('/forgot-password', async (req, res) => {
     }
 });
 
+// --- RUTA: "RESTABLECER CONTRASEÑA" (LÓGICA CORREGIDA) ---
 router.post('/reset-password/:token', async (req, res) => {
     try {
         const { token } = req.params;

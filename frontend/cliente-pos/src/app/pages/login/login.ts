@@ -34,7 +34,7 @@ export class LoginComponent {
     this.errorMessage = '';
 
     this.authService.login(this.loginForm.value).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.isLoading = false;
         if (response && response.token) {
           switch (response.rol) {
@@ -54,7 +54,7 @@ export class LoginComponent {
           }
         }
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isLoading = false;
         this.errorMessage = 'Credenciales inválidas. Por favor, inténtelo de nuevo.';
         console.error('Error en el login:', err);

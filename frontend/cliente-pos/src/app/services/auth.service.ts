@@ -20,29 +20,21 @@ export class AuthService {
     private notificationService: NotificationService
   ) {}
 
-  // --- NUEVA FUNCIÓN: VERIFICACIÓN PROACTIVA ---
   checkTokenExpiration(): void {
     const token = this.getToken();
     if (token) {
-      const decodedToken: { exp: number } = jwtDecode(token);
-      // La expiración está en segundos, Date.now() en milisegundos
-      if (decodedToken.exp * 1000 < Date.now()) {
+      try {
+        const decodedToken: { exp: number } = jwtDecode(token);
+        if (decodedToken.exp * 1000 < Date.now()) {
+          this.logout(true);
+        }
+      } catch (error) {
+        console.error("Error decoding token:", error);
         this.logout();
-        this.notificationService.add('Tu sesión ha caducado. Por favor, inicia sesión de nuevo.', 'error');
       }
     }
   }
 
-
-  logout(sessionExpired = false): void {
-    this.disconnectSocket();
-    localStorage.clear();
-    this.router.navigate(['/login']);
-    if (sessionExpired) {
-      this.notificationService.add('Tu sesión ha caducado. Por favor, inicia sesión de nuevo.', 'error');
-    }
-  }
-  // --- MÉTODOS DE WEBSOCKETS ---
   connectSocket(): void {
     const userId = this.getUserId();
     if (userId) {
@@ -55,7 +47,6 @@ export class AuthService {
     this.socket.disconnect();
   }
 
-  // --- MÉTODOS DE AUTENTICACIÓN ---
   login(loginData: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, loginData).pipe(
       tap(response => {
@@ -63,24 +54,29 @@ export class AuthService {
           localStorage.setItem('token', response.token);
           localStorage.setItem('user_role', response.rol);
           localStorage.setItem('user_id', response.userId);
-          
           this.connectSocket();
         }
       })
     );
   }
 
-  // --- MÉTODO 'register' (RESTAURADO) ---
   register(userData: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/register`, userData);
   }
-  // --- MÉTODOS DE UTILIDAD ---
+
+  logout(sessionExpired = false): void {
+    this.disconnectSocket();
+    localStorage.clear();
+    this.router.navigate(['/login']);
+    if (sessionExpired) {
+      this.notificationService.add('Tu sesión ha caducado. Por favor, inicia sesión de nuevo.', 'error');
+    }
+  }
   
   getToken(): string | null { return localStorage.getItem('token'); }
   getUserId(): string | null { return localStorage.getItem('user_id'); }
   isLoggedIn(): boolean { return !!this.getToken(); }
 
-  // --- NUEVAS FUNCIONES DE VERIFICACIÓN DE ROL ---
   private getRole(): string | null {
     return localStorage.getItem('user_role');
   }
@@ -89,4 +85,12 @@ export class AuthService {
   isEmpleado(): boolean { return this.getRole() === 'empleado'; }
   isCocinero(): boolean { return this.getRole() === 'cocinero'; }
   isCliente(): boolean { return this.getRole() === 'cliente'; }
+
+  hasRole(allowedRoles: Array<string>): boolean {
+    const userRole = this.getRole();
+    if (userRole) {
+      return allowedRoles.includes(userRole);
+    }
+    return false;
+  }
 }

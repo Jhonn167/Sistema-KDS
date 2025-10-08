@@ -1,0 +1,29 @@
+<div class="list-container">
+  <div class="header">
+    <h1>Gestión de Usuarios</h1>
+  </div>
+  <div class="table-wrapper">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Teléfono</th>
+          <th>Rol</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.nombre }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.telefono || 'N/A' }}</td>
+          <td>
+            <select [value]="user.rol" (change)="onRoleChange(user, $event)">
+              <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

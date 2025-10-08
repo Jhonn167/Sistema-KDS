@@ -1,0 +1,189 @@
+/* src/app/pages/admin/product-list/product-list.component.css */
+
+/* Estilo base para el componente, similar al del formulario */
+:host {
+  display: block;
+  padding: 40px;
+  background-color: #f4f7f6;
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+/* Estilos de los botones, consistentes en toda la app */
+.btn {
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center; /* Centra el texto dentro del botón */
+  gap: 8px;
+  border: 1px solid transparent; /* Borde base para todos */
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+.plus-icon {
+  font-size: 1.5em;
+  line-height: 0.5;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+  border-color: #6c757d;
+  padding: 8px 16px;
+}
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  color: #212529;
+  border-color: #ffc107;
+}
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* Mensajes de "cargando" o "no hay productos" */
+.info-message {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+/* Estilos de la tabla */
+.table-wrapper {
+  overflow-x: auto; /* Permite scroll horizontal en pantallas pequeñas */
+}
+
+.products-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.products-table th, .products-table td {
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle; /* Alinea verticalmente el contenido de las celdas */
+}
+
+.products-table thead th {
+  background-color: #f8f9fa;
+  color: #333;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.products-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* --- CAMBIOS PARA ALINEACIÓN DE BOTONES --- */
+.actions-cell {
+  display: flex;
+  gap: 10px; /* Espacio entre los botones */
+  align-items: center;
+}
+
+.actions-cell .btn {
+  min-width: 110px; /* <--- ESTA ES LA REGLA MÁGICA */
+  flex-shrink: 0; /* Evita que los botones se encojan */
+}
+/* --- FIN DE CAMBIOS --- */
+
+
+.description-cell {
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stock-badge {
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 0.9em;
+  font-weight: bold;
+  color: white;
+  background-color: #28a745;
+}
+.stock-badge.low-stock {
+  background-color: #ffc107;
+  color: #333;
+}
+.stock-badge.no-stock {
+  background-color: #dc3545;
+}
+
+tr.suspended {
+  opacity: 0.6;
+  background-color: #f8f9fa;
+}
+tr.suspended:hover {
+  opacity: 1;
+}
+.status-badge {
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 0.9em;
+  font-weight: bold;
+  color: white;
+}
+.status-badge.active {
+  background-color: #28a745;
+}
+
+/* Estilo que faltaba para la etiqueta "Suspendido" */
+.status-badge:not(.active) {
+    background-color: #6c757d;
+}
+

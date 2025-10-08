@@ -27,6 +27,7 @@ import { ForgotPasswordComponent } from './pages/public/forgot-password/forgot-p
 import { ResetPasswordComponent } from './pages/public/reset-password/reset-password';
 import { PaymentConfirmationsComponent } from './pages/admin/payment-confirmations/payment-confirmations';
 import { UploadReceiptComponent } from './pages/public/upload-receipt/upload-receipt';
+import { UserManagementComponent } from './pages/admin/user-management/user-management';
 
 export const routes: Routes = [
   // Redirección principal al menú
@@ -62,7 +63,7 @@ export const routes: Routes = [
       { path: 'products/edit/:id', component: ProductFormComponent },
       { path: 'modifiers', component: ModifierListComponent },
       { path: 'reports', component: ReportsComponent },
-
+      { path: 'users', component: UserManagementComponent },
       { path: 'confirmations', component: PaymentConfirmationsComponent, canActivate: [AdminGuard], data: { roles: ['admin', 'empleado'] } },
       { path: '', redirectTo: 'products', pathMatch: 'full' }
     ]

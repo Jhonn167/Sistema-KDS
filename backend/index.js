@@ -55,6 +55,7 @@ const reportRoutes = require('./routes/reports');
 const uploadRoutes = require('./routes/upload');
 const pedidoRoutes = require('./routes/pedidos')(io, () => onlineUsers);
 const paymentRoutes = require('./routes/payments')(io);
+const userRoutes = require('./routes/users');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
@@ -63,6 +64,7 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/pedidos', pedidoRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/users', userRoutes);
 
 server.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);

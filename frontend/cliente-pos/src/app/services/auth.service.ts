@@ -1,5 +1,4 @@
-// src/app/services/auth.service.ts - VERSIÓN FINAL Y COMPLETA
-
+// src/app/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -10,9 +9,7 @@ import { jwtDecode } from 'jwt-decode';
 import { NotificationService } from './notification';
 import { environment } from '../../environments/environments';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/api/auth`;
 
@@ -36,10 +33,14 @@ export class AuthService {
     }
   }
 
-  logout() {
+
+  logout(sessionExpired = false): void {
     this.disconnectSocket();
-    localStorage.clear(); // Limpia todo el storage
+    localStorage.clear();
     this.router.navigate(['/login']);
+    if (sessionExpired) {
+      this.notificationService.add('Tu sesión ha caducado. Por favor, inicia sesión de nuevo.', 'error');
+    }
   }
   // --- MÉTODOS DE WEBSOCKETS ---
   connectSocket(): void {
@@ -73,27 +74,19 @@ export class AuthService {
   register(userData: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/register`, userData);
   }
-
-
+  // --- MÉTODOS DE UTILIDAD ---
   
-  // --- MÉTODOS AUXILIARES ---
-  getToken(): string | null {
-    return localStorage.getItem('token');
+  getToken(): string | null { return localStorage.getItem('token'); }
+  getUserId(): string | null { return localStorage.getItem('user_id'); }
+  isLoggedIn(): boolean { return !!this.getToken(); }
+
+  // --- NUEVAS FUNCIONES DE VERIFICACIÓN DE ROL ---
+  private getRole(): string | null {
+    return localStorage.getItem('user_role');
   }
 
-  getUserId(): string | null {
-    return localStorage.getItem('user_id');
-  }
-
-  isLoggedIn(): boolean {
-    return !!this.getToken();
-  }
-
-  isAdmin(): boolean {
-    return localStorage.getItem('user_role') === 'admin';
-  }
-  hasRole(allowedRoles: string[]): boolean {
-    const userRole = localStorage.getItem('user_role');
-    return userRole ? allowedRoles.includes(userRole) : false;
-  }
+  isAdmin(): boolean { return this.getRole() === 'admin'; }
+  isEmpleado(): boolean { return this.getRole() === 'empleado'; }
+  isCocinero(): boolean { return this.getRole() === 'cocinero'; }
+  isCliente(): boolean { return this.getRole() === 'cliente'; }
 }

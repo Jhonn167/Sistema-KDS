@@ -1,5 +1,4 @@
 // src/app/pages/login/login.component.ts
-
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -38,7 +37,6 @@ export class LoginComponent {
       next: (response) => {
         this.isLoading = false;
         if (response && response.token) {
-          // --- LÓGICA DE REDIRECCIÓN MEJORADA ---
           switch (response.rol) {
             case 'admin':
             case 'empleado':

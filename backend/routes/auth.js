@@ -81,7 +81,7 @@ router.post('/forgot-password', async (req, res) => {
         await pool.query('UPDATE usuarios SET reset_token = $1, reset_token_expires = $2 WHERE id = $3', [resetToken, tokenExpires, user.id]);
 
         // --- CAMBIO CLAVE: Hacemos la URL de reseteo dinámica ---
-        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
+        const frontendUrl = process.env.FRONTEND_URL || 'https://sistema-kds.vercel.app/';
         const resetUrl = `${frontendUrl}/restablecer-contrasena/${resetToken}`;
 
         const msg = {
@@ -98,7 +98,7 @@ router.post('/forgot-password', async (req, res) => {
     }
 });
 
-// --- RUTA: "RESTABLECER CONTRASEÑA" (LÓGICA CORREGIDA) ---
+// --- RUTA: "RESTABLECER CONTRASEÑA" (LÓGICA CORREGIDA) ----
 router.post('/reset-password/:token', async (req, res) => {
     try {
         const { token } = req.params;

@@ -92,4 +92,8 @@ export class AuthService {
   isAdmin(): boolean {
     return localStorage.getItem('user_role') === 'admin';
   }
+  hasRole(allowedRoles: string[]): boolean {
+    const userRole = localStorage.getItem('user_role');
+    return userRole ? allowedRoles.includes(userRole) : false;
+  }
 }

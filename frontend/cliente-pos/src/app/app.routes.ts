@@ -50,12 +50,12 @@ export const routes: Routes = [
   { path: 'subir-comprobante/:orderId', component: UploadReceiptComponent, canActivate: [authGuard] },
   
   // --- RUTAS DE ADMIN (Requieren Rol de Admin) ---
-  { path: 'pos', component: PosComponent, canActivate: [AdminGuard] },
-  { path: 'kds', component: KdsComponent, canActivate: [AdminGuard] },
-  { path: 'imprimir-ticket', component: ReceiptTicketComponent, canActivate: [AdminGuard] },
+  { path: 'pos', component: PosComponent, canActivate: [AdminGuard], data: { roles: ['admin', 'empleado'] } },
+  { path: 'kds', component: KdsComponent, canActivate: [AdminGuard], data: { roles: ['admin', 'cocinero'] } },
+  { path: 'imprimir-ticket', component: ReceiptTicketComponent, canActivate: [AdminGuard], data: { roles: ['admin', 'empleado'] } },
   {
     path: 'admin',
-    canActivate: [AdminGuard],
+    canActivate: [AdminGuard], data: { roles: ['admin'] },
     children: [
       { path: 'products', component: ProductListComponent },
       { path: 'products/new', component: ProductFormComponent },

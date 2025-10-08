@@ -67,7 +67,7 @@ module.exports = function (io, getOnlineUsers) {
 
   // --- RUTA KDS (CON NOMBRE DE CLIENTE) ---
   router.get('/cocina', checkAuth, async (req, res) => {
-    if (req.userData.rol !== 'admin') { return res.status(403).json({ message: 'Acceso denegado.' }); }
+    if (req.userData.rol !== 'admin' && req.userData.rol !== 'cocinero') { return res.status(403).json({ message: 'Acceso denegado.' }); }
     try {
       const query = `
         SELECT 
@@ -93,7 +93,7 @@ module.exports = function (io, getOnlineUsers) {
 
   // --- RUTA NUEVA: OBTENER PEDIDOS PENDIENTES DE CONFIRMACIÓN ---
   router.get('/pending-confirmation', checkAuth, async (req, res) => {
-    if (req.userData.rol !== 'admin') {
+    if (req.userData.rol !== 'admin' && req.userData.rol !== 'empleado') {
       return res.status(403).json({ message: 'Acceso denegado.' });
     }
     try {

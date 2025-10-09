@@ -11,11 +11,12 @@ import { switchMap } from 'rxjs/operators';
 import { StripeService } from 'ngx-stripe';
 import { environment } from '../../../../environments/environments';
 import { FormsModule } from '@angular/forms';
+import { OrderTypeModalComponent } from '../../../components/order-type-modal/order-type-modal';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, OrderTypeModalComponent],
   templateUrl: './cart.html',
   styleUrls: ['./cart.css']
 })
@@ -23,14 +24,14 @@ export class CartComponent implements OnInit {
   orderItems$: Observable<CartItem[]>;
   orderTotal$: Observable<number>;
   
-  orderType: 'inmediato' | 'futuro' = 'inmediato';
+  orderType: 'inmediato' | 'futuro' | null = null; // Inicia nulo para mostrar el modal
   pickupDate: string = '';
   minPickupDate: string = '';
-  isProcessingPayment = false;
-  
-  // Propiedad auxiliar para restaurar la fecha si la selección es inválida
   private pickupDateAux: string = '';
-
+  isProcessingPayment = false;
+  contactPhone: string = '';
+  maxQuantity = 50;
+  
   constructor(
     public orderService: OrderService,
     private authService: AuthService,
@@ -42,39 +43,112 @@ export class CartComponent implements OnInit {
     this.orderTotal$ = this.orderService.orderTotal$;
   }
 
-  ngOnInit(): void {
-    this.setMinPickupDate();
+  ngOnInit(): void {}
+
+  onOrderTypeSelected(type: 'inmediato' | 'futuro'): void {
+    this.orderType = type;
+    if (type === 'inmediato') {
+      this.setPickupTimeForToday();
+    } else {
+      this.setPickupDateForFuture();
+    }
   }
 
-  private setMinPickupDate(): void {
+  private setPickupTimeForToday(): void {
     const now = new Date();
-    now.setMinutes(now.getMinutes() + 30); // Margen de 30 minutos
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const day = now.getDate().toString().padStart(2, '0');
+    now.setMinutes(now.getMinutes() + 30); // 30 min de antelación
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
-    const localDateTimeString = `${year}-${month}-${day}T${hours}:${minutes}`;
+    this.minPickupDate = `${hours}:${minutes}`;
+    this.pickupDate = this.minPickupDate;
+    this.pickupDateAux = this.minPickupDate;
+  }
 
-    this.minPickupDate = localDateTimeString;
-    this.pickupDate = localDateTimeString;
-    this.pickupDateAux = localDateTimeString; // Inicializamos la fecha auxiliar
+  private setPickupDateForFuture(): void {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const year = tomorrow.getFullYear();
+    const month = (tomorrow.getMonth() + 1).toString().padStart(2, '0');
+    const day = tomorrow.getDate().toString().padStart(2, '0');
+    this.minPickupDate = `${year}-${month}-${day}T09:00`; 
+    this.pickupDate = `${year}-${month}-${day}T12:00`;
+    this.pickupDateAux = this.pickupDate;
   }
   
-  // --- FUNCIÓN DE VALIDACIÓN RESTAURADA ---
   validatePickupTime(): void {
     if (this.pickupDate && this.minPickupDate && this.pickupDate < this.minPickupDate) {
-      alert('La hora de recogida no puede ser en el pasado. Hemos ajustado la hora a la más cercana disponible.');
-      // Restablece la hora a la última válida conocida
+      alert('La hora de recogida no puede ser en el pasado. Se ha ajustado la hora a la más cercana disponible.');
       this.pickupDate = this.pickupDateAux;
     } else {
-      // Si la hora es válida, la guardamos como la última correcta
       this.pickupDateAux = this.pickupDate;
     }
   }
 
-  // Las funciones de pago se mantienen igual
-  confirmOrder(): void { /* ... tu lógica de pago en efectivo ... */ }
-  proceedToCheckout(): void { /* ... tu lógica de pago con tarjeta ... */ }
-  startTransferPayment(): void { /* ... tu lógica de pago por transferencia ... */ }
+  private processOrder(isCardPayment: boolean, isTransfer: boolean = false): void {
+    if (!this.authService.isLoggedIn()) { alert('Por favor, inicia sesión para continuar.'); this.router.navigate(['/login']); return; }
+    if (this.isProcessingPayment) return;
+
+    if (this.orderType === 'futuro' && !this.contactPhone) {
+      alert('Por favor, ingresa un número de teléfono de contacto para programar tu pedido.');
+      return;
+    }
+    
+    this.isProcessingPayment = true;
+    const items = this.orderService.getCurrentOrderItems();
+    
+    let estatus: string | undefined;
+    if (isCardPayment) {
+      estatus = 'Esperando Pago';
+    } else if (isTransfer) {
+      estatus = 'Esperando Comprobante';
+    }
+
+    const orderData = {
+      items,
+      tipo_pedido: this.orderType,
+      fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : (this.orderType === 'inmediato' ? new Date().toISOString().split('T')[0] + 'T' + this.pickupDate : null),
+      estatus: estatus,
+      telefono_contacto: this.contactPhone || undefined
+    };
+
+    if (isCardPayment) {
+      this.orderService.checkout(orderData).subscribe({
+        next: (orderResponse) => {
+          this.http.post<{ id: string }>(`${environment.apiUrl}/api/payments/create-checkout-session`, { items, orderId: orderResponse.pedidoId })
+            .pipe(switchMap(session => this.stripeService.redirectToCheckout({ sessionId: session.id })))
+            .subscribe(result => {
+              if (result.error) {
+                alert(result.error.message);
+                this.isProcessingPayment = false;
+              }
+            });
+        },
+        error: (err) => {
+          alert('Error al crear el pedido: ' + (err.error?.message || 'Error desconocido'));
+          this.isProcessingPayment = false;
+        }
+      });
+    } else {
+      this.orderService.checkout(orderData).subscribe({
+        next: (response) => {
+          if (isTransfer) {
+            this.orderService.clearOrder();
+            this.router.navigate(['/subir-comprobante', response.pedidoId]);
+          } else {
+            alert('¡Pedido enviado a la cocina! Pagarás en efectivo al recoger.');
+            this.orderService.clearOrder();
+            this.router.navigate(['/mis-pedidos']);
+          }
+        },
+        error: (err) => {
+          alert('Error al enviar el pedido: ' + (err.error?.message || 'Error desconocido'));
+          this.isProcessingPayment = false;
+        }
+      });
+    }
+  }
+
+  confirmOrder(): void { this.processOrder(false, false); }
+  proceedToCheckout(): void { this.processOrder(true, false); }
+  startTransferPayment(): void { this.processOrder(false, true); }
 }

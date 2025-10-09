@@ -19,15 +19,13 @@ export class MenuComponent implements OnInit {
   products: any[] = [];
   isLoading = true;
   cartItemCount$: Observable<number>;
-
-  // Nuevas propiedades para manejar el modal
   isModalOpen = false;
   selectedProduct: any | null = null;
 
   constructor(
     private productService: ProductService,
-    private notificationService: NotificationService,
-    public orderService: OrderService
+    public orderService: OrderService,
+    private notificationService: NotificationService // 2. Inyéctalo
   ) {
     this.cartItemCount$ = this.orderService.totalItemCount$;
   }
@@ -45,37 +43,33 @@ export class MenuComponent implements OnInit {
     });
   }
 
-  // Nueva función para manejar el clic en "Añadir"
   handleAddItem(product: any): void {
-    // Primero, obtenemos la versión completa del producto con sus modificadores
-    this.productService.getProductById(product.id_producto).subscribe(fullProduct => {
-      // Si el producto tiene modificadores, abrimos el modal
+    this.productService.getProductById(product.id_producto.toString()).subscribe(fullProduct => {
       if (fullProduct.modificadores && fullProduct.modificadores.length > 0) {
         this.selectedProduct = fullProduct;
         this.isModalOpen = true;
       } else {
-        // Si no tiene, lo añadimos directamente al carrito como antes
         const configuredProduct = {
             ...fullProduct,
             finalPrice: fullProduct.precio,
             selectedOptions: []
         };
         this.orderService.addItem(configuredProduct);
-        this.notificationService.add('${configuredProduct.nombre} añadido al carrito', 'success');
+        // Muestra la notificación para productos simples
+        this.notificationService.add(`${configuredProduct.nombre} fue añadido al carrito`, 'success');
       }
     });
   }
 
-  // Función para cerrar el modal
   closeModal(): void {
     this.isModalOpen = false;
     this.selectedProduct = null;
   }
 
-  // Función que se ejecuta cuando el modal confirma la selección
   onConfirmProduct(configuredProduct: any): void {
     this.orderService.addItem(configuredProduct);
     this.closeModal();
-    this.notificationService.add('${configuredProduct.nombre} añadido al carrito', 'success');
+    // 3. Muestra la notificación para productos con modificadores
+    this.notificationService.add(`${configuredProduct.nombre} fue añadido al carrito`, 'success');
   }
 }

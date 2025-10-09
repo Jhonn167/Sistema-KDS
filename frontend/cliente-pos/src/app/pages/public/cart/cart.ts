@@ -1,4 +1,5 @@
 // src/app/pages/public/cart/cart.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -23,7 +24,7 @@ export class CartComponent implements OnInit {
   orderItems$: Observable<CartItem[]>;
   orderTotal$: Observable<number>;
   
-  orderType: 'inmediato' | 'futuro' | null = null;
+  orderType: 'inmediato' | 'futuro' | null = null; // Inicia como nulo para mostrar el modal
   pickupDate: string = '';
   minPickupDate: string = '';
   isProcessingPayment = false;
@@ -43,6 +44,7 @@ export class CartComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  // Se ejecuta cuando el modal emite una opción
   onOrderTypeSelected(type: 'inmediato' | 'futuro'): void {
     this.orderType = type;
     if (type === 'inmediato') {
@@ -52,19 +54,20 @@ export class CartComponent implements OnInit {
     }
   }
 
+  // Lógica para bloquear el calendario solo para el día de hoy
   private setPickupDateForToday(): void {
     const now = new Date();
     this.minPickupDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
     this.pickupDate = this.minPickupDate;
   }
 
+  // Lógica para el calendario de pedidos futuros
   private setPickupDateForFuture(): void {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     this.minPickupDate = `${tomorrow.getFullYear()}-${(tomorrow.getMonth() + 1).toString().padStart(2, '0')}-${tomorrow.getDate().toString().padStart(2, '0')}`;
     this.pickupDate = this.minPickupDate;
   }
-
   // ... (tus funciones de pago: confirmOrder, proceedToCheckout, startTransferPayment)
 
 

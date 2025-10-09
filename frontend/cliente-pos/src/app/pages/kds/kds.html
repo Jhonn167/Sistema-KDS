@@ -14,13 +14,15 @@
           <span class="pedido-status">{{ pedido.estatus }}</span>
         </div>
         <div class="time-info">
-          <div *ngIf="pedido.estatus === 'Programado' && pedido.hora_recogida" class="pickup-time">
-            <span>Para las</span>
-            <strong>{{ pedido.hora_recogida | date:'shortTime' }}</strong>
-          </div>
-          <div *ngIf="pedido.estatus !== 'Programado'" class="time-elapsed">
-            <span>Hace</span>
-            <strong>{{ pedido.tiempo_transcurrido }}</strong>
+      <!-- Muestra fecha y hora para pedidos programados -->
+      <div *ngIf="pedido.estatus === 'Programado' && pedido.hora_recogida" class="pickup-time">
+        <span>Para el</span>
+        <strong>{{ pedido.hora_recogida | date:'short' }}</strong>
+      </div>
+      <!-- Muestra tiempo transcurrido para los demás -->
+      <div *ngIf="pedido.estatus !== 'Programado'" class="time-elapsed">
+        <span>Hace</span>
+        <strong>{{ pedido.tiempo_transcurrido }}</strong>
           </div>
         </div>
       </div>

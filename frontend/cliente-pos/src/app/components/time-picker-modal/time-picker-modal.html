@@ -1,0 +1,11 @@
+<div class="modal-overlay" (click)="close.emit()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>Selecciona una hora de recogida</h2>
+    <div class="time-slots">
+      <button *ngFor="let time of availableTimes" (click)="timeSelected.emit(time)">
+        {{ time }}
+      </button>
+    </div>
+    <button class="close-btn-footer" (click)="close.emit()">Cancelar</button>
+  </div>
+</div>

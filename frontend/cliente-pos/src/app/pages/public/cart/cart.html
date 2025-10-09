@@ -1,10 +1,8 @@
-<!-- Muestra el modal si el tipo de orden no ha sido seleccionado Y el carrito no está vacío -->
 <app-order-type-modal 
   *ngIf="!orderType && (orderItems$ | async)?.length" 
   (typeSelected)="onOrderTypeSelected($event)">
 </app-order-type-modal>
 
-<!-- Muestra el contenido del carrito solo DESPUÉS de seleccionar el tipo -->
 <div class="cart-container" *ngIf="orderType">
   <div class="cart-header">
     <h1>{{ orderType === 'inmediato' ? 'Tu Pedido de Hoy' : 'Tu Pedido Programado' }}</h1>
@@ -61,7 +59,6 @@
   </div>
 </div>
 
-<!-- Muestra el mensaje de carrito vacío si no hay items, sin importar si se seleccionó tipo o no -->
 <div *ngIf="!(orderItems$ | async)?.length" class="empty-cart-message">
   <p>Tu carrito está vacío.</p>
   <a routerLink="/menu" class="btn-primary">Ver el Menú</a>

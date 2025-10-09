@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('../db');
 const checkAuth = require('../middleware/check-auth');
+const checkrole = require('../middleware/check-role');
 
 module.exports = function (io, getOnlineUsers) {
   const router = express.Router();
@@ -133,8 +134,7 @@ module.exports = function (io, getOnlineUsers) {
   });
 
   // --- ACTUALIZAR ESTATUS Y NOTIFICAR ---
-  router.put('/cocina/:id', checkAuth, async (req, res) => {
-    if (req.userData.rol !== 'admin') { return res.status(403).json({ message: 'Acceso denegado.' }); }
+ router.put('/cocina/:id', checkRole(['admin', 'cocinero']), async (req, res) => {
     try {
       const { id } = req.params;
       const { estatus } = req.body;

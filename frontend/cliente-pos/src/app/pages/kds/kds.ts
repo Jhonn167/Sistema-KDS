@@ -1,11 +1,11 @@
 // src/app/pages/kds/kds.component.ts
 
+// src/app/pages/kds/kds.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environments';
+import { OrderService } from '../../services/order';
 import { Socket } from 'ngx-socket-io';
-import { Subscription, interval } from 'rxjs'; // 1. Importa 'interval'
+import { Subscription, interval } from 'rxjs';
 
 @Component({
   selector: 'app-kds',
@@ -18,10 +18,9 @@ export class KdsComponent implements OnInit, OnDestroy {
   pedidos: any[] = [];
   isLoading = true;
   private orderUpdatesSub: Subscription | undefined;
-  private timerSub: Subscription | undefined; // Para el temporizador
-  private apiUrl = `${environment.apiUrl}/api/pedidos`;
+  private timerSub: Subscription | undefined;
 
-  constructor(private http: HttpClient, private socket: Socket) {}
+  constructor(private orderService: OrderService, private socket: Socket) {}
 
   ngOnInit(): void {
     this.cargarPedidos();
@@ -39,34 +38,30 @@ export class KdsComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    this.orderUpdatesSub?.unsubscribe();
-    this.timerSub?.unsubscribe(); // 3. Limpiamos el temporizador
-  }
+  ngOnDestroy(): void { /* ... */ }
 
   cargarPedidos(): void {
     this.isLoading = true;
-    this.http.get<any[]>(`${this.apiUrl}/cocina`).subscribe(data => {
+    this.orderService.getKitchenOrders().subscribe(data => {
       this.pedidos = data;
-      this.updateTimestamps(); // Calculamos los tiempos al cargar
+      this.updateTimestamps();
       this.isLoading = false;
     });
   }
 
-  // 4. Nueva función para calcular el tiempo transcurrido
   private updateTimestamps(): void {
     const now = Date.now();
     this.pedidos.forEach(pedido => {
-      const orderTime = new Date(pedido.fecha).getTime();
-      const minutesAgo = Math.round((now - orderTime) / 60000);
-      pedido.tiempo_transcurrido = `${minutesAgo} min`;
+      // Solo calculamos el tiempo transcurrido para pedidos que no son programados
+      if (pedido.estatus !== 'Programado') {
+        const orderTime = new Date(pedido.fecha).getTime();
+        const minutesAgo = Math.round((now - orderTime) / 60000);
+        pedido.tiempo_transcurrido = `${minutesAgo} min`;
+      }
     });
   }
 
   actualizarEstatus(id: number, nuevoEstatus: string): void {
-    this.http.put(`${this.apiUrl}/cocina/${id}`, { estatus: nuevoEstatus }).subscribe({
-        next: () => this.cargarPedidos(),
-        error: (err) => console.error("Error al actualizar estatus:", err)
-    });
+    this.orderService.updateOrderStatus(id, nuevoEstatus).subscribe();
   }
 }

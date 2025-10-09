@@ -1,4 +1,5 @@
-// src/app/pages/public/cart/cart.component.ts
+// Ruta: src/app/pages/public/cart/cart.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -67,7 +68,6 @@ export class CartComponent implements OnInit {
     const year = tomorrow.getFullYear();
     const month = (tomorrow.getMonth() + 1).toString().padStart(2, '0');
     const day = tomorrow.getDate().toString().padStart(2, '0');
-    // Hora mínima por defecto para pedidos futuros (ej. 09:00 AM)
     this.minPickupDate = `${year}-${month}-${day}T09:00`; 
     this.pickupDate = `${year}-${month}-${day}T12:00`;
   }
@@ -75,12 +75,10 @@ export class CartComponent implements OnInit {
   private processOrder(isCardPayment: boolean, isTransfer: boolean = false): void {
     if (!this.authService.isLoggedIn()) { alert('Por favor, inicia sesión para continuar.'); this.router.navigate(['/login']); return; }
     if (this.isProcessingPayment) return;
-
     if (this.orderType === 'futuro' && !this.contactPhone) {
       alert('Por favor, ingresa un número de teléfono de contacto para programar tu pedido.');
       return;
     }
-    
     this.isProcessingPayment = true;
     const items = this.orderService.getCurrentOrderItems();
     
@@ -94,8 +92,8 @@ export class CartComponent implements OnInit {
     const orderData = {
       items,
       tipo_pedido: this.orderType,
-      // Usamos el nombre de columna correcto que espera el backend
-      fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : (this.orderType === 'inmediato' ? new Date().toISOString().split('T')[0] + 'T' + this.pickupDate : null),
+      fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null,
+      hora_recogida: this.orderType === 'inmediato' ? this.pickupDate : null,
       estatus: estatus,
       telefono_contacto: this.contactPhone || undefined
     };
@@ -117,7 +115,7 @@ export class CartComponent implements OnInit {
           this.isProcessingPayment = false;
         }
       });
-    } else { // Efectivo o Transferencia
+    } else {
       this.orderService.checkout(orderData).subscribe({
         next: (response) => {
           if (isTransfer) {

@@ -24,7 +24,7 @@ export class CartComponent implements OnInit {
   orderItems$: Observable<CartItem[]>;
   orderTotal$: Observable<number>;
   
-  orderType: 'inmediato' | 'futuro' | null = null; // Inicia como nulo para mostrar el modal
+  orderType: 'inmediato' | 'futuro' | null = null;
   pickupDate: string = '';
   minPickupDate: string = '';
   isProcessingPayment = false;
@@ -42,94 +42,114 @@ export class CartComponent implements OnInit {
     this.orderTotal$ = this.orderService.orderTotal$;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // La lógica para establecer la fecha se mueve a onOrderTypeSelected
+  }
 
-  // Se ejecuta cuando el modal emite una opción
   onOrderTypeSelected(type: 'inmediato' | 'futuro'): void {
     this.orderType = type;
     if (type === 'inmediato') {
-      this.setPickupDateForToday();
+      this.setPickupTimeForToday();
     } else {
       this.setPickupDateForFuture();
     }
   }
 
-  // Lógica para bloquear el calendario solo para el día de hoy
-  private setPickupDateForToday(): void {
+  private setPickupTimeForToday(): void {
     const now = new Date();
-    this.minPickupDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+    now.setMinutes(now.getMinutes() + 30); // 30 min de antelación
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    this.minPickupDate = `${hours}:${minutes}`;
     this.pickupDate = this.minPickupDate;
   }
 
-  // Lógica para el calendario de pedidos futuros
   private setPickupDateForFuture(): void {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    this.minPickupDate = `${tomorrow.getFullYear()}-${(tomorrow.getMonth() + 1).toString().padStart(2, '0')}-${tomorrow.getDate().toString().padStart(2, '0')}`;
-    this.pickupDate = this.minPickupDate;
+    const year = tomorrow.getFullYear();
+    const month = (tomorrow.getMonth() + 1).toString().padStart(2, '0');
+    const day = tomorrow.getDate().toString().padStart(2, '0');
+    // Hora por defecto para pedidos futuros (ej. 12:00 PM)
+    this.minPickupDate = `${year}-${month}-${day}T09:00`; 
+    this.pickupDate = `${year}-${month}-${day}T12:00`;
   }
-  // ... (tus funciones de pago: confirmOrder, proceedToCheckout, startTransferPayment)
-
-
-
-  confirmOrder(): void {
-    if (!this.authService.isLoggedIn()) { alert('Por favor, inicia sesión para confirmar tu pedido.'); this.router.navigate(['/login']); return; }
-    if (this.isProcessingPayment) return;
-    this.isProcessingPayment = true;
-    const orderData = { tipo_pedido: this.orderType, fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null };
-    this.orderService.checkout(orderData).subscribe({
-      next: () => {
-        alert('¡Pedido enviado a la cocina! Pagarás en efectivo al recoger.');
-        this.orderService.clearOrder();
-        this.router.navigate(['/mis-pedidos']);
-      },
-      error: (err) => {
-        alert('Error al enviar el pedido: ' + (err.error.message || 'Error desconocido'));
-        this.isProcessingPayment = false;
-      }
-    });
-  }
-
-  proceedToCheckout(): void {
-    if (!this.authService.isLoggedIn()) { alert('Por favor, inicia sesión para pagar.'); this.router.navigate(['/login']); return; }
-    if (this.isProcessingPayment) return;
-    this.isProcessingPayment = true;
-    const items = this.orderService.getCurrentOrderItems();
-    const orderData = { tipo_pedido: this.orderType, fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null, estatus: 'Esperando Pago' };
-    this.orderService.checkout(orderData).subscribe({
-      next: (orderResponse) => {
-        const orderId = orderResponse.pedidoId;
-        this.http.post<{ id: string }>(`${environment.apiUrl}/api/payments/create-checkout-session`, { items, orderId })
-          .pipe(switchMap(session => this.stripeService.redirectToCheckout({ sessionId: session.id })))
-          .subscribe(result => {
-            if (result.error) {
-              alert(result.error.message);
-              this.isProcessingPayment = false;
-            }
-          });
-      },
-      error: (err) => {
-        alert('Error al crear el pedido inicial: ' + (err.error.message || 'Error desconocido'));
-        this.isProcessingPayment = false;
-      }
-    });
-  }
-
-  startTransferPayment(): void {
+  
+  private processOrder(isCardPayment: boolean, isTransfer: boolean = false): void {
     if (!this.authService.isLoggedIn()) { alert('Por favor, inicia sesión para continuar.'); this.router.navigate(['/login']); return; }
     if (this.isProcessingPayment) return;
+
+    if (this.orderType === 'futuro' && !this.contactPhone) {
+      alert('Por favor, ingresa un número de teléfono de contacto para programar tu pedido.');
+      return;
+    }
+    
     this.isProcessingPayment = true;
-    const orderData = { tipo_pedido: this.orderType, fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null, estatus: 'Esperando Comprobante' };
-    this.orderService.checkout(orderData).subscribe({
-      next: (response) => {
-        const newOrderId = response.pedidoId;
-        this.orderService.clearOrder();
-        this.router.navigate(['/subir-comprobante', newOrderId]);
-      },
-      error: (err) => {
-        alert('Error al iniciar el pedido por transferencia.');
-        this.isProcessingPayment = false;
-      }
-    });
+    const items = this.orderService.getCurrentOrderItems();
+    
+    let estatus: string | undefined;
+    if (isCardPayment) {
+      estatus = 'Esperando Pago';
+    } else if (isTransfer) {
+      estatus = 'Esperando Comprobante';
+    } else {
+      estatus = undefined; // Para pago en efectivo, el backend lo pondrá como 'Pendiente'
+    }
+
+    const orderData = {
+      items,
+      tipo_pedido: this.orderType,
+      fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null,
+      hora_recogida: this.orderType === 'inmediato' ? this.pickupDate : null,
+      estatus: estatus,
+      telefono_contacto: this.contactPhone || undefined
+    };
+    
+    if (isCardPayment) {
+      this.orderService.checkout(orderData).subscribe({
+        next: (orderResponse) => {
+          this.http.post<{ id: string }>(`${environment.apiUrl}/api/payments/create-checkout-session`, { items, orderId: orderResponse.pedidoId })
+            .pipe(switchMap(session => this.stripeService.redirectToCheckout({ sessionId: session.id })))
+            .subscribe(result => {
+              if (result.error) {
+                alert(result.error.message);
+                this.isProcessingPayment = false;
+              }
+            });
+        },
+        error: (err) => {
+          alert('Error al crear el pedido: ' + (err.error?.message || 'Error desconocido'));
+          this.isProcessingPayment = false;
+        }
+      });
+    } else if (isTransfer) {
+        this.orderService.checkout(orderData).subscribe({
+            next: (response) => {
+                const newOrderId = response.pedidoId;
+                this.orderService.clearOrder();
+                this.router.navigate(['/subir-comprobante', newOrderId]);
+            },
+            error: (err) => {
+                alert('Error al iniciar el pedido por transferencia: ' + (err.error?.message || 'Error desconocido'));
+                this.isProcessingPayment = false;
+            }
+        });
+    } else { // Pago en Efectivo
+      this.orderService.checkout(orderData).subscribe({
+        next: () => {
+          alert('¡Pedido enviado a la cocina! Pagarás en efectivo al recoger.');
+          this.orderService.clearOrder();
+          this.router.navigate(['/mis-pedidos']);
+        },
+        error: (err) => {
+          alert('Error al enviar el pedido: ' + (err.error?.message || 'Error desconocido'));
+          this.isProcessingPayment = false;
+        }
+      });
+    }
   }
+
+  confirmOrder(): void { this.processOrder(false, false); }
+  proceedToCheckout(): void { this.processOrder(true, false); }
+  startTransferPayment(): void { this.processOrder(false, true); }
 }

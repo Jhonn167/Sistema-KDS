@@ -1,5 +1,4 @@
 // src/app/services/notification.service.ts
-
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
@@ -18,10 +17,14 @@ export class NotificationService {
   private notificationId = 0;
 
   add(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
+    // Limpiamos las notificaciones existentes para mostrar solo la última
+    this.notifications.next([]);
+    
     const id = this.notificationId++;
-    const currentNotifications = this.notifications.getValue();
-    this.notifications.next([...currentNotifications, { id, message, type }]);
-    setTimeout(() => this.remove(id), 5000);
+    this.notifications.next([{ id, message, type }]);
+
+    // La notificación desaparece automáticamente después de 3 segundos
+    setTimeout(() => this.remove(id), 3000);
   }
 
   remove(id: number): void {

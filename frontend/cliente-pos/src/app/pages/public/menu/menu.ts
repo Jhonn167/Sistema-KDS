@@ -5,7 +5,8 @@ import { RouterModule } from '@angular/router';
 import { ProductService } from '../../../services/product';
 import { OrderService } from '../../../services/order';
 import { Observable } from 'rxjs';
-import { ModifierModalComponent } from '../../../components/modifier-modal/modifier-modal'; // <-- Importa el modal
+import { ModifierModalComponent } from '../../../components/modifier-modal/modifier-modal';
+import { NotificationService } from '../../../services/notification';
 
 @Component({
   selector: 'app-menu',
@@ -25,6 +26,7 @@ export class MenuComponent implements OnInit {
 
   constructor(
     private productService: ProductService,
+    private notificationService: NotificationService,
     public orderService: OrderService
   ) {
     this.cartItemCount$ = this.orderService.totalItemCount$;
@@ -59,6 +61,7 @@ export class MenuComponent implements OnInit {
             selectedOptions: []
         };
         this.orderService.addItem(configuredProduct);
+        this.notificationService.add('${configuredProduct.nombre} añadido al carrito', 'success');
       }
     });
   }
@@ -73,5 +76,6 @@ export class MenuComponent implements OnInit {
   onConfirmProduct(configuredProduct: any): void {
     this.orderService.addItem(configuredProduct);
     this.closeModal();
+    this.notificationService.add('${configuredProduct.nombre} añadido al carrito', 'success');
   }
 }

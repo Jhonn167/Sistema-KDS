@@ -35,6 +35,9 @@ module.exports = function (io, getOnlineUsers) {
       const shouldUpdateStockNow = (tipo_pedido === 'inmediato' && estatusPedido !== 'Esperando Pago' && estatusPedido !== 'Esperando Comprobante');
 
       for (const item of items) {
+        if (item.cantidad > 50) {
+          return res.status(400).json({ message: `Para pedidos programados, la cantidad máxima por producto es de 50 unidades. El Producto ${item.nombre} excede este límite.` });
+        }
         if (shouldUpdateStockNow) {
           const stockResult = await connection.query('SELECT stock FROM productos WHERE id_producto = $1', [item.producto_id]);
           if (stockResult.rows.length === 0 || stockResult.rows[0].stock < item.cantidad) {

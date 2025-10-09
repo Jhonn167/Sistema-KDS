@@ -1,4 +1,5 @@
 // src/app/pages/public/cart/cart.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -21,6 +22,7 @@ import { FormsModule } from '@angular/forms';
 export class CartComponent implements OnInit {
   orderItems$: Observable<CartItem[]>;
   orderTotal$: Observable<number>;
+  
   orderType: 'inmediato' | 'futuro' = 'inmediato';
   pickupDate: string = '';
   minPickupDate: string = '';
@@ -51,14 +53,15 @@ export class CartComponent implements OnInit {
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
     const localDateTimeString = `${year}-${month}-${day}T${hours}:${minutes}`;
+
     this.minPickupDate = localDateTimeString;
     this.pickupDate = localDateTimeString;
     this.pickupDateAux = localDateTimeString;
   }
-
+  
   validatePickupTime(): void {
     if (this.pickupDate && this.minPickupDate && this.pickupDate < this.minPickupDate) {
-      alert('La hora de recogida no puede ser en el pasado. Se ha ajustado la hora a la más cercana disponible.');
+      alert('La hora de recogida no puede ser en el pasado. Hemos ajustado la hora a la más cercana disponible.');
       this.pickupDate = this.pickupDateAux;
     } else {
       this.pickupDateAux = this.pickupDate;
@@ -71,15 +74,15 @@ export class CartComponent implements OnInit {
     this.isProcessingPayment = true;
     const orderData = { tipo_pedido: this.orderType, fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null };
     this.orderService.checkout(orderData).subscribe({
-        next: () => {
-            alert('¡Pedido enviado a la cocina! Pagarás en efectivo al recoger.');
-            this.orderService.clearOrder();
-            this.router.navigate(['/mis-pedidos']);
-        },
-        error: (err) => {
-            alert('Error al enviar el pedido: ' + err.error.message);
-            this.isProcessingPayment = false;
-        }
+      next: () => {
+        alert('¡Pedido enviado a la cocina! Pagarás en efectivo al recoger.');
+        this.orderService.clearOrder();
+        this.router.navigate(['/mis-pedidos']);
+      },
+      error: (err) => {
+        alert('Error al enviar el pedido: ' + (err.error.message || 'Error desconocido'));
+        this.isProcessingPayment = false;
+      }
     });
   }
 
@@ -102,7 +105,7 @@ export class CartComponent implements OnInit {
           });
       },
       error: (err) => {
-        alert('Error al crear el pedido inicial: ' + err.error.message);
+        alert('Error al crear el pedido inicial: ' + (err.error.message || 'Error desconocido'));
         this.isProcessingPayment = false;
       }
     });

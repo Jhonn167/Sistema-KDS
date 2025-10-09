@@ -1,9 +1,9 @@
 <div class="modal-overlay">
-    <div class="modal-content">
-        <h2>¿Cuándo deseas realizar el pedido?</h2>
-        <div class="options">
-            <button (click)="typeSelected.emit('inmediato')">Para hoy</button>
-            <button (click)="typeSelected.emit('futuro')">Programar pedido</button>
-        </div>
+  <div class="modal-content">
+    <h2>¿Cuándo deseas realizar el pedido?</h2>
+    <div class="options">
+      <button (click)="typeSelected.emit('inmediato')" class="btn-modal">Para Hoy</button>
+      <button (click)="typeSelected.emit('futuro')" class="btn-modal">Programar Pedido</button>
     </div>
+  </div>
 </div>

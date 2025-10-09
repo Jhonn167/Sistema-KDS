@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, output } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -9,5 +9,5 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./order-type-modal.css']
 })
 export class OrderTypeModalComponent {
-@Output() typeSelected = new EventEmitter<'inmediato' | 'futuro'>();
+  @Output() typeSelected = new EventEmitter<'inmediato' | 'futuro'>();
 }

@@ -1,12 +1,21 @@
-<div class="cart-container">
+<!-- Modal de selección de tipo de pedido -->
+<app-order-type-modal 
+  *ngIf="!orderType && (orderItems$ | async)?.length" 
+  (typeSelected)="onOrderTypeSelected($event)">
+</app-order-type-modal>
+
+<!-- Carrito visible solo si ya se seleccionó un tipo de pedido -->
+<div class="cart-container" *ngIf="orderType">
   <div class="cart-header">
-    <h1>Tu Pedido</h1>
+    <h1>{{ orderType === 'inmediato' ? 'Tu Pedido de Hoy' : 'Tu Pedido Programado' }}</h1>
     <a routerLink="/menu" class="continue-shopping-btn">← Seguir Comprando</a>
   </div>
   
   <div *ngIf="(orderItems$ | async)?.length; else emptyCart" class="cart-content">
+    <!-- LISTA DE PRODUCTOS -->
     <div class="cart-items">
       <button class="clear-cart-btn" (click)="orderService.clearOrder()">Vaciar Carrito</button>
+
       <div *ngFor="let item of (orderItems$ | async)" class="cart-item">
         <div class="item-details">
           <h4>{{ item.nombre }}</h4>
@@ -17,57 +26,66 @@
             </li>
           </ul>
         </div>
+
         <div class="item-controls">
           <button (click)="orderService.updateItemQuantity(item.cartItemId, -1)">-</button>
           <span>{{ item.cantidad }}</span>
           <button (click)="orderService.updateItemQuantity(item.cartItemId, 1)" [disabled]="item.cantidad >= item.stock">+</button>
         </div>
+
         <div class="item-subtotal">
           {{ (item.precioFinal * item.cantidad) | currency:'MXN' }}
         </div>
+
         <button class="remove-btn" (click)="orderService.removeItem(item.cartItemId)">&times;</button>
       </div>
     </div>
 
+    <!-- RESUMEN Y OPCIONES DE ENTREGA / PAGO -->
     <div class="cart-summary">
       <h3>Resumen</h3>
+
       <div class="summary-row">
         <span>Subtotal</span>
         <span>{{ (orderTotal$ | async) | currency:'MXN' }}</span>
       </div>
+
       <div class="summary-row total">
         <span>Total</span>
         <span>{{ (orderTotal$ | async) | currency:'MXN' }}</span>
       </div>
 
-      <div class="order-type-section">
-        <label class="section-label">¿Cuándo quieres recoger tu pedido?</label>
-        <div class="radio-group">
-          <div class="radio-item">
-            <input type="radio" id="inmediato" name="orderType" value="inmediato" [(ngModel)]="orderType">
-            <label for="inmediato">Lo antes posible</label>
-          </div>
-          <div class="radio-item">
-            <input type="radio" id="futuro" name="orderType" value="futuro" [(ngModel)]="orderType">
-            <label for="futuro">Programar pedido</label>
-          </div>
-        </div>
-        
-        <div *ngIf="orderType === 'futuro'" class="pickup-time-section">
-          <label for="pickupDate">Selecciona fecha y hora:</label>
-          <input type="datetime-local" id="pickupDate" [(ngModel)]="pickupDate" [min]="minPickupDate" class="time-input" (change)="validatePickupTime()">
-        </div>
+      <!-- SECCIÓN DE FECHA / HORA -->
+      <div class="pickup-time-section">
+        <label for="pickupDate">
+          {{ orderType === 'inmediato' ? 'Selecciona una hora para hoy:' : 'Selecciona una fecha de recogida:' }}
+        </label>
+        <input 
+          [type]="orderType === 'inmediato' ? 'time' : 'date'" 
+          id="pickupDate" 
+          [(ngModel)]="pickupDate" 
+          [min]="minPickupDate" 
+          class="time-input">
       </div>
       
+      <!-- TELÉFONO SOLO SI ES PEDIDO FUTURO -->
+      <div *ngIf="orderType === 'futuro'" class="form-group">
+        <label for="contactPhone">Tu número de teléfono de contacto:</label>
+        <input type="tel" id="contactPhone" [(ngModel)]="contactPhone" placeholder="Requerido para confirmar">
+      </div>
+
+      <!-- BOTONES DE PAGO -->
       <div class="payment-options">
         <button class="confirm-btn cash" (click)="confirmOrder()" [disabled]="isProcessingPayment">
           <span *ngIf="!isProcessingPayment">Pagar en Efectivo</span>
           <span *ngIf="isProcessingPayment">Procesando...</span>
         </button>
+
         <button class="confirm-btn card" (click)="proceedToCheckout()" [disabled]="isProcessingPayment">
           <span *ngIf="!isProcessingPayment">Pagar con Tarjeta</span>
           <span *ngIf="isProcessingPayment">Procesando...</span>
         </button>
+
         <button class="confirm-btn transfer" (click)="startTransferPayment()" [disabled]="isProcessingPayment">
           <span *ngIf="!isProcessingPayment">Pagar por Transferencia</span>
           <span *ngIf="isProcessingPayment">Procesando...</span>
@@ -76,6 +94,7 @@
     </div>
   </div>
 
+  <!-- MENSAJE DE CARRITO VACÍO -->
   <ng-template #emptyCart>
     <div class="empty-cart-message">
       <p>Tu carrito está vacío.</p>

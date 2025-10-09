@@ -1,5 +1,4 @@
 // src/app/pages/public/cart/cart.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -11,11 +10,12 @@ import { switchMap } from 'rxjs/operators';
 import { StripeService } from 'ngx-stripe';
 import { environment } from '../../../../environments/environments';
 import { FormsModule } from '@angular/forms';
+import { OrderTypeModalComponent } from '../../../components/order-type-modal/order-type-modal';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, OrderTypeModalComponent],
   templateUrl: './cart.html',
   styleUrls: ['./cart.css']
 })
@@ -23,11 +23,12 @@ export class CartComponent implements OnInit {
   orderItems$: Observable<CartItem[]>;
   orderTotal$: Observable<number>;
   
-  orderType: 'inmediato' | 'futuro' = 'inmediato';
+  orderType: 'inmediato' | 'futuro' | null = null;
   pickupDate: string = '';
   minPickupDate: string = '';
-  private pickupDateAux: string = '';
   isProcessingPayment = false;
+  contactPhone: string = '';
+  maxQuantity = 50;
   
   constructor(
     public orderService: OrderService,
@@ -40,33 +41,33 @@ export class CartComponent implements OnInit {
     this.orderTotal$ = this.orderService.orderTotal$;
   }
 
-  ngOnInit(): void {
-    this.setMinPickupDate();
-  }
+  ngOnInit(): void {}
 
-  private setMinPickupDate(): void {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() + 30);
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const day = now.getDate().toString().padStart(2, '0');
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    const localDateTimeString = `${year}-${month}-${day}T${hours}:${minutes}`;
-
-    this.minPickupDate = localDateTimeString;
-    this.pickupDate = localDateTimeString;
-    this.pickupDateAux = localDateTimeString;
-  }
-  
-  validatePickupTime(): void {
-    if (this.pickupDate && this.minPickupDate && this.pickupDate < this.minPickupDate) {
-      alert('La hora de recogida no puede ser en el pasado. Hemos ajustado la hora a la más cercana disponible.');
-      this.pickupDate = this.pickupDateAux;
+  onOrderTypeSelected(type: 'inmediato' | 'futuro'): void {
+    this.orderType = type;
+    if (type === 'inmediato') {
+      this.setPickupDateForToday();
     } else {
-      this.pickupDateAux = this.pickupDate;
+      this.setPickupDateForFuture();
     }
   }
+
+  private setPickupDateForToday(): void {
+    const now = new Date();
+    this.minPickupDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+    this.pickupDate = this.minPickupDate;
+  }
+
+  private setPickupDateForFuture(): void {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    this.minPickupDate = `${tomorrow.getFullYear()}-${(tomorrow.getMonth() + 1).toString().padStart(2, '0')}-${tomorrow.getDate().toString().padStart(2, '0')}`;
+    this.pickupDate = this.minPickupDate;
+  }
+
+  // ... (tus funciones de pago: confirmOrder, proceedToCheckout, startTransferPayment)
+
+
 
   confirmOrder(): void {
     if (!this.authService.isLoggedIn()) { alert('Por favor, inicia sesión para confirmar tu pedido.'); this.router.navigate(['/login']); return; }

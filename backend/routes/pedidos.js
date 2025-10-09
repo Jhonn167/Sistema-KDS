@@ -1,12 +1,12 @@
 const express = require('express');
 const pool = require('../db');
 const checkAuth = require('../middleware/check-auth');
-const checkrole = require('../middleware/check-role');
+const checkRole = require('../middleware/checkRole'); // CORRECCIÓN: Usamos la variable estandarizada
 
 module.exports = function (io, getOnlineUsers) {
   const router = express.Router();
 
-  // --- RUTA PARA CREAR UN NUEVO PEDIDO (UNIFICADA) ---
+  // --- RUTA PARA CREAR UN NUEVO PEDIDO (LÓGICA REFACTORIZADA) ---
   router.post('/', checkAuth, async (req, res) => {
     const { items, fecha_recogida, estatus, tipo_pedido = 'inmediato' } = req.body;
     const usuario_id = req.userData.userId;
@@ -15,49 +15,50 @@ module.exports = function (io, getOnlineUsers) {
       return res.status(400).json({ message: 'El pedido debe contener al menos un producto.' });
     }
 
+    // CORRECCIÓN: La validación de cantidad solo aplica a pedidos futuros
+    if (tipo_pedido === 'futuro') {
+      for (const item of items) {
+        if (item.cantidad > 50) {
+          return res.status(400).json({ message: `Para pedidos programados, la cantidad máxima por producto es de 50 unidades.` });
+        }
+      }
+    }
+
     const connection = await pool.connect();
     try {
       await connection.query('BEGIN');
 
       let calculatedTotal = 0;
       for (const item of items) {
-        const productResult = await connection.query('SELECT precio FROM productos WHERE id_producto = $1', [item.producto_id]);
-        if (productResult.rows.length === 0) throw new Error(`Producto ${item.producto_id} no encontrado.`);
-        calculatedTotal += parseFloat(item.precioFinal || productResult.rows[0].precio) * item.cantidad;
+        calculatedTotal += parseFloat(item.precioFinal) * item.cantidad;
       }
 
       const estatusPedido = estatus || (tipo_pedido === 'futuro' ? 'Programado' : 'Pendiente');
-
+      
       const pedidoQuery = 'INSERT INTO pedidos (usuario_id, total, estatus, fecha_recogida, tipo_pedido) VALUES ($1, $2, $3, $4, $5) RETURNING id_pedido';
       const pedidoResult = await connection.query(pedidoQuery, [usuario_id, calculatedTotal, estatusPedido, fecha_recogida || null, tipo_pedido]);
       const nuevoPedidoId = pedidoResult.rows[0].id_pedido;
 
-      // Descontamos stock solo para pedidos inmediatos que no están esperando confirmación de pago
       const shouldUpdateStockNow = (tipo_pedido === 'inmediato' && estatusPedido !== 'Esperando Pago' && estatusPedido !== 'Esperando Comprobante');
 
       for (const item of items) {
-        if (item.cantidad > 50) {
-          return res.status(400).json({ message: `Para pedidos programados, la cantidad máxima por producto es de 50 unidades. El Producto ${item.nombre} excede este límite.` });
-        }
         if (shouldUpdateStockNow) {
           const stockResult = await connection.query('SELECT stock FROM productos WHERE id_producto = $1', [item.producto_id]);
           if (stockResult.rows.length === 0 || stockResult.rows[0].stock < item.cantidad) {
             await connection.query('ROLLBACK');
             return res.status(409).json({ message: `Stock insuficiente para el producto ID ${item.producto_id}` });
           }
-          const updateStockQuery = 'UPDATE productos SET stock = stock - $1 WHERE id_producto = $2';
-          await connection.query(updateStockQuery, [item.cantidad, item.producto_id]);
+          await connection.query('UPDATE productos SET stock = stock - $1 WHERE id_producto = $2', [item.cantidad, item.producto_id]);
         }
+        // CORRECCIÓN: La inserción de detalles se hace una sola vez, sin duplicar código
         const detalleQuery = 'INSERT INTO detalles_pedido (pedido_id, producto_id, cantidad, opciones_seleccionadas) VALUES ($1, $2, $3, $4)';
         await connection.query(detalleQuery, [nuevoPedidoId, item.producto_id, item.cantidad, JSON.stringify(item.selectedOptions || [])]);
       }
 
       await connection.query('COMMIT');
-
       if (estatusPedido === 'Pendiente' || estatusPedido === 'Programado') {
         io.emit('nuevo_pedido_cocina');
       }
-
       res.status(201).json({ message: 'Pedido creado exitosamente', pedidoId: nuevoPedidoId });
 
     } catch (error) {
@@ -69,9 +70,8 @@ module.exports = function (io, getOnlineUsers) {
     }
   });
 
-  // --- RUTA KDS (CON NOMBRE DE CLIENTE) ---
-  router.get('/cocina', checkAuth, async (req, res) => {
-    if (req.userData.rol !== 'admin' && req.userData.rol !== 'cocinero') { return res.status(403).json({ message: 'Acceso denegado.' }); }
+  // --- RUTA KDS (PERMISOS Y CONSULTA CORREGIDOS) ---
+  router.get('/cocina', checkRole(['admin', 'cocinero']), async (req, res) => {
     try {
       const query = `
         SELECT 
@@ -83,7 +83,7 @@ module.exports = function (io, getOnlineUsers) {
         JOIN productos pr ON dp.producto_id = pr.id_producto
         JOIN usuarios u ON p.usuario_id = u.id
         WHERE p.estatus IN ('Pendiente', 'En Preparación', 'Programado')
-        GROUP BY p.id_pedido, u.nombre
+        GROUP BY p.id_pedido, p.fecha, p.estatus, p.fecha_recogida, u.nombre
         ORDER BY p.fecha ASC;
       `;
       const { rows } = await pool.query(query);
@@ -94,20 +94,16 @@ module.exports = function (io, getOnlineUsers) {
     }
   });
 
-
-  // --- RUTA NUEVA: OBTENER PEDIDOS PENDIENTES DE CONFIRMACIÓN ---
-  router.get('/pending-confirmation', checkAuth, async (req, res) => {
-    if (req.userData.rol !== 'admin' && req.userData.rol !== 'empleado') {
-      return res.status(403).json({ message: 'Acceso denegado.' });
-    }
+  // --- RUTA PARA PEDIDOS PENDIENTES DE CONFIRMACIÓN (PERMISOS CORREGIDOS) ---
+  router.get('/pending-confirmation', checkRole(['admin', 'empleado']), async (req, res) => {
     try {
       const query = `
-            SELECT p.id_pedido, p.fecha, p.total, u.nombre AS nombre_cliente, p.comprobante_url
-            FROM pedidos p
-            JOIN usuarios u ON p.usuario_id = u.id
-            WHERE p.estatus = 'Esperando Comprobante'
-            ORDER BY p.fecha ASC;
-        `;
+        SELECT p.id_pedido, p.fecha, p.total, u.nombre AS nombre_cliente, p.comprobante_url
+        FROM pedidos p
+        JOIN usuarios u ON p.usuario_id = u.id
+        WHERE p.estatus = 'Esperando Comprobante'
+        ORDER BY p.fecha ASC;
+      `;
       const { rows } = await pool.query(query);
       res.status(200).json(rows);
     } catch (error) {
@@ -115,7 +111,8 @@ module.exports = function (io, getOnlineUsers) {
       res.status(500).json({ message: 'Error en el servidor.' });
     }
   });
-  // --- OBTENER LOS PEDIDOS DE UN USUARIO ---
+
+  // --- OBTENER LOS PEDIDOS DE UN USUARIO (se mantiene igual) ---
   router.get('/mis-pedidos', checkAuth, async (req, res) => {
     const usuario_id = req.userData.userId;
     try {
@@ -128,13 +125,12 @@ module.exports = function (io, getOnlineUsers) {
       const { rows } = await pool.query(query, [usuario_id]);
       res.status(200).json(rows);
     } catch (error) {
-      console.error("ERROR DETALLADO EN GET /mis-pedidos:", error);
       res.status(500).json({ message: 'Error al obtener los pedidos del usuario.' });
     }
   });
 
-  // --- ACTUALIZAR ESTATUS Y NOTIFICAR ---
- router.put('/cocina/:id', checkRole(['admin', 'cocinero']), async (req, res) => {
+  // --- ACTUALIZAR ESTATUS Y NOTIFICAR (se mantiene igual) ---
+  router.put('/cocina/:id', checkRole(['admin', 'cocinero']), async (req, res) => {
     try {
       const { id } = req.params;
       const { estatus } = req.body;
@@ -150,14 +146,12 @@ module.exports = function (io, getOnlineUsers) {
       io.emit('pedido_actualizado_cocina');
       res.status(200).json({ message: `Pedido #${id} actualizado a ${estatus}` });
     } catch (error) {
-      console.error("ERROR DETALLADO EN PUT /cocina/:id:", error);
       res.status(500).json({ message: 'Error al actualizar el estatus del pedido' });
     }
   });
 
-  // --- CONFIRMACIÓN DE PAGO POR TRANSFERENCIA ---
-  router.post('/confirm-transfer/:orderId', checkAuth, async (req, res) => {
-    if (req.userData.rol !== 'admin') { return res.status(403).json({ message: 'Acceso denegado.' }); }
+  // --- CONFIRMACIÓN DE PAGO POR TRANSFERENCIA (PERMISOS CORREGIDOS) ---
+  router.post('/confirm-transfer/:orderId', checkRole(['admin', 'empleado']), async (req, res) => {
     const { orderId } = req.params;
     const connection = await pool.connect();
     try {
@@ -180,4 +174,3 @@ module.exports = function (io, getOnlineUsers) {
 
   return router;
 };
-

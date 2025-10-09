@@ -6,26 +6,21 @@
   <div *ngIf="!isLoading && pedidos.length === 0" class="info-message">No hay pedidos pendientes.</div>
   
   <div class="pedidos-grid">
-    <div *ngFor="let pedido of pedidos" class="pedido-card">
-      <div class="card-header">
-        <h3>Pedido #{{ pedido.id_pedido }} - {{ pedido.nombre_cliente }}</h3>
-        
-        <!-- =====> LÓGICA DE HORA MEJORADA <===== -->
-        <div class="header-details">
-          <!-- Si es un pedido programado, muestra la hora de recogida -->
-          <div *ngIf="pedido.hora_recogida; else creationTime" class="pickup-time">
-            <span>Recoger a las:</span>
-            <!-- Usamos el pipe 'date' con 'shortTime' para formatear la hora -->
-            <strong>{{ pedido.hora_recogida | date:'shortTime' }}</strong>
-          </div>
-          <!-- Si es un pedido inmediato, muestra la hora en que se creó -->
-          <ng-template #creationTime>
-            <div class="creation-time">
-              <span>Pedido a las:</span>
-              <span>{{ pedido.fecha | date:'mediumTime' }}</span>
-            </div>
-          </ng-template>
+   <!-- src/app/pages/kds/kds.component.html -->
+<div *ngFor="let pedido of pedidos" class="pedido-card">
+  <div class="card-header">
+    <h3>Pedido #{{ pedido.id_pedido }} - {{ pedido.nombre_cliente }}</h3>
+    <div class="header-details">
+      <!-- CORREGIDO: Usa fecha_recogida y pipe 'date' -->
+      <div *ngIf="pedido.fecha_recogida; else creationTime" class="pickup-time">
+        <span>Recoger:</span>
+        <strong>{{ pedido.fecha_recogida | date:'short' }}</strong>
+      </div>
+      <ng-template #creationTime>
+        <div class="creation-time">
+          <span>Pedido a las: {{ pedido.fecha | date:'mediumTime' }}</span>
         </div>
+      </ng-template>
         <!-- ===================================== -->
 
       </div>

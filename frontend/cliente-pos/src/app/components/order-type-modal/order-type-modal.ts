@@ -1,10 +1,8 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 @Component({
   selector: 'app-order-type-modal',
-  standalone: true,
-  imports: [CommonModule],
+  standalone: true, imports: [CommonModule],
   templateUrl: './order-type-modal.html',
   styleUrls: ['./order-type-modal.css']
 })

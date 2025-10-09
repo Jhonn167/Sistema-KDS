@@ -1,5 +1,4 @@
 // src/app/pages/public/cart/cart.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -42,9 +41,7 @@ export class CartComponent implements OnInit {
     this.orderTotal$ = this.orderService.orderTotal$;
   }
 
-  ngOnInit(): void {
-    // La lógica para establecer la fecha se mueve a onOrderTypeSelected
-  }
+  ngOnInit(): void {}
 
   onOrderTypeSelected(type: 'inmediato' | 'futuro'): void {
     this.orderType = type;
@@ -70,7 +67,7 @@ export class CartComponent implements OnInit {
     const year = tomorrow.getFullYear();
     const month = (tomorrow.getMonth() + 1).toString().padStart(2, '0');
     const day = tomorrow.getDate().toString().padStart(2, '0');
-    // Hora por defecto para pedidos futuros (ej. 12:00 PM)
+    // Hora mínima por defecto para pedidos futuros (ej. 09:00 AM)
     this.minPickupDate = `${year}-${month}-${day}T09:00`; 
     this.pickupDate = `${year}-${month}-${day}T12:00`;
   }
@@ -92,19 +89,17 @@ export class CartComponent implements OnInit {
       estatus = 'Esperando Pago';
     } else if (isTransfer) {
       estatus = 'Esperando Comprobante';
-    } else {
-      estatus = undefined; // Para pago en efectivo, el backend lo pondrá como 'Pendiente'
     }
 
     const orderData = {
       items,
       tipo_pedido: this.orderType,
-      fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : null,
-      hora_recogida: this.orderType === 'inmediato' ? this.pickupDate : null,
+      // Usamos el nombre de columna correcto que espera el backend
+      fecha_recogida: this.orderType === 'futuro' ? this.pickupDate : (this.orderType === 'inmediato' ? new Date().toISOString().split('T')[0] + 'T' + this.pickupDate : null),
       estatus: estatus,
       telefono_contacto: this.contactPhone || undefined
     };
-    
+
     if (isCardPayment) {
       this.orderService.checkout(orderData).subscribe({
         next: (orderResponse) => {
@@ -122,24 +117,17 @@ export class CartComponent implements OnInit {
           this.isProcessingPayment = false;
         }
       });
-    } else if (isTransfer) {
-        this.orderService.checkout(orderData).subscribe({
-            next: (response) => {
-                const newOrderId = response.pedidoId;
-                this.orderService.clearOrder();
-                this.router.navigate(['/subir-comprobante', newOrderId]);
-            },
-            error: (err) => {
-                alert('Error al iniciar el pedido por transferencia: ' + (err.error?.message || 'Error desconocido'));
-                this.isProcessingPayment = false;
-            }
-        });
-    } else { // Pago en Efectivo
+    } else { // Efectivo o Transferencia
       this.orderService.checkout(orderData).subscribe({
-        next: () => {
-          alert('¡Pedido enviado a la cocina! Pagarás en efectivo al recoger.');
-          this.orderService.clearOrder();
-          this.router.navigate(['/mis-pedidos']);
+        next: (response) => {
+          if (isTransfer) {
+            this.orderService.clearOrder();
+            this.router.navigate(['/subir-comprobante', response.pedidoId]);
+          } else {
+            alert('¡Pedido enviado a la cocina! Pagarás en efectivo al recoger.');
+            this.orderService.clearOrder();
+            this.router.navigate(['/mis-pedidos']);
+          }
         },
         error: (err) => {
           alert('Error al enviar el pedido: ' + (err.error?.message || 'Error desconocido'));

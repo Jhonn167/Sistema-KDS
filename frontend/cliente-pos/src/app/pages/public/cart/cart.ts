@@ -9,14 +9,14 @@ import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { StripeService } from 'ngx-stripe';
 import { environment } from '../../../../environments/environments';
-import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule } from '@angular/forms';
 import { OrderTypeModalComponent } from '../../../components/order-type-modal/order-type-modal';
 import { CartStateService } from '../../../services/cart-state';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, OrderTypeModalComponent],
+  imports: [CommonModule, RouterModule, FormsModule, OrderTypeModalComponent, ReactiveFormsModule],
   templateUrl: './cart.html',
   styleUrls: ['./cart.css']
 })
@@ -124,9 +124,9 @@ export class CartComponent implements OnInit, OnDestroy {
 
   onKeyUpPhone(){
     
-    let telefono = this.carritoForm.controls['telefono'].value;
-    console.log(this.contactPhone);
-    this.isProcessingPayment = telefono.length > 0;
+    //let telefono = this.carritoForm.controls['telefono'].value;
+    console.log('telefono:' + this.contactPhone);
+    this.isProcessingPayment = this.contactPhone.length > 0;
 
   }
 

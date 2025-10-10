@@ -21,10 +21,10 @@ export interface CartItem {
   providedIn: 'root'
 })
 export class OrderService {
+  private cartStateService = inject(CartStateService);
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/api/pedidos`;
   private storageKey = 'kds_cart';
-  private cartStateService = inject(CartStateService);
 
   private orderItems = new BehaviorSubject<CartItem[]>([]);
   orderItems$ = this.orderItems.asObservable();
@@ -102,12 +102,17 @@ export class OrderService {
     const updatedItems = currentItems.filter(item => item.cartItemId !== cartItemId);
     this.orderItems.next(updatedItems);
     this.saveCartToStorage(updatedItems);
+    // Si el carrito queda vacío, reseteamos el estado
+    if (updatedItems.length === 0) {
+      this.cartStateService.clearAll();
+    }
   }
+
 
   clearOrder(): void {
     this.orderItems.next([]);
     localStorage.removeItem(this.storageKey);
-    this.cartStateService.clearOrderType();
+    this.cartStateService.clearAll(); 
   }
 
   checkout(additionalData: any = {}): Observable<any> {

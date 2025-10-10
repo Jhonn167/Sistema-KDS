@@ -1,11 +1,11 @@
 // src/app/pages/public/cart/cart.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { OrderService, CartItem } from '../../../services/order';
 import { AuthService } from '../../../services/auth.service';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { StripeService } from 'ngx-stripe';
 import { environment } from '../../../../environments/environments';
@@ -20,18 +20,20 @@ import { CartStateService } from '../../../services/cart-state';
   templateUrl: './cart.html',
   styleUrls: ['./cart.css']
 })
-export class CartComponent implements OnInit {
+export class CartComponent implements OnInit, OnDestroy {
   orderItems$: Observable<CartItem[]>;
   orderTotal$: Observable<number>;
   
   orderType: 'inmediato' | 'futuro' | null = null;
   pickupDate: string = '';
   minPickupDate: string = '';
-  private pickupDateAux: string = '';
-  isProcessingPayment = false;
   contactPhone: string = '';
-  maxQuantity = 50;
+  pickupDateAux: string = '';
   
+  isProcessingPayment = false;
+  maxQuantity = 50;
+  private stateSub: Subscription | undefined;
+
   constructor(
     public orderService: OrderService,
     private authService: AuthService,
@@ -45,17 +47,36 @@ export class CartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Al iniciar, leemos el tipo de orden guardado
-    this.cartStateService.orderType$.subscribe(type => {
+    // Nos suscribimos al estado guardado para mantener la consistencia
+    this.stateSub = this.cartStateService.orderType$.subscribe(type => {
       this.orderType = type;
-      if (type) {
-        this.initializeDatePickers(type);
-      }
+      if (type) this.initializeDatePickers(type);
     });
+    this.cartStateService.pickupDate$.subscribe(date => this.pickupDate = date);
+    this.cartStateService.contactPhone$.subscribe(phone => this.contactPhone = phone);
+  }
+
+  ngOnDestroy(): void {
+    this.stateSub?.unsubscribe();
   }
 
   onOrderTypeSelected(type: 'inmediato' | 'futuro'): void {
-    this.cartStateService.setOrderType(type); // Guardamos la selección
+    this.cartStateService.setOrderType(type);
+  }
+
+  onPickupDateChange(date: string): void {
+    this.cartStateService.setPickupDate(date);
+  }
+
+  onContactPhoneChange(phone: string): void {
+    this.cartStateService.setContactPhone(phone);
+  }
+   canProceedToPayment(): boolean {
+    if (this.orderType === 'futuro') {
+      const phoneRegex = /^[0-9]{10}$/;
+      return phoneRegex.test(this.contactPhone);
+    }
+    return true; 
   }
 
   private initializeDatePickers(type: 'inmediato' | 'futuro'): void {
@@ -92,7 +113,7 @@ export class CartComponent implements OnInit {
     }
   }
 
-  private processOrder(isCardPayment: boolean, isTransfer: boolean = false): void {
+    private processOrder(isCardPayment: boolean, isTransfer: boolean = false): void {
     if (!this.authService.isLoggedIn()) { alert('Por favor, inicia sesión para continuar.'); this.router.navigate(['/login']); return; }
     if (this.isProcessingPayment) return;
 
@@ -158,7 +179,6 @@ export class CartComponent implements OnInit {
       });
     }
   }
-
   confirmOrder(): void { this.processOrder(false, false); }
   proceedToCheckout(): void { this.processOrder(true, false); }
   startTransferPayment(): void { this.processOrder(false, true); }

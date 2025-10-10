@@ -61,12 +61,13 @@ export class CartComponent implements OnInit, OnDestroy {
     // Nos suscribimos al estado guardado para mantener la consistencia
     this.stateSub = this.cartStateService.orderType$.subscribe(type => {
       this.orderType = type;
+      this.bloquearBotones = this.orderType == 'futuro';
       if (type) this.initializeDatePickers(type);
     });
     this.cartStateService.pickupDate$.subscribe(date => this.pickupDate = date);
     this.cartStateService.contactPhone$.subscribe(phone => this.contactPhone = phone);
 
-    this.bloquearBotones = this.orderType == 'futuro';
+    
   }
 
   ngOnDestroy(): void {

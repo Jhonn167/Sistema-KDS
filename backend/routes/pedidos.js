@@ -1,12 +1,14 @@
+// backend/routes/pedidos.js
+
 const express = require('express');
 const pool = require('../db');
 const checkAuth = require('../middleware/check-auth');
-const checkRole = require('../middleware/checkRole'); // CORRECCIÓN: Usamos la variable estandarizada
+const checkRole = require('../middleware/checkRole');
 
 module.exports = function (io, getOnlineUsers) {
   const router = express.Router();
 
-  // --- RUTA PARA CREAR UN NUEVO PEDIDO (LÓGICA REFACTORIZADA) ---
+  // --- RUTA PARA CREAR UN NUEVO PEDIDO (SE MANTIENE IGUAL) ---
   router.post('/', checkAuth, async (req, res) => {
     const { items, fecha_recogida, estatus, tipo_pedido = 'inmediato' } = req.body;
     const usuario_id = req.userData.userId;
@@ -15,7 +17,6 @@ module.exports = function (io, getOnlineUsers) {
       return res.status(400).json({ message: 'El pedido debe contener al menos un producto.' });
     }
 
-    // CORRECCIÓN: La validación de cantidad solo aplica a pedidos futuros
     if (tipo_pedido === 'futuro') {
       for (const item of items) {
         if (item.cantidad > 50) {
@@ -50,7 +51,6 @@ module.exports = function (io, getOnlineUsers) {
           }
           await connection.query('UPDATE productos SET stock = stock - $1 WHERE id_producto = $2', [item.cantidad, item.producto_id]);
         }
-        // CORRECCIÓN: La inserción de detalles se hace una sola vez, sin duplicar código
         const detalleQuery = 'INSERT INTO detalles_pedido (pedido_id, producto_id, cantidad, opciones_seleccionadas) VALUES ($1, $2, $3, $4)';
         await connection.query(detalleQuery, [nuevoPedidoId, item.producto_id, item.cantidad, JSON.stringify(item.selectedOptions || [])]);
       }
@@ -70,12 +70,12 @@ module.exports = function (io, getOnlineUsers) {
     }
   });
 
-  // --- RUTA KDS (PERMISOS Y CONSULTA CORREGIDOS) ---
+  // --- RUTA KDS (ACTUALIZADA) ---
   router.get('/cocina', checkRole(['admin', 'cocinero']), async (req, res) => {
     try {
       const query = `
         SELECT 
-          p.id_pedido, p.fecha, p.estatus, p.fecha_recogida AS hora_recogida,
+          p.id_pedido, p.fecha, p.estatus, p.fecha_recogida, p.preparacion_iniciada_en,
           u.nombre AS nombre_cliente,
           json_agg(json_build_object('producto', pr.nombre, 'cantidad', dp.cantidad, 'opciones', dp.opciones_seleccionadas)) AS items
         FROM pedidos p
@@ -83,7 +83,7 @@ module.exports = function (io, getOnlineUsers) {
         JOIN productos pr ON dp.producto_id = pr.id_producto
         JOIN usuarios u ON p.usuario_id = u.id
         WHERE p.estatus IN ('Pendiente', 'En Preparación', 'Programado')
-        GROUP BY p.id_pedido, p.fecha, p.estatus, p.fecha_recogida, u.nombre
+        GROUP BY p.id_pedido, u.nombre
         ORDER BY p.fecha ASC;
       `;
       const { rows } = await pool.query(query);
@@ -94,7 +94,30 @@ module.exports = function (io, getOnlineUsers) {
     }
   });
 
-  // --- RUTA PARA PEDIDOS PENDIENTES DE CONFIRMACIÓN (PERMISOS CORREGIDOS) ---
+  // --- ACTUALIZAR ESTATUS (LÓGICA MEJORADA) ---
+  router.put('/cocina/:id', checkRole(['admin', 'cocinero']), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { estatus } = req.body;
+
+      let query = 'UPDATE pedidos SET estatus = $1 WHERE id_pedido = $2';
+      const values = [estatus, id];
+
+      if (estatus === 'En Preparación') {
+        query = 'UPDATE pedidos SET estatus = $1, preparacion_iniciada_en = NOW() WHERE id_pedido = $2';
+      }
+
+      await pool.query(query, values);
+
+      io.emit('pedido_actualizado_cocina'); 
+      res.status(200).json({ message: `Pedido #${id} actualizado a ${estatus}` });
+    } catch (error) {
+      console.error("ERROR DETALLADO EN PUT /cocina/:id:", error);
+      res.status(500).json({ message: 'Error al actualizar el estatus del pedido' });
+    }
+  });
+
+  // --- RUTA PARA PEDIDOS PENDIENTES DE CONFIRMACIÓN ---
   router.get('/pending-confirmation', checkRole(['admin', 'empleado']), async (req, res) => {
     try {
       const query = `
@@ -112,7 +135,7 @@ module.exports = function (io, getOnlineUsers) {
     }
   });
 
-  // --- OBTENER LOS PEDIDOS DE UN USUARIO (se mantiene igual) ---
+  // --- OBTENER LOS PEDIDOS DE UN USUARIO ---
   router.get('/mis-pedidos', checkAuth, async (req, res) => {
     const usuario_id = req.userData.userId;
     try {
@@ -129,28 +152,7 @@ module.exports = function (io, getOnlineUsers) {
     }
   });
 
-  // --- ACTUALIZAR ESTATUS Y NOTIFICAR (se mantiene igual) ---
-  router.put('/cocina/:id', checkRole(['admin', 'cocinero']), async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { estatus } = req.body;
-      const userResult = await pool.query('SELECT usuario_id FROM pedidos WHERE id_pedido = $1', [id]);
-      if (userResult.rows.length === 0) { return res.status(404).json({ message: 'Pedido no encontrado.' }); }
-      const targetUserId = userResult.rows[0].usuario_id;
-      await pool.query('UPDATE pedidos SET estatus = $1 WHERE id_pedido = $2', [estatus, id]);
-      const onlineUsers = getOnlineUsers();
-      const targetSocketId = onlineUsers[targetUserId];
-      if (targetSocketId) {
-        io.to(targetSocketId).emit('estatus_actualizado', { pedidoId: id, nuevoEstatus: estatus });
-      }
-      io.emit('pedido_actualizado_cocina');
-      res.status(200).json({ message: `Pedido #${id} actualizado a ${estatus}` });
-    } catch (error) {
-      res.status(500).json({ message: 'Error al actualizar el estatus del pedido' });
-    }
-  });
-
-  // --- CONFIRMACIÓN DE PAGO POR TRANSFERENCIA (PERMISOS CORREGIDOS) ---
+  // --- CONFIRMAR PAGO POR TRANSFERENCIA ---
   router.post('/confirm-transfer/:orderId', checkRole(['admin', 'empleado']), async (req, res) => {
     const { orderId } = req.params;
     const connection = await pool.connect();

@@ -1,8 +1,5 @@
 <div class="kds-container">
-  <div class="kds-header">
-    <h1>KDS - Pedidos para Cocina</h1>
-  </div>
-  
+  <div class="kds-header"><h1>KDS - Pedidos para Cocina</h1></div>
   <div *ngIf="isLoading" class="info-message">Cargando pedidos...</div>
   <div *ngIf="!isLoading && pedidos.length === 0" class="info-message">No hay pedidos pendientes.</div>
   
@@ -14,15 +11,15 @@
           <span class="pedido-status">{{ pedido.estatus }}</span>
         </div>
         <div class="time-info">
-      <!-- Muestra fecha y hora para pedidos programados -->
-      <div *ngIf="pedido.estatus === 'Programado' && pedido.hora_recogida" class="pickup-time">
-        <span>Para el</span>
-        <strong>{{ pedido.hora_recogida | date:'short' }}</strong>
-      </div>
-      <!-- Muestra tiempo transcurrido para los demás -->
-      <div *ngIf="pedido.estatus !== 'Programado'" class="time-elapsed">
-        <span>Hace</span>
-        <strong>{{ pedido.tiempo_transcurrido }}</strong>
+          <!-- Muestra fecha Y hora para pedidos programados -->
+          <div *ngIf="pedido.estatus === 'Programado' && pedido.hora_recogida" class="pickup-time">
+            <span>Para el</span>
+            <strong>{{ pedido.hora_recogida | date:'short' }}</strong>
+          </div>
+          <!-- Muestra el cronómetro para los demás -->
+          <div *ngIf="pedido.estatus !== 'Programado'" class="time-elapsed">
+            <span>Tiempo:</span>
+            <strong>{{ pedido.tiempo_transcurrido }}</strong>
           </div>
         </div>
       </div>
@@ -40,14 +37,10 @@
         </ul>
       </div>
       <div class="card-footer">
-        <button *ngIf="pedido.estatus === 'Pendiente' || pedido.estatus === 'Programado'" 
-                class="btn btn-start" 
-                (click)="actualizarEstatus(pedido.id_pedido, 'En Preparación')">
+        <button *ngIf="pedido.estatus === 'Pendiente' || pedido.estatus === 'Programado'" class="btn btn-start" (click)="actualizarEstatus(pedido.id_pedido, 'En Preparación')">
           Empezar Preparación
         </button>
-        <button *ngIf="pedido.estatus === 'En Preparación'" 
-                class="btn btn-ready" 
-                (click)="actualizarEstatus(pedido.id_pedido, 'Listo para Recoger')">
+        <button *ngIf="pedido.estatus === 'En Preparación'" class="btn btn-ready" (click)="actualizarEstatus(pedido.id_pedido, 'Listo para Recoger')">
           Marcar como Listo
         </button>
       </div>

@@ -1,6 +1,4 @@
 // src/app/pages/kds/kds.component.ts
-
-// src/app/pages/kds/kds.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OrderService } from '../../services/order';
@@ -24,21 +22,17 @@ export class KdsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.cargarPedidos();
-
-    this.orderUpdatesSub = this.socket.fromEvent('pedido_actualizado_cocina').subscribe(() => {
-        this.cargarPedidos();
-    });
-    this.socket.fromEvent('nuevo_pedido_cocina').subscribe(() => {
-        this.cargarPedidos();
-    });
-
-    // 2. Creamos un temporizador que se ejecuta cada minuto
-    this.timerSub = interval(60000).subscribe(() => {
-      this.updateTimestamps();
-    });
+    this.orderUpdatesSub = this.socket.fromEvent('pedido_actualizado_cocina').subscribe(() => this.cargarPedidos());
+    this.socket.fromEvent('nuevo_pedido_cocina').subscribe(() => this.cargarPedidos());
+    
+    // El temporizador ahora se ejecuta cada segundo para un cronómetro más preciso
+    this.timerSub = interval(1000).subscribe(() => this.updateTimestamps());
   }
 
-  ngOnDestroy(): void { /* ... */ }
+  ngOnDestroy(): void {
+    this.orderUpdatesSub?.unsubscribe();
+    this.timerSub?.unsubscribe();
+  }
 
   cargarPedidos(): void {
     this.isLoading = true;
@@ -52,12 +46,18 @@ export class KdsComponent implements OnInit, OnDestroy {
   private updateTimestamps(): void {
     const now = Date.now();
     this.pedidos.forEach(pedido => {
-      // Solo calculamos el tiempo transcurrido para pedidos que no son programados
-      if (pedido.estatus !== 'Programado') {
-        const orderTime = new Date(pedido.fecha).getTime();
-        const minutesAgo = Math.round((now - orderTime) / 60000);
-        pedido.tiempo_transcurrido = `${minutesAgo} min`;
+      let startTime;
+      // Si está 'En Preparación', el cronómetro empieza desde que se marcó.
+      if (pedido.estatus === 'En Preparación' && pedido.preparacion_iniciada_en) {
+        startTime = new Date(pedido.preparacion_iniciada_en).getTime();
+      } else { // Si no, sigue mostrando el tiempo desde que se creó el pedido.
+        startTime = new Date(pedido.fecha).getTime();
       }
+      
+      const secondsElapsed = Math.floor((now - startTime) / 1000);
+      const minutes = Math.floor(secondsElapsed / 60);
+      const seconds = secondsElapsed % 60;
+      pedido.tiempo_transcurrido = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     });
   }
 

@@ -14,6 +14,7 @@
       <div *ngFor="let item of (orderItems$ | async)" class="cart-item">
         <!-- ... (detalles del item) ... -->
         <div class="item-controls">
+          <span>{{item.nombre}}</span>
           <button (click)="orderService.updateItemQuantity(item.cartItemId, -1)">-</button>
           <span>{{ item.cantidad }}</span>
           <!-- AÑADIMOS LA VALIDACIÓN DE CANTIDAD MÁXIMA -->

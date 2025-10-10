@@ -23,13 +23,13 @@ import { CartStateService } from '../../../services/cart-state';
 export class CartComponent implements OnInit, OnDestroy {
   orderItems$: Observable<CartItem[]>;
   orderTotal$: Observable<number>;
-  
+
   orderType: 'inmediato' | 'futuro' | null = null;
   pickupDate: string = '';
   minPickupDate: string = '';
   contactPhone: string = '';
   pickupDateAux: string = '';
-  
+
   isProcessingPayment = false;
   maxQuantity = 50;
   private stateSub: Subscription | undefined;
@@ -71,12 +71,12 @@ export class CartComponent implements OnInit, OnDestroy {
   onContactPhoneChange(phone: string): void {
     this.cartStateService.setContactPhone(phone);
   }
-   canProceedToPayment(): boolean {
+  canProceedToPayment(): boolean {
     if (this.orderType === 'futuro') {
       const phoneRegex = /^[0-9]{10}$/;
       return phoneRegex.test(this.contactPhone);
     }
-    return true; 
+    return true;
   }
 
   private initializeDatePickers(type: 'inmediato' | 'futuro'): void {
@@ -113,21 +113,29 @@ export class CartComponent implements OnInit, OnDestroy {
     }
   }
 
-    private processOrder(isCardPayment: boolean, isTransfer: boolean = false): void {
+  onKeyUpPhone(){
+    
+    this.cartStateService.contactPhone$.subscribe(phone => this.contactPhone = phone);
+    console.log(this.contactPhone);
+    this.isProcessingPayment = this.contactPhone.length > 0;
+
+  }
+
+  private processOrder(isCardPayment: boolean, isTransfer: boolean = false): void {
     if (!this.authService.isLoggedIn()) { alert('Por favor, inicia sesión para continuar.'); this.router.navigate(['/login']); return; }
     if (this.isProcessingPayment) return;
 
     if (this.orderType === 'futuro') {
       const phoneRegex = /^[0-9]{10}$/;
       if (!this.contactPhone || !phoneRegex.test(this.contactPhone)) {
-        alert('Por favor ingresa un número de teléfono válido de 10 dígitos para programar tu pedido.');  
+        alert('Por favor ingresa un número de teléfono válido de 10 dígitos para programar tu pedido.');
         return;
       }
     }
-    
+
     this.isProcessingPayment = true;
     const items = this.orderService.getCurrentOrderItems();
-    
+
     let estatus: string | undefined;
     if (isCardPayment) {
       estatus = 'Esperando Pago';

@@ -39,12 +39,7 @@
       </div>
       <div *ngIf="orderType === 'futuro'" class="form-group">
         <label for="contactPhone">Tu número de teléfono de contacto:</label>
-        <input type="tel" id="contactPhone" [(ngModel)]="contactPhone" placeholder="Requerido para confirmar">
-      </div>
-      
-      <div *ngIf="orderType === 'futuro'" class="form-group">
-        <label for="contactPhone">Tu número de teléfono de contacto:</label>
-        <input type="tel" id="contactPhone" [(ngModel)]="contactPhone" placeholder="Requerido para confirmar">
+        <input type="tel" id="contactPhone" [(ngModel)]="contactPhone" onkeyup="onKeyUpPhone()" placeholder="Requerido para confirmar">
       </div>
 
       <div class="payment-options">

@@ -1,4 +1,6 @@
-/* src/app/pages/public/menu/menu.component.css */
+/* ================================
+   src/app/pages/public/menu/menu.component.css
+   ================================ */
 
 .menu-container {
   max-width: 1200px;
@@ -6,6 +8,7 @@
   padding: 1rem;
 }
 
+/* --- Encabezado --- */
 h1 {
   text-align: center;
   font-size: 2.5rem;
@@ -20,64 +23,74 @@ p {
   font-size: 1.1rem;
 }
 
+/* --- Grid de Productos --- */
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
+/* --- Tarjeta de Producto --- */
 .product-card {
   background-color: var(--surface-color);
   border-radius: 0.75rem;
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  /* =====> CAMBIO CLAVE #1: Convertimos la tarjeta en un contenedor flexible vertical <===== */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+  transform: translateY(-6px);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
 }
 
+/* --- Imagen del Producto --- */
 .product-image {
   width: 100%;
-  height: 180px;
+  height: 200px;
   object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
+.product-card:hover .product-image {
+  transform: scale(1.05);
+}
+
+/* --- Información del Producto --- */
 .product-info {
   padding: 1.25rem;
-  /* =====> CAMBIO CLAVE #2: Hacemos que esta sección sea flexible y crezca <===== */
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Esta es la propiedad mágica que empuja el footer hacia abajo */
+  flex-grow: 1;
 }
 
 .product-info h3 {
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.75rem 0;
   font-size: 1.25rem;
-  min-height: 2.5em; /* Aprox. para dos líneas de texto, asegurando alineación */
+  color: var(--text-primary);
+  min-height: 2.5em;
 }
 
 .product-description {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--text-secondary);
-  /* =====> CAMBIO CLAVE #3: Hacemos que la descripción ocupe el espacio sobrante <===== */
-  flex-grow: 1; 
+  flex-grow: 1;
   margin-bottom: 1rem;
   text-align: left;
   line-height: 1.5;
 }
 
+/* --- Pie de la Tarjeta --- */
 .product-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid var(--border-color);
   padding-top: 1rem;
+  margin-top: auto;
 }
 
 .product-price {
@@ -86,19 +99,22 @@ p {
   color: var(--text-primary);
 }
 
+/* --- Botón de Agregar al Carrito --- */
 .add-to-cart-btn {
   background-color: var(--primary-color);
-  color: white;
+  color: #fff;
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 0.5rem;
   cursor: pointer;
   font-weight: bold;
-  transition: background-color 0.2s;
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .add-to-cart-btn:hover:not(:disabled) {
   background-color: var(--primary-hover);
+  transform: scale(1.03);
 }
 
 .add-to-cart-btn:disabled {
@@ -107,7 +123,7 @@ p {
   opacity: 0.7;
 }
 
-/* --- ESTILOS DEL CARRITO FLOTANTE (SIN CAMBIOS) --- */
+/* --- Botón Flotante del Carrito --- */
 .cart-fab {
   position: fixed;
   bottom: 30px;
@@ -115,25 +131,64 @@ p {
   width: 60px;
   height: 60px;
   background-color: var(--success-color);
-  color: white;
+  color: #fff;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  font-size: 1.6rem;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
   text-decoration: none;
   z-index: 1000;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
+.cart-fab:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Contador del Carrito --- */
 .cart-badge {
   position: absolute;
-  top: -5px;
-  right: -5px;
+  top: -6px;
+  right: -6px;
   background-color: var(--danger-color);
-  color: white;
+  color: #fff;
   border-radius: 50%;
   padding: 2px 8px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: bold;
+}
+
+/* --- Responsividad --- */
+@media (max-width: 600px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  p {
+    font-size: 1rem;
+  }
+
+  .product-info h3 {
+    font-size: 1.1rem;
+  }
+
+  .product-description {
+    font-size: 0.9rem;
+  }
+
+  .add-to-cart-btn {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .cart-fab {
+    width: 50px;
+    height: 50px;
+    font-size: 1.3rem;
+    bottom: 20px;
+    right: 20px;
+  }
 }

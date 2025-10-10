@@ -9,7 +9,7 @@ import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { StripeService } from 'ngx-stripe';
 import { environment } from '../../../../environments/environments';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { OrderTypeModalComponent } from '../../../components/order-type-modal/order-type-modal';
 import { CartStateService } from '../../../services/cart-state';
 
@@ -34,16 +34,25 @@ export class CartComponent implements OnInit, OnDestroy {
   maxQuantity = 50;
   private stateSub: Subscription | undefined;
 
+  carritoForm: FormGroup;
+
   constructor(
     public orderService: OrderService,
     private authService: AuthService,
     private router: Router,
     private http: HttpClient,
     private stripeService: StripeService,
-    private cartStateService: CartStateService
+    private cartStateService: CartStateService,
+        private fb: FormBuilder
+
   ) {
     this.orderItems$ = this.orderService.orderItems$;
     this.orderTotal$ = this.orderService.orderTotal$;
+
+    this.carritoForm = this.fb.group({
+      fecha: ['', [Validators.required]],
+      telefono: ['', [Validators.required]]
+    });
   }
 
   ngOnInit(): void {
@@ -115,9 +124,9 @@ export class CartComponent implements OnInit, OnDestroy {
 
   onKeyUpPhone(){
     
-    this.cartStateService.contactPhone$.subscribe(phone => this.contactPhone = phone);
+    let telefono = this.carritoForm.controls['telefono'].value;
     console.log(this.contactPhone);
-    this.isProcessingPayment = this.contactPhone.length > 0;
+    this.isProcessingPayment = telefono.length > 0;
 
   }
 

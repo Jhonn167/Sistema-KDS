@@ -65,6 +65,8 @@ export class CartComponent implements OnInit, OnDestroy {
     });
     this.cartStateService.pickupDate$.subscribe(date => this.pickupDate = date);
     this.cartStateService.contactPhone$.subscribe(phone => this.contactPhone = phone);
+
+    this.bloquearBotones = this.orderType == 'futuro';
   }
 
   ngOnDestroy(): void {

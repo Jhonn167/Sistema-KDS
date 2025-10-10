@@ -1,3 +1,4 @@
+/* === Fondo oscuro y contenedor === */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -11,57 +12,143 @@
   z-index: 1050;
 }
 
+/* === Cuerpo del modal === */
 .modal-content {
-  background-color: white;
-  border-radius: 8px;
+  background-color: #fff;
+  border-radius: 10px;
   width: 90%;
   max-width: 500px;
-  max-height: 80vh;
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  overflow: hidden;
 }
 
+/* === Encabezado === */
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
   border-bottom: 1px solid #eee;
+  background-color: #f8fafc;
 }
 
-.modal-header h2 { margin: 0; }
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #1e293b;
+  font-weight: 600;
+}
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 2rem;
+  font-size: 1.8rem;
   cursor: pointer;
+  color: #64748b;
+  transition: color 0.2s ease;
 }
 
+.close-btn:hover {
+  color: #ef4444;
+}
+
+/* === Cuerpo del modal === */
 .modal-body {
   padding: 20px;
   overflow-y: auto;
 }
 
-.modifier-group { margin-bottom: 20px; }
-.modifier-group h4 { margin-top: 0; }
+/* === Grupos de modificadores === */
+.modifier-group {
+  margin-bottom: 22px;
+}
 
+.modifier-group h4 {
+  margin: 0 0 12px 0;
+  font-size: 1.1rem;
+  color: #334155;
+  font-weight: 600;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 4px;
+}
+
+/* === Opciones === */
 .option-item {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  gap: 10px; /* 🔹 Uniforma el espacio entre input y texto */
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
 }
-.option-item input { margin-right: 10px; }
-.option-item .price { color: #555; margin-left: 5px; }
 
+.option-item:hover {
+  background-color: #f1f5f9; /* Sutil hover para mejorar lectura */
+}
+
+.option-item input {
+  margin: 0;
+  width: 18px;
+  height: 18px;
+  accent-color: #007bff; /* 🔹 color moderno para los inputs */
+  flex-shrink: 0;
+}
+
+.option-item label {
+  font-size: 0.95rem;
+  color: #1e293b;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.option-item .price {
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* === Pie del modal === */
 .modal-footer {
   padding: 15px 20px;
   border-top: 1px solid #eee;
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+  background-color: #f8fafc;
 }
 
-.btn { padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; border: 1px solid transparent; }
-.btn-primary { background-color: #007bff; color: white; }
-.btn-secondary { background-color: #6c757d; color: white; }
+/* === Botones === */
+.btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #0056d2;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: #565e64;
+}

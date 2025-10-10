@@ -44,9 +44,9 @@
       </div>
 
       <div class="payment-options">
-        <button class="confirm-btn cash" (click)="confirmOrder()" [disabled]="isProcessingPayment"><span *ngIf="!isProcessingPayment">Pagar en Efectivo</span><span *ngIf="isProcessingPayment">Procesando...</span></button>
-        <button class="confirm-btn card" (click)="proceedToCheckout()" [disabled]="isProcessingPayment"><span *ngIf="!isProcessingPayment">Pagar con Tarjeta</span><span *ngIf="isProcessingPayment">Procesando...</span></button>
-        <button class="confirm-btn transfer" (click)="startTransferPayment()" [disabled]="isProcessingPayment"><span *ngIf="!isProcessingPayment">Pagar por Transferencia</span><span *ngIf="isProcessingPayment">Procesando...</span></button>
+        <button class="confirm-btn cash" (click)="confirmOrder()" [disabled]="habilitarBotones"><span *ngIf="!isProcessingPayment">Pagar en Efectivo</span><span *ngIf="isProcessingPayment">Procesando...</span></button>
+        <button class="confirm-btn card" (click)="proceedToCheckout()" [disabled]="habilitarBotones"><span *ngIf="!isProcessingPayment">Pagar con Tarjeta</span><span *ngIf="isProcessingPayment">Procesando...</span></button>
+        <button class="confirm-btn transfer" (click)="startTransferPayment()" [disabled]="habilitarBotones"><span *ngIf="!isProcessingPayment">Pagar por Transferencia</span><span *ngIf="isProcessingPayment">Procesando...</span></button>
       </div>
     </div>
   </div>

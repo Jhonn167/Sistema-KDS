@@ -31,6 +31,8 @@ export class CartComponent implements OnInit, OnDestroy {
   pickupDateAux: string = '';
 
   isProcessingPayment = false;
+  habilitarBotones = false;
+
   maxQuantity = 50;
   private stateSub: Subscription | undefined;
 
@@ -126,7 +128,7 @@ export class CartComponent implements OnInit, OnDestroy {
     
     //let telefono = this.carritoForm.controls['telefono'].value;
     console.log('telefono:' + this.contactPhone);
-    this.isProcessingPayment = this.contactPhone.length > 0;
+    this.habilitarBotones = this.contactPhone.length == 0;
 
   }
 

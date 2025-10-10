@@ -1,5 +1,4 @@
 // src/app/pages/public/cart/cart.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -12,6 +11,7 @@ import { StripeService } from 'ngx-stripe';
 import { environment } from '../../../../environments/environments';
 import { FormsModule } from '@angular/forms';
 import { OrderTypeModalComponent } from '../../../components/order-type-modal/order-type-modal';
+import { CartStateService } from '../../../services/cart-state';
 
 @Component({
   selector: 'app-cart',
@@ -24,7 +24,7 @@ export class CartComponent implements OnInit {
   orderItems$: Observable<CartItem[]>;
   orderTotal$: Observable<number>;
   
-  orderType: 'inmediato' | 'futuro' | null = null; // Inicia nulo para mostrar el modal
+  orderType: 'inmediato' | 'futuro' | null = null;
   pickupDate: string = '';
   minPickupDate: string = '';
   private pickupDateAux: string = '';
@@ -37,47 +37,55 @@ export class CartComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private http: HttpClient,
-    private stripeService: StripeService
+    private stripeService: StripeService,
+    private cartStateService: CartStateService
   ) {
     this.orderItems$ = this.orderService.orderItems$;
     this.orderTotal$ = this.orderService.orderTotal$;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // Al iniciar, leemos el tipo de orden guardado
+    this.cartStateService.orderType$.subscribe(type => {
+      this.orderType = type;
+      if (type) {
+        this.initializeDatePickers(type);
+      }
+    });
+  }
 
   onOrderTypeSelected(type: 'inmediato' | 'futuro'): void {
-    this.orderType = type;
+    this.cartStateService.setOrderType(type); // Guardamos la selección
+  }
+
+  private initializeDatePickers(type: 'inmediato' | 'futuro'): void {
     if (type === 'inmediato') {
-      this.setPickupTimeForToday();
-    } else {
-      this.setPickupDateForFuture();
+      const now = new Date();
+      now.setMinutes(now.getMinutes() + 30);
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      this.minPickupDate = `${hours}:${minutes}`;
+      if (!this.pickupDate || this.pickupDate < this.minPickupDate) {
+        this.pickupDate = this.minPickupDate;
+      }
+      this.pickupDateAux = this.pickupDate;
+    } else { // futuro
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const year = tomorrow.getFullYear();
+      const month = (tomorrow.getMonth() + 1).toString().padStart(2, '0');
+      const day = tomorrow.getDate().toString().padStart(2, '0');
+      this.minPickupDate = `${year}-${month}-${day}T09:00`;
+      if (!this.pickupDate || new Date(this.pickupDate) < new Date(this.minPickupDate)) {
+        this.pickupDate = `${year}-${month}-${day}T12:00`;
+      }
+      this.pickupDateAux = this.pickupDate;
     }
   }
 
-  private setPickupTimeForToday(): void {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() + 30); // 30 min de antelación
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    this.minPickupDate = `${hours}:${minutes}`;
-    this.pickupDate = this.minPickupDate;
-    this.pickupDateAux = this.minPickupDate;
-  }
-
-  private setPickupDateForFuture(): void {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const year = tomorrow.getFullYear();
-    const month = (tomorrow.getMonth() + 1).toString().padStart(2, '0');
-    const day = tomorrow.getDate().toString().padStart(2, '0');
-    this.minPickupDate = `${year}-${month}-${day}T09:00`; 
-    this.pickupDate = `${year}-${month}-${day}T12:00`;
-    this.pickupDateAux = this.pickupDate;
-  }
-  
   validatePickupTime(): void {
     if (this.pickupDate && this.minPickupDate && this.pickupDate < this.minPickupDate) {
-      alert('La hora de recogida no puede ser en el pasado. Se ha ajustado la hora a la más cercana disponible.');
+      alert('La hora de recogida no puede ser en el pasado. Hemos ajustado la hora a la más cercana disponible.');
       this.pickupDate = this.pickupDateAux;
     } else {
       this.pickupDateAux = this.pickupDate;
@@ -88,9 +96,12 @@ export class CartComponent implements OnInit {
     if (!this.authService.isLoggedIn()) { alert('Por favor, inicia sesión para continuar.'); this.router.navigate(['/login']); return; }
     if (this.isProcessingPayment) return;
 
-    if (this.orderType === 'futuro' && !this.contactPhone) {
-      alert('Por favor, ingresa un número de teléfono de contacto para programar tu pedido.');
-      return;
+    if (this.orderType === 'futuro') {
+      const phoneRegex = /^[0-9]{10}$/;
+      if (!this.contactPhone || !phoneRegex.test(this.contactPhone)) {
+        alert('Por favor ingresa un número de teléfono válido de 10 dígitos para programar tu pedido.');  
+        return;
+      }
     }
     
     this.isProcessingPayment = true;
@@ -103,11 +114,6 @@ export class CartComponent implements OnInit {
       estatus = 'Esperando Comprobante';
     }
 
-    const phoneRegex = /^[0-9]{10}$/;
-    if (!phoneRegex.test(this.contactPhone)) {
-    alert('Por favor ingresa un número de teléfono válido de 10 dígitos.');  
-    return;
-}
     const orderData = {
       items,
       tipo_pedido: this.orderType,

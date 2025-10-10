@@ -4,6 +4,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { environment } from '../../environments/environments';
+import { CartStateService } from './cart-state';
 
 export interface CartItem {
   cartItemId: string;
@@ -23,6 +24,7 @@ export class OrderService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/api/pedidos`;
   private storageKey = 'kds_cart';
+  private cartStateService = inject(CartStateService);
 
   private orderItems = new BehaviorSubject<CartItem[]>([]);
   orderItems$ = this.orderItems.asObservable();
@@ -105,6 +107,7 @@ export class OrderService {
   clearOrder(): void {
     this.orderItems.next([]);
     localStorage.removeItem(this.storageKey);
+    this.cartStateService.clearOrderType();
   }
 
   checkout(additionalData: any = {}): Observable<any> {

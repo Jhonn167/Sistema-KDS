@@ -1,30 +1,22 @@
-<!-- Muestra el modal si el tipo de orden no ha sido seleccionado Y el carrito no está vacío -->
+<!-- Muestra el modal solo si el tipo de orden no ha sido seleccionado Y el carrito no está vacío -->
 <app-order-type-modal 
   *ngIf="!orderType && (orderItems$ | async)?.length" 
   (typeSelected)="onOrderTypeSelected($event)">
 </app-order-type-modal>
 
-<!-- Muestra el contenido del carrito solo DESPUÉS de seleccionar el tipo -->
+<!-- Muestra el contenido del carrito DESPUÉS de seleccionar el tipo -->
 <div class="cart-container" *ngIf="orderType">
-  <div class="cart-header">
-    <h1>{{ orderType === 'inmediato' ? 'Tu Pedido de Hoy' : 'Tu Pedido Programado' }}</h1>
-    <a routerLink="/menu" class="continue-shopping-btn">← Seguir Comprando</a>
-  </div>
+  <h1>{{ orderType === 'inmediato' ? 'Tu Pedido de Hoy' : 'Tu Pedido Programado' }}</h1>
   
-  <div class="cart-content">
+  <div *ngIf="(orderItems$ | async)?.length" class="cart-content">
     <div class="cart-items">
-      <button class="clear-cart-btn" (click)="orderService.clearOrder()">Vaciar Carrito</button>
+      <button (click)="orderService.clearOrder()">Vaciar Carrito</button>
       <div *ngFor="let item of (orderItems$ | async)" class="cart-item">
-        <div class="item-details">
-          <h4>{{ item.nombre }}</h4>
-          <p>{{ item.precioFinal | currency:'MXN' }} (Precio unitario)</p>
-          <ul *ngIf="item.selectedOptions.length > 0" class="selected-options-list">
-            <li *ngFor="let option of item.selectedOptions">+ {{ option.nombre }} ({{ option.precio_adicional | currency:'MXN' }})</li>
-          </ul>
-        </div>
+        <!-- ... (detalles del item) ... -->
         <div class="item-controls">
           <button (click)="orderService.updateItemQuantity(item.cartItemId, -1)">-</button>
           <span>{{ item.cantidad }}</span>
+          <!-- AÑADIMOS LA VALIDACIÓN DE CANTIDAD MÁXIMA -->
           <button (click)="orderService.updateItemQuantity(item.cartItemId, 1)" [disabled]="(orderType === 'futuro' && item.cantidad >= maxQuantity) || item.cantidad >= item.stock">+</button>
         </div>
         <div class="item-subtotal">{{ (item.precioFinal * item.cantidad) | currency:'MXN' }}</div>
@@ -34,18 +26,19 @@
 
     <div class="cart-summary">
       <h3>Resumen</h3>
-      <div class="summary-row"><span>Subtotal</span><span>{{ (orderTotal$ | async) | currency:'MXN' }}</span></div>
-      <div class="summary-row total"><span>Total</span><span>{{ (orderTotal$ | async) | currency:'MXN' }}</span></div>
-      
+      <!-- ... (total) ... -->
       <div class="pickup-time-section">
-        <label for="pickupDate">{{ orderType === 'inmediato' ? 'Selecciona una hora para hoy:' : 'Selecciona fecha y hora de recogida:' }}</label>
+        <label for="pickupDate">{{ orderType === 'inmediato' ? 'Hora de recogida:' : 'Fecha y hora de recogida:' }}</label>
         <input 
           [type]="orderType === 'inmediato' ? 'time' : 'datetime-local'" 
           id="pickupDate" 
           [(ngModel)]="pickupDate" 
           [min]="minPickupDate" 
-          class="time-input"
-          (change)="validatePickupTime()">
+          class="time-input">
+      </div>
+      <div *ngIf="orderType === 'futuro'" class="form-group">
+        <label for="contactPhone">Tu número de teléfono de contacto:</label>
+        <input type="tel" id="contactPhone" [(ngModel)]="contactPhone" placeholder="Requerido para confirmar">
       </div>
       
       <div *ngIf="orderType === 'futuro'" class="form-group">
@@ -60,7 +53,6 @@
       </div>
     </div>
   </div>
-</div>
 
 <!-- Muestra el mensaje de carrito vacío si no hay items, sin importar si se seleccionó tipo o no -->
 <div *ngIf="!(orderItems$ | async)?.length" class="empty-cart-message">

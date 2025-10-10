@@ -167,7 +167,8 @@
   text-decoration: none;
   border-radius: 5px;
 }
-.continue-shopping-btn, .clear-cart-btn {
+
+.continue-shopping-btn {
   background-color: #6c757d;
   color: white;
   padding: 8px 15px;
@@ -177,8 +178,72 @@
   border: none;
   cursor: pointer;
 }
+
 .clear-cart-btn {
-  background: none;
-  border: 1px solid #dc3545;
+  background-color: transparent;
   color: #dc3545;
+  border: 2px solid #dc3545;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+}
+
+.clear-cart-btn:hover {
+  background-color: #dc3545;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
+}
+
+.clear-cart-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* === Botón "Seguir Comprando" === */
+.continue-shopping-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #6c757d;
+  color: white;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+  margin-bottom: 25px;
+}
+
+.continue-shopping-btn:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+}
+
+.continue-shopping-btn:active {
+  background-color: #4e555b;
+  transform: translateY(0);
+}
+
+/* Opcional: mejora visual del ícono de flecha */
+.continue-shopping-btn::before {
+  content: '←';
+  font-size: 1.1em;
+  margin-right: 6px;
+}
+
+/* Ajuste del header general */
+.cart-container h1 {
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .continue-shopping-btn {
+    display: block;
+    width: fit-content;
+    margin: 10px auto 25px auto;
+    text-align: center;
+  }
 }

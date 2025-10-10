@@ -103,6 +103,11 @@ export class CartComponent implements OnInit {
       estatus = 'Esperando Comprobante';
     }
 
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(this.contactPhone)) {
+    alert('Por favor ingresa un número de teléfono válido de 10 dígitos.');  
+    return;
+}
     const orderData = {
       items,
       tipo_pedido: this.orderType,

@@ -35,7 +35,7 @@
 }
 
 /* Estilos de los botones, consistentes en toda la app */
-.btn {
+ /* .btn { 
   padding: 10px 15px;
   border-radius: 5px;
   text-decoration: none;
@@ -44,9 +44,8 @@
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
-  justify-content: center; /* Centra el texto dentro del botón */
-  gap: 8px;
-  border: 1px solid transparent; /* Borde base para todos */
+  justify-content: center; Centra el texto dentro del botón 
+  gap: 8px
 }
 
 .btn-primary {
@@ -89,6 +88,7 @@
 .btn-danger:hover {
     background-color: #c82333;
 }
+*/  
 
 /* Mensajes de "cargando" o "no hay productos" */
 .info-message {

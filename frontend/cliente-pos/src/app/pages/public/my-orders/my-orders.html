@@ -21,10 +21,11 @@
       </thead>
       <tbody>
         <tr *ngFor="let order of orders">
-          <td data-label="ID Pedido">#{{ order.id_pedido }}</td>
-          <td data-label="Fecha">{{ order.fecha | date:'short' }}</td>
-          <td data-label="Total">{{ order.total | currency:'MXN' }}</td>
-          <td data-label="Estatus">
+          <td>#{{ order.id_pedido }}</td>
+          <td>{{ order.fecha | date:'short' }}</td>
+          <td>{{ order.total | currency:'MXN' }}</td>
+          <td>
+            <!-- CORRECCIÓN: Ahora llamamos a la nueva función getStatusClass() -->
             <span class="status" [ngClass]="getStatusClass(order.estatus)">
               {{ order.estatus }}
             </span>
@@ -34,3 +35,4 @@
     </table>
   </div>
 </div>
+

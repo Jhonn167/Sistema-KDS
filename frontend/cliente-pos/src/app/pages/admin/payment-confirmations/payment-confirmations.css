@@ -1,4 +1,3 @@
-/* Reutilizamos los estilos de la lista de productos para mantener la consistencia */
 :host {
   display: block;
   padding: 40px;
@@ -8,86 +7,121 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* CONTENEDOR PRINCIPAL */
 .list-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.list-container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 }
 
+/* ENCABEZADO */
 .header {
-  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #e9ecef;
   padding-bottom: 20px;
   margin-bottom: 30px;
 }
-
 .header h1 {
   margin: 0;
-  font-size: 1.8rem;
-  color: #333;
+  font-size: 1.9rem;
+  color: #343a40;
+  letter-spacing: 0.5px;
+}
+.header-actions {
+  display: flex;
+  gap: 10px;
 }
 
+/* MENSAJE INFORMATIVO */
 .info-message {
   text-align: center;
-  padding: 40px;
+  padding: 50px 20px;
   font-size: 1.1rem;
-  color: #666;
+  color: #6c757d;
+  border: 2px dashed #dee2e6;
+  border-radius: 10px;
+  background-color: #f8f9fa;
 }
 
+/* TABLA */
 .table-wrapper {
   overflow-x: auto;
+  border-radius: 10px;
 }
 
 .confirmations-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.confirmations-table th, .confirmations-table td {
-  padding: 15px;
+.confirmations-table th,
+.confirmations-table td {
+  padding: 15px 20px;
   border-bottom: 1px solid #e0e0e0;
   vertical-align: middle;
+  transition: background-color 0.2s ease;
 }
 
 .confirmations-table thead th {
   background-color: #f8f9fa;
   font-weight: bold;
+  color: #495057;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .confirmations-table tbody tr:hover {
-  background-color: #f1f1f1;
+  background-color: #f1f3f5;
 }
 
 .no-receipt {
   font-style: italic;
-  color: #888;
+  color: #adb5bd;
 }
 
+/* BOTONES */
 .btn {
-  padding: 8px 16px;
-  border-radius: 5px;
+  padding: 10px 18px;
+  border-radius: 6px;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
   border: none;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  font-size: 0.95rem;
 }
 
 .btn-primary {
   background-color: #28a745;
   color: white;
+  box-shadow: 0 3px 10px rgba(40, 167, 69, 0.2);
 }
 .btn-primary:hover {
   background-color: #218838;
+  box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+  transform: translateY(-2px);
 }
 
 .btn-secondary {
   background-color: #007bff;
   color: white;
+  box-shadow: 0 3px 10px rgba(0, 123, 255, 0.2);
 }
 .btn-secondary:hover {
   background-color: #0056b3;
+  box-shadow: 0 5px 15px rgba(0, 86, 179, 0.3);
+  transform: translateY(-2px);
 }

@@ -1,30 +1,38 @@
-/* src/app/pages/pos/pos.component.css - VERSIÓN CORREGIDA */
+/* src/app/pages/pos/pos.component.css - VERSIÓN RESPONSIVA FINAL */
 
+/* === CONTENEDOR PRINCIPAL === */
 .pos-container {
   display: flex;
   gap: 20px;
   padding: 20px;
-  height: calc(100vh - 102px); 
+  height: calc(100vh - 102px);
   box-sizing: border-box;
 }
+
+/* === GRID DE PRODUCTOS === */
 .product-grid-container {
   flex: 3;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Evita que el contenedor se desborde */
+  overflow: hidden;
 }
+
 .product-grid-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
-  padding-right: 10px; /* Alinea con el padding del scrollbar */
+  padding-right: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
+
 .product-grid-header h3 {
   margin: 0;
   font-size: 1.2rem;
   color: #333;
 }
+
 .btn-refresh {
   background-color: #007bff;
   color: white;
@@ -32,10 +40,15 @@
   padding: 8px 15px;
   border-radius: 5px;
   cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+.btn-refresh:hover {
+  background-color: #0056b3;
 }
 
+/* === CUADRÍCULA DE PRODUCTOS === */
 .product-grid {
-  flex-grow: 1; /* Ocupa el espacio restante */
+  flex-grow: 1;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 15px;
@@ -53,11 +66,14 @@
   background-color: #fff;
   display: flex;
   flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .product-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
+
 .product-card:disabled {
   background-color: #f1f1f1;
   cursor: not-allowed;
@@ -66,16 +82,33 @@
 
 .product-image-pos {
   width: 100%;
-  height: 80px; /* Altura fija para las imágenes del POS */
-  object-fit: contain; /* 'Contain' es mejor para logos o imágenes de producto */
+  height: 80px;
+  object-fit: contain;
   margin-bottom: 10px;
 }
 
-.product-name { font-size: 1.1em; font-weight: bold; }
-.product-price { font-size: 1.2em; color: #28a745; margin: 5px 0; }
-.product-stock { font-size: 0.9em; color: #6c757d; }
-.product-stock.out-of-stock { color: #dc3545; font-weight: bold; }
+.product-name {
+  font-size: 1.1em;
+  font-weight: bold;
+}
 
+.product-price {
+  font-size: 1.2em;
+  color: #28a745;
+  margin: 5px 0;
+}
+
+.product-stock {
+  font-size: 0.9em;
+  color: #6c757d;
+}
+
+.product-stock.out-of-stock {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+/* === SECCIÓN DEL TICKET === */
 .ticket {
   flex: 1;
   border: 1px solid #ddd;
@@ -83,40 +116,59 @@
   background-color: #f9f9f9;
   display: flex;
   flex-direction: column;
-  /* CAMBIO CLAVE:
-     Evitamos que el ticket se desborde si el contenido es muy grande. */
-  overflow: hidden; 
+  overflow: hidden;
 }
 
-.ticket h2 { 
-  text-align: center; 
-  padding: 15px; 
-  margin: 0; 
+.ticket h2 {
+  text-align: center;
+  padding: 15px;
+  margin: 0;
   border-bottom: 1px solid #ddd;
-  flex-shrink: 0; /* Evita que el título se encoja */
+  flex-shrink: 0;
 }
 
+/* === ÍTEMS DEL TICKET === */
 .ticket-items {
-  flex-grow: 1; /* Esta es la parte más importante: hace que la lista de items ocupe todo el espacio disponible */
-  overflow-y: auto; /* Permite que solo la lista de items tenga scroll */
+  flex-grow: 1;
+  overflow-y: auto;
   padding: 10px;
 }
-.empty-message { text-align: center; color: #888; padding: 20px; }
+
+.empty-message {
+  text-align: center;
+  color: #888;
+  padding: 20px;
+}
 
 .ticket-item {
-  display: grid; /* Usamos grid para mejor alineación */
+  display: grid;
   grid-template-columns: 1fr auto auto auto;
   gap: 10px;
   align-items: center;
   padding: 10px;
   border-bottom: 1px solid #eee;
 }
+
 .item-name {
   font-weight: 500;
 }
-.item-controls { display: flex; align-items: center; gap: 10px; }
-.item-controls button { width: 30px; height: 30px; }
-.item-total { font-weight: bold; text-align: right; }
+
+.item-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.item-controls button {
+  width: 30px;
+  height: 30px;
+}
+
+.item-total {
+  font-weight: bold;
+  text-align: right;
+}
+
 .ticket-item .remove-btn {
   background: none;
   border: none;
@@ -126,14 +178,16 @@
   padding: 0 5px;
 }
 
+/* === RESUMEN DEL TICKET === */
 .ticket-summary {
   padding: 20px;
   border-top: 2px solid #ccc;
-  flex-shrink: 0; /* Evita que esta sección se encoja */
+  flex-shrink: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
+
 .ticket-summary .total {
   width: 100%;
   display: flex;
@@ -141,9 +195,13 @@
   font-size: 1.5em;
   margin-bottom: 15px;
 }
-.ticket-summary .cancel-btn, .ticket-summary .checkout-btn {
+
+.ticket-summary .cancel-btn,
+.ticket-summary .checkout-btn {
   flex-grow: 1;
 }
+
+/* === BOTONES === */
 .checkout-btn {
   padding: 15px;
   font-size: 1.2em;
@@ -152,8 +210,16 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background 0.2s ease-in-out;
 }
-.checkout-btn:disabled { background-color: #aaa; cursor: not-allowed; }
+.checkout-btn:hover {
+  background-color: #0056b3;
+}
+.checkout-btn:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
 .cancel-btn {
   padding: 15px;
   font-size: 1.2em;
@@ -162,4 +228,106 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+.cancel-btn:hover {
+  background-color: #5a6268;
+}
+
+/* ===============================
+   📱 RESPONSIVIDAD
+   =============================== */
+
+/* --- Tablets --- */
+@media (max-width: 992px) {
+  .pos-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .product-grid-container {
+    flex: none;
+    order: 1;
+  }
+
+  .ticket {
+    order: 2;
+    margin-top: 20px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+  }
+
+  .product-card {
+    padding: 8px;
+  }
+
+  .product-image-pos {
+    height: 70px;
+  }
+
+  .ticket-summary {
+    flex-direction: column;
+  }
+
+  .checkout-btn,
+  .cancel-btn {
+    width: 100%;
+    font-size: 1.1em;
+  }
+}
+
+/* --- Móviles --- */
+@media (max-width: 600px) {
+  .pos-container {
+    padding: 10px;
+    gap: 15px;
+  }
+
+  .product-grid-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+  }
+
+  .product-card {
+    padding: 6px;
+    font-size: 0.9em;
+  }
+
+  .product-image-pos {
+    height: 60px;
+  }
+
+  .ticket-item {
+    grid-template-columns: 1fr auto;
+    gap: 5px;
+    text-align: left;
+  }
+
+  .item-total {
+    text-align: left;
+  }
+
+  .item-controls button {
+    width: 28px;
+    height: 28px;
+  }
+
+  .ticket-summary .total {
+    font-size: 1.2em;
+  }
+
+  .checkout-btn,
+  .cancel-btn {
+    padding: 12px;
+    font-size: 1em;
+  }
 }

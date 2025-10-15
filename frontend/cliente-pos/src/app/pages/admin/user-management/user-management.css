@@ -6,22 +6,108 @@
   box-sizing: border-box;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+/* CONTENEDOR PRINCIPAL */
 .list-container {
-  max-width: 1000px; margin: 0 auto; padding: 40px; background-color: white;
-  border-radius: 10px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
 }
-.header { border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 30px; }
-.header h1 { margin: 0; font-size: 1.8rem; color: #333; }
-.info-message { text-align: center; padding: 40px; font-size: 1.1rem; color: #666; }
-.table-wrapper { overflow-x: auto; }
-.users-table { width: 100%; border-collapse: collapse; text-align: left; }
-.users-table th, .users-table td { padding: 15px; border-bottom: 1px solid #e0e0e0; vertical-align: middle; }
-.users-table thead th { background-color: #f8f9fa; font-weight: bold; }
-.users-table tbody tr:hover { background-color: #f1f1f1; }
+.list-container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* ENCABEZADO */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+}
+.header h1 {
+  margin: 0;
+  font-size: 1.9rem;
+  color: #343a40;
+  letter-spacing: 0.5px;
+}
+
+/* MENSAJE INFORMATIVO */
+.info-message {
+  text-align: center;
+  padding: 50px 20px;
+  font-size: 1.1rem;
+  color: #6c757d;
+  border: 2px dashed #dee2e6;
+  border-radius: 10px;
+  background-color: #f8f9fa;
+}
+
+/* TABLA */
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 10px;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.users-table th,
+.users-table td {
+  padding: 15px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
+  transition: background-color 0.2s ease;
+}
+
+.users-table thead th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+  color: #495057;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.users-table tbody tr:hover {
+  background-color: #f1f3f5;
+}
+
+/* SELECTOR DE ROL */
 .role-select {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: white;
+  padding: 8px 14px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background-color: #ffffff;
   font-size: 1rem;
+  color: #495057;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #007bff 50%), 
+                    linear-gradient(135deg, #007bff 50%, transparent 50%);
+  background-position: calc(100% - 15px) calc(50% - 2px), calc(100% - 10px) calc(50% - 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.role-select:hover {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+.role-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25);
 }

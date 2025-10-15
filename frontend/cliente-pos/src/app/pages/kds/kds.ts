@@ -44,24 +44,40 @@ export class KdsComponent implements OnInit, OnDestroy {
   }
 
   private updateTimestamps(): void {
-    const now = Date.now();
-    this.pedidos.forEach(pedido => {
-      let startTime;
-      // Si está 'En Preparación', el cronómetro empieza desde que se marcó.
-      if (pedido.estatus === 'En Preparación' && pedido.preparacion_iniciada_en) {
-        startTime = new Date(pedido.preparacion_iniciada_en).getTime();
-      } else { // Si no, sigue mostrando el tiempo desde que se creó el pedido.
-        startTime = new Date(pedido.fecha).getTime();
-      }
-      
-      const secondsElapsed = Math.floor((now - startTime) / 1000);
-      const minutes = Math.floor(secondsElapsed / 60);
-      const seconds = secondsElapsed % 60;
-      pedido.tiempo_transcurrido = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    });
-  }
+  const now = Date.now();
+  this.pedidos.forEach(pedido => {
+    let startTime: number;
+
+    if (pedido.estatus === 'En Preparación' && pedido.preparacion_iniciada_en) {
+      // Tiempo cocinando: desde que se inició la preparación
+      startTime = new Date(pedido.preparacion_iniciada_en).getTime();
+      pedido.cronometroLabel = 'Tiempo cocinando';
+    } else if (pedido.estatus === 'Pendiente' || pedido.estatus === 'Programado') {
+      // Tiempo en espera: desde que llegó el pedido
+      startTime = new Date(pedido.fecha).getTime();
+      pedido.cronometroLabel = 'Tiempo en espera';
+    } else {
+      // Para otros estados, no mostrar cronómetro
+      pedido.tiempo_transcurrido = '';
+      pedido.cronometroLabel = '';
+      return;
+    }
+
+    const secondsElapsed = Math.floor((now - startTime) / 1000);
+    const minutes = Math.floor(secondsElapsed / 60);
+    const seconds = secondsElapsed % 60;
+    pedido.tiempo_transcurrido = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  });
+}
 
   actualizarEstatus(id: number, nuevoEstatus: string): void {
-    this.orderService.updateOrderStatus(id, nuevoEstatus).subscribe();
-  }
+  this.orderService.updateOrderStatus(id, nuevoEstatus).subscribe(() => {
+    const pedido = this.pedidos.find(p => p.id_pedido === id);
+    if (pedido && nuevoEstatus === 'En Preparación') {
+      // Guardamos el momento exacto en que inicia la preparación
+      pedido.preparacion_iniciada_en = new Date().toISOString();
+    }
+    pedido.estatus = nuevoEstatus;
+  });
+}
 }

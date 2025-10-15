@@ -47,6 +47,18 @@
 .time-info { text-align: right; }
 .time-info span { display: block; font-size: 0.8em; }
 .time-info strong { font-size: 1.4em; }
+.time-elapsed span {
+  font-weight: 500;
+  margin-right: 5px;
+}
+
+.time-elapsed.waiting {
+  color: #ffc107; /* amarillo para tiempo en espera */
+}
+
+.time-elapsed.cooking {
+  color: #28a745; /* verde para tiempo cocinando */
+}
 
 .card-body { padding: 18px; flex-grow: 1; }
 .card-body ul { list-style: none; padding: 0; margin: 0; }

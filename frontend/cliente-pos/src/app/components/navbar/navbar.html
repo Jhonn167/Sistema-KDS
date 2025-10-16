@@ -10,39 +10,39 @@
     <ng-container *ngIf="authService.isLoggedIn(); else publicNav">
       <!-- NAV ADMIN -->
       <nav *ngIf="authService.isAdmin()" class="main-nav">
-        <a routerLink="/pos" routerLinkActive="active" class="nav-link">Point of Sale</a>
-        <a routerLink="/admin/products" routerLinkActive="active" class="nav-link">Products</a>
-        <a routerLink="/admin/reports" routerLinkActive="active" class="nav-link">Reports</a>
-        <a routerLink="/admin/modifiers" routerLinkActive="active-link" (click)="closeMenu()">Modificadores</a>
-        <a routerLink="/kds" routerLinkActive="active" class="nav-link">Kitchen</a>
-        <a routerLink="/admin/users" routerLinkActive="active" class="nav-link">Users</a>
-        <a routerLink="/admin/categories" routerLinkActive="active" class="nav-link">Categorías</a>
-        <a routerLink="/admin/confirmations" routerLinkActive="active" class="nav-link">Confirmaciones</a>  
+        <a routerLink="/pos" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Point of Sale</a>
+        <a routerLink="/admin/products" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Products</a>
+        <a routerLink="/admin/reports" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Reports</a>
+        <a routerLink="/admin/modifiers" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Modificadores</a>
+        <a routerLink="/kds" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Kitchen</a>
+        <a routerLink="/admin/users" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Users</a>
+        <a routerLink="/admin/categories" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Categorías</a>
+        <a routerLink="/admin/confirmations" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Confirmaciones</a>  
       </nav>
       <!-- NAV EMPLEADO -->
       <nav *ngIf="authService.isEmpleado()" class="main-nav">
-        <a routerLink="/pos" routerLinkActive="active" class="nav-link">Point of Sale</a>
-        <a routerLink="/admin/confirmations" routerLinkActive="active" class="nav-link">Confirmaciones</a>
+        <a routerLink="/pos" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Point of Sale</a>
+        <a routerLink="/admin/confirmations" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Confirmaciones</a>
       </nav>
       <!-- NAV COCINERO -->
       <nav *ngIf="authService.isCocinero()" class="main-nav">
-        <a routerLink="/kds" routerLinkActive="active" class="nav-link">Kitchen</a>
+        <a routerLink="/kds" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Kitchen</a>
       </nav>
       <!-- NAV CLIENTE -->
       <nav *ngIf="authService.isCliente()" class="main-nav">
-        <a routerLink="/menu" routerLinkActive="active" class="nav-link">Menú</a>
-        <a routerLink="/mis-pedidos" routerLinkActive="active" class="nav-link">Mis Pedidos</a>
-        <a routerLink="/galeria" routerLinkActive="active" class="nav-link">Galería</a>
+        <a routerLink="/menu" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Menú</a>
+        <a routerLink="/mis-pedidos" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Mis Pedidos</a>
+        <a routerLink="/galeria" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Galería</a>
       </nav>
     </ng-container>
 
     <!-- NAV PÚBLICA (PARA VISITANTES NO LOGUEADOS) -->
     <ng-template #publicNav>
       <nav class="main-nav">
-        <a routerLink="/menu" routerLinkActive="active" class="nav-link">Menú</a>
-        <a routerLink="/galeria" routerLinkActive="active" class="nav-link">Galería</a>
-        <a routerLink="/nosotros" routerLinkActive="active" class="nav-link">Nosotros</a>
-        <a routerLink="/contacto" routerLinkActive="active" class="nav-link">Contacto</a>
+        <a routerLink="/menu" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Menú</a>
+        <a routerLink="/galeria" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Galería</a>
+        <a routerLink="/nosotros" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Nosotros</a>
+        <a routerLink="/contacto" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Contacto</a>
       </nav>
     </ng-template>
   </div>

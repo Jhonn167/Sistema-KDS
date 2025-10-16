@@ -2,8 +2,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../../services/product';
+import { CategoryService } from '../../services/category'; // <-- 1. Importa el CategoryService
 import { OrderService, CartItem } from '../../services/order';
-import { Observable, forkJoin } from 'rxjs'; // Importamos forkJoin
+import { Observable, forkJoin } from 'rxjs';
 import { ModifierModalComponent } from '../../components/modifier-modal/modifier-modal';
 import { PrintService } from '../../services/print';
 
@@ -15,10 +16,10 @@ import { PrintService } from '../../services/print';
   styleUrls: ['./pos.css']
 })
 export class PosComponent implements OnInit {
-  allProducts: any[] = []; // Guardará todos los productos sin filtrar
-  products: any[] = []; // La lista que se muestra en la pantalla (filtrada)
-  categories: any[] = []; // Guardará las categorías
-  selectedCategoryId: number | null = null; // Para saber qué categoría está activa
+  allProducts: any[] = [];
+  products: any[] = [];
+  categories: any[] = [];
+  selectedCategoryId: number | null = null;
 
   orderItems$: Observable<CartItem[]>;
   orderTotal$: Observable<number>;
@@ -27,6 +28,7 @@ export class PosComponent implements OnInit {
 
   constructor(
     private productService: ProductService,
+    private categoryService: CategoryService, // <-- 2. Inyecta el CategoryService
     public orderService: OrderService,
     private printService: PrintService
   ) {
@@ -39,32 +41,30 @@ export class PosComponent implements OnInit {
   }
 
   loadInitialData(): void {
-    // Usamos forkJoin para cargar productos y categorías al mismo tiempo
     forkJoin({
       products: this.productService.getProducts(),
-      categories: this.productService.getCategories()
+      categories: this.categoryService.getCategories() // <-- 3. Llama al servicio correcto
     }).subscribe(({ products, categories }) => {
       this.allProducts = products;
-      this.products = products; // Al inicio, mostramos todos
+      this.products = products;
       this.categories = categories;
-      this.selectedCategoryId = null; // Ninguna categoría seleccionada
+      this.selectedCategoryId = null;
     });
   }
+
   loadProducts(): void {
     this.productService.getProducts().subscribe(data => {
       this.products = data;
     });
   }
-
   refreshProducts(): void {
     this.loadInitialData();
   }
 
-  // --- FUNCIÓN NUEVA PARA FILTRAR ---
   filterByCategory(categoryId: number | null): void {
     this.selectedCategoryId = categoryId;
     if (categoryId === null) {
-      this.products = this.allProducts; // Si es null, mostramos todos
+      this.products = this.allProducts;
     } else {
       this.products = this.allProducts.filter(p => p.categoria_id === categoryId);
     }

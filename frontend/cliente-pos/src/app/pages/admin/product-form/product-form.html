@@ -1,5 +1,4 @@
 <!-- src/app/pages/admin/product-form/product-form.component.html -->
-
 <div class="form-container">
   <div class="header">
     <h1>{{ pageTitle }}</h1>
@@ -7,31 +6,43 @@
   </div>
   
   <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
-    <!-- ... (Tus campos existentes para nombre, descripción, etc.) ... -->
     <div class="form-group">
       <label for="nombre">Nombre del Producto</label>
-      <input type="text" id="nombre" formControlName="nombre" placeholder="Ej. Tacos al Pastor">
+      <input type="text" id="nombre" formControlName="nombre">
     </div>
+
     <div class="form-group">
       <label for="descripcion">Descripción</label>
-      <textarea id="descripcion" formControlName="descripcion" rows="3" placeholder="Ej. Tortilla de maíz..."></textarea>
+      <textarea id="descripcion" formControlName="descripcion" rows="3"></textarea>
     </div>
+
     <div class="form-group">
       <label for="precio">Precio</label>
-      <input type="number" id="precio" formControlName="precio" placeholder="Ej. 120.50">
+      <input type="number" id="precio" formControlName="precio">
     </div>
+
     <div class="form-group">
-      <label for="stock">Cantidad en Inventario (Stock)</label>
-      <input type="number" id="stock" formControlName="stock" placeholder="Ej. 100">
+      <label for="stock">Stock</label>
+      <input type="number" id="stock" formControlName="stock">
     </div>
+
+    <!-- Selector de Categoría -->
+    <div class="form-group">
+      <label for="categoria_id">Categoría</label>
+      <select id="categoria_id" formControlName="categoria_id">
+        <option [ngValue]="null">-- Sin Categoría --</option>
+        <option *ngFor="let cat of categories" [value]="cat.id_categoria">{{ cat.nombre }}</option>
+      </select>
+    </div>
+
+    <!-- Subida de Imagen -->
     <div class="form-group">
       <label for="imagen">Imagen del Producto</label>
       <img [src]="imageUrlPreview" *ngIf="imageUrlPreview" class="image-preview">
       <input type="file" (change)="onFileSelected($event)">
     </div>
 
-
-    <!-- --- SECCIÓN NUEVA: ASIGNAR MODIFICADORES --- -->
+    <!-- Asignación de Modificadores -->
     <div class="form-group" formArrayName="modifierGroups" *ngIf="allModifierGroups.length > 0">
         <label>Asignar Grupos de Modificadores</label>
         <div class="modifiers-checklist">
@@ -41,7 +52,6 @@
             </div>
         </div>
     </div>
-    <!-- --- FIN DE SECCIÓN NUEVA --- -->
 
     <button type="submit" [disabled]="productForm.invalid" class="submit-btn">
       {{ isEditMode ? 'Actualizar Producto' : 'Guardar Producto' }}

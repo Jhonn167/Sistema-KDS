@@ -1,9 +1,12 @@
+// src/app/pages/admin/product-form/product-form.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../../../services/product';
-import { ModifierService } from '../../../services/modifier'; // <-- Importamos el nuevo servicio
+import { CategoryService } from '../../../services/category';
+import { ModifierService } from '../../../services/modifier';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -20,13 +23,14 @@ export class ProductFormComponent implements OnInit {
   pageTitle = 'Crear Producto';
   imageUrlPreview: string | ArrayBuffer | null = null;
   
-  // Nuevas propiedades para los modificadores
+  categories: any[] = [];
   allModifierGroups: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
-    private modifierService: ModifierService, // <-- Inyectamos el servicio
+    private categoryService: CategoryService,
+    private modifierService: ModifierService,
     private router: Router,
     private route: ActivatedRoute
   ) {
@@ -37,7 +41,6 @@ export class ProductFormComponent implements OnInit {
       stock: [null, [Validators.required, Validators.min(0)]],
       categoria_id: [null],
       imagen_url: [null],
-      // Nuevo FormArray para manejar los checkboxes de los modificadores
       modifierGroups: this.fb.array([]) 
     });
   }
@@ -45,7 +48,8 @@ export class ProductFormComponent implements OnInit {
   ngOnInit(): void {
     this.productId = this.route.snapshot.paramMap.get('id');
     
-    // Usamos forkJoin para cargar los datos del producto y los modificadores al mismo tiempo
+    // Cargamos todas las dependencias necesarias
+    const categories$ = this.categoryService.getCategories();
     const modifierGroups$ = this.modifierService.getModifierGroups();
 
     if (this.productId) {
@@ -53,8 +57,9 @@ export class ProductFormComponent implements OnInit {
       this.pageTitle = 'Editar Producto';
       const product$ = this.productService.getProductById(this.productId);
 
-      forkJoin([product$, modifierGroups$]).subscribe(([product, groups]) => {
-        this.allModifierGroups = groups;
+      forkJoin([product$, categories$, modifierGroups$]).subscribe(([product, categories, modifiers]) => {
+        this.categories = categories;
+        this.allModifierGroups = modifiers;
         this.buildModifierCheckboxes(product.modificadores || []);
         this.productForm.patchValue(product);
         if (product.imagen_url) {
@@ -62,14 +67,14 @@ export class ProductFormComponent implements OnInit {
         }
       });
     } else {
-      modifierGroups$.subscribe(groups => {
-        this.allModifierGroups = groups;
+      forkJoin([categories$, modifierGroups$]).subscribe(([categories, modifiers]) => {
+        this.categories = categories;
+        this.allModifierGroups = modifiers;
         this.buildModifierCheckboxes([]);
       });
     }
   }
   
-  // --- NUEVAS FUNCIONES PARA MANEJAR MODIFICADORES ---
   get modifierGroupsFormArray() {
     return this.productForm.get('modifierGroups') as FormArray;
   }
@@ -77,8 +82,7 @@ export class ProductFormComponent implements OnInit {
   private buildModifierCheckboxes(assignedModifiers: any[]) {
     const assignedGroupIds = new Set(assignedModifiers.map(m => m.id_grupo));
     this.allModifierGroups.forEach(group => {
-      const isAssigned = assignedGroupIds.has(group.id_grupo);
-      this.modifierGroupsFormArray.push(new FormControl(isAssigned));
+      this.modifierGroupsFormArray.push(new FormControl(assignedGroupIds.has(group.id_grupo)));
     });
   }
   
@@ -92,41 +96,33 @@ export class ProductFormComponent implements OnInit {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files.length > 0) {
       const file = target.files[0];
-      
       const reader = new FileReader();
       reader.onload = () => { this.imageUrlPreview = reader.result; };
       reader.readAsDataURL(file);
 
       this.productService.uploadImage(file).subscribe({
-        next: (response) => {
-          console.log('Imagen subida con éxito. URL:', response.imageUrl);
-          this.productForm.patchValue({ imagen_url: response.imageUrl });
-        },
-        error: (err) => {
-          console.error('Error al subir la imagen:', err);
-          alert('Hubo un error al subir la imagen.');
-        }
+        next: (response) => this.productForm.patchValue({ imagen_url: response.imageUrl }),
+        error: (err) => console.error('Error al subir la imagen:', err)
       });
     }
   }
 
   onSubmit(): void {
-    if (this.productForm.invalid) {
-      return;
-    }
+    if (this.productForm.invalid) return;
 
     const productData = this.productForm.value;
+    if (productData.categoria_id) {
+      productData.categoria_id = parseInt(productData.categoria_id, 10);
+    }
     const selectedModifierIds = this.getSelectedModifierGroupIds();
 
     if (this.isEditMode && this.productId) {
-      // Flujo de Edición
       this.productService.updateProduct(this.productId, productData).subscribe(() => {
         this.productService.assignModifiersToProduct(this.productId!, selectedModifierIds).subscribe(() => {
           this.router.navigate(['/admin/products']);
         });
       });
     } else {
-      // Flujo de Creación
       this.productService.createProduct(productData).subscribe(response => {
         const newProductId = response.productId;
         this.productService.assignModifiersToProduct(newProductId.toString(), selectedModifierIds).subscribe(() => {

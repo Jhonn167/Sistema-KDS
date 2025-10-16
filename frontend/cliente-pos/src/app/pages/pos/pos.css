@@ -1,7 +1,6 @@
 /* src/app/pages/pos/pos.component.css */
 
 /* --- FUENTES Y VARIABLES (ADAPTADAS DE TU DISEÑO) --- */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 :host {
   --primary-blue: #0d6efd;

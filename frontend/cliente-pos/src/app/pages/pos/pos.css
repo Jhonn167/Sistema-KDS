@@ -11,7 +11,7 @@
   --white: #ffffff;
   --border-color: #dee2e6;
   --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  font-family: 'Poppins', sans-serif;
+  font-family: sans-serif;
   display: block;
   background-color: var(--white);
 }
@@ -30,7 +30,7 @@
 /* --- BARRA DE BÚSQUEDA Y FILTROS --- */
 .search-bar { display: flex; align-items: center; border: 1px solid var(--border-color); border-radius: 8px; padding: 0.5rem 1rem; margin-bottom: 1.5rem; }
 .search-bar i { color: var(--light-text); }
-.search-bar input { border: none; outline: none; width: 100%; margin-left: 0.5rem; font-size: 1rem; font-family: 'Poppins', sans-serif; }
+.search-bar input { border: none; outline: none; width: 100%; margin-left: 0.5rem; font-size: 1rem; font-family: sans-serif; }
 .category-filters { display: flex; gap: 0.8rem; margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 10px; }
 .filter-btn { background-color: #f8f9fa; border: 1px solid var(--border-color); border-radius: 20px; padding: 0.6rem 1.2rem; cursor: pointer; font-weight: 500; white-space: nowrap; }
 .filter-btn.active { background-color: var(--light-blue); color: var(--primary-blue); border-color: var(--primary-blue); }

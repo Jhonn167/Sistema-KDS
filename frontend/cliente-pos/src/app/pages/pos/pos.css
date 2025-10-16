@@ -42,6 +42,7 @@
   cursor: pointer;
   transition: background 0.2s ease-in-out;
 }
+
 .btn-refresh:hover {
   background-color: #0056b3;
 }
@@ -212,9 +213,11 @@
   cursor: pointer;
   transition: background 0.2s ease-in-out;
 }
+
 .checkout-btn:hover {
   background-color: #0056b3;
 }
+
 .checkout-btn:disabled {
   background-color: #aaa;
   cursor: not-allowed;
@@ -230,6 +233,7 @@
   cursor: pointer;
   transition: background 0.2s ease-in-out;
 }
+
 .cancel-btn:hover {
   background-color: #5a6268;
 }
@@ -330,44 +334,47 @@
     padding: 12px;
     font-size: 1em;
   }
+}
   /* src/app/pages/pos/pos.component.css */
 
-/* ... (todos tus estilos existentes) ... */
+  /* ... (todos tus estilos existentes) ... */
 
-/* --- ESTILOS NUEVOS PARA LA BARRA DE CATEGORÍAS --- */
-.category-bar {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
-  padding-bottom: 10px;
-  overflow-x: auto; /* Permite scroll horizontal si hay muchas categorías */
-  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
-}
+  /* --- ESTILOS NUEVOS PARA LA BARRA DE CATEGORÍAS --- */
+  .category-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    overflow-x: auto;
+    /* Permite scroll horizontal si hay muchas categorías */
+    -webkit-overflow-scrolling: touch;
+    /* Scroll suave en iOS */
+  }
 
-/* Ocultar la barra de scroll visualmente */
-.category-bar::-webkit-scrollbar {
-  display: none;
-}
+  /* Ocultar la barra de scroll visualmente */
+  .category-bar::-webkit-scrollbar {
+    display: none;
+  }
 
-.category-btn {
-  padding: 8px 16px;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  background-color: #f0f0f0;
-  cursor: pointer;
-  font-weight: 500;
-  white-space: nowrap; /* Evita que el texto se parta en dos líneas */
-  transition: all 0.2s ease;
-}
+  .category-btn {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    font-weight: 500;
+    white-space: nowrap;
+    /* Evita que el texto se parta en dos líneas */
+    transition: all 0.2s ease;
+  }
 
-.category-btn:hover {
-  background-color: #ddd;
-}
+  .category-btn:hover {
+    background-color: #ddd;
+  }
 
-/* Estilo para el botón de la categoría activa */
-.category-btn.active {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
-}
-}
+  /* Estilo para el botón de la categoría activa */
+  .category-btn.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+  }

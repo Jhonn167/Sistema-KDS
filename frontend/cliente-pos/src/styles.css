@@ -1,7 +1,6 @@
 /* src/styles.css */
 
 /* --- 1. Paleta de Colores y Variables Globales --- */
-@import url('[https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap)');
 
 :root {
   --primary-color: #0d6efd;

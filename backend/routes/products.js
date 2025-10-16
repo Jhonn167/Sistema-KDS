@@ -18,16 +18,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// --- RUTA NUEVA: OBTENER TODAS LAS CATEGORÍAS ---
-router.get('/categories', checkAuth, async (req, res) => {
-    try {
-        const { rows } = await pool.query('SELECT * FROM categorias ORDER BY nombre ASC');
-        res.status(200).json(rows);
-    } catch (error) {
-        console.error("Error al obtener categorías:", error);
-        res.status(500).json({ message: 'Error en el servidor.' });
-    }
-});
 
 // OBTENER TODOS LOS PRODUCTOS PARA EL PANEL DE ADMIN
 router.get('/admin', checkRole(['admin']), async (req, res) => {

@@ -1,0 +1,25 @@
+<div class="list-container">
+  <div class="header"><h1>Gestión de Categorías</h1></div>
+  <div class="content-wrapper">
+    <div class="form-card">
+      <h2>Crear Nueva Categoría</h2>
+      <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+        <input formControlName="nombre" placeholder="Nombre (ej. Bebidas)">
+        <textarea formControlName="descripcion" placeholder="Descripción (opcional)"></textarea>
+        <button type="submit" [disabled]="categoryForm.invalid">Guardar Categoría</button>
+      </form>
+    </div>
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead><tr><th>Nombre</th><th>Descripción</th><th>Acciones</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let cat of categories">
+            <td>{{ cat.nombre }}</td>
+            <td>{{ cat.descripcion }}</td>
+            <td><button (click)="onDelete(cat.id_categoria)">Eliminar</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

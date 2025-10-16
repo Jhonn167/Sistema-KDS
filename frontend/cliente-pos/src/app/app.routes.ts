@@ -27,6 +27,7 @@ import { ResetPasswordComponent } from './pages/public/reset-password/reset-pass
 import { PaymentConfirmationsComponent } from './pages/admin/payment-confirmations/payment-confirmations';
 import { UploadReceiptComponent } from './pages/public/upload-receipt/upload-receipt';
 import { UserManagementComponent } from './pages/admin/user-management/user-management';
+import { CategoryListComponent } from './pages/admin/category-list/category-list'; 
 
 export const routes: Routes = [
   // Redirección principal al menú
@@ -59,6 +60,7 @@ export const routes: Routes = [
     children: [
       { path: 'products', component: ProductListComponent },
       { path: 'products/new', component: ProductFormComponent },
+      { path: 'categories', component: CategoryListComponent },
       { path: 'products/edit/:id', component: ProductFormComponent },
       { path: 'modifiers', component: ModifierListComponent },
       { path: 'reports', component: ReportsComponent },

@@ -1,64 +1,45 @@
 /* src/styles.css */
 
 /* --- 1. Paleta de Colores y Variables Globales --- */
+@import url('[https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap)');
+
 :root {
-  --primary-color: #2563eb;
-  --primary-hover: #1d4ed8;
-  --secondary-color: #475569;
-  --secondary-hover: #334155;
-  --success-color: #16a34a;
-  --danger-color: #dc2626;
-  --warning-color: #f59e0b;
-
-  --background-color: #f1f5f9;
+  --primary-color: #0d6efd;
+  --primary-hover: #0b5ed7;
+  --light-blue: #e7f1ff;
+  --secondary-color: #6c757d;
+  --secondary-hover: #5a6268;
+  --success-color: #198754;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  
+  --background-color: #f4f3f8;
   --surface-color: #ffffff;
-
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-
-  --border-color: #e2e8f0;
-
-  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  
+  --text-primary: #343a40;
+  --text-secondary: #6c757d;
+  
+  --border-color: #dee2e6;
+  
+  --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* --- 2. Reset y Estilos Base --- */
-* {
-  box-sizing: border-box;
-}
-
+/* --- 2. Reseteo y Estilos Base --- */
 body {
   margin: 0;
   font-family: var(--font-family);
   background-color: var(--background-color);
   color: var(--text-primary);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  line-height: 1.6;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  margin-top: 0;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-a {
-  color: var(--primary-color);
-  text-decoration: none;
-}
-a:hover {
-  text-decoration: underline;
-}
-
-/* --- 3. Botones y Formularios --- */
+/* --- 3. Estilos Globales para Componentes Comunes --- */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 500;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -75,126 +56,4 @@ a:hover {
 }
 .btn-primary:hover:not(:disabled) {
   background-color: var(--primary-hover);
-}
-
-.btn-secondary {
-  background-color: var(--secondary-color);
-  color: white;
-}
-.btn-secondary:hover:not(:disabled) {
-  background-color: var(--secondary-hover);
-}
-
-.btn-danger {
-  background-color: var(--danger-color);
-  color: white;
-}
-
-input,
-select,
-textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  font-family: var(--font-family);
-  box-sizing: border-box;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-  outline: 2px solid var(--primary-color);
-  border-color: transparent;
-}
-
-/* --- 4. Tarjetas y Contenedores --- */
-.card {
-  background-color: var(--surface-color);
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  padding: 1.5rem;
-  margin: 1rem auto;
-  max-width: 100%;
-  transition: transform 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-3px);
-}
-
-/* --- 5. Layouts Responsivos --- */
-
-/* Contenedor general */
-.container {
-  width: 90%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Grid flexible para secciones con varias tarjetas */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-/* Ajustes de tipografía y espaciado por tamaño de pantalla */
-@media (max-width: 1024px) {
-  h1 {
-    font-size: 1.8rem;
-  }
-  .btn {
-    padding: 0.65rem 1.2rem;
-  }
-  .card {
-    padding: 1.25rem;
-  }
-}
-
-@media (max-width: 768px) {
-  body {
-    font-size: 0.95rem;
-  }
-
-  h1 {
-    font-size: 1.6rem;
-  }
-  h2 {
-    font-size: 1.3rem;
-  }
-
-  .btn {
-    width: 100%;
-    padding: 0.8rem;
-    font-size: 1rem;
-  }
-
-  .container {
-    width: 95%;
-  }
-}
-
-@media (max-width: 480px) {
-  body {
-    font-size: 0.9rem;
-  }
-
-  h1 {
-    font-size: 1.4rem;
-  }
-
-  .card {
-    padding: 1rem;
-    box-shadow: 0 2px 4px rgb(0 0 0 / 0.08);
-  }
-
-  input, select, textarea {
-    font-size: 0.95rem;
-  }
-
-  .btn {
-    font-size: 0.9rem;
-  }
 }

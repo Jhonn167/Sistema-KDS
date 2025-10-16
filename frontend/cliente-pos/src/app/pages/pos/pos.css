@@ -37,14 +37,17 @@
 .filter-btn.active { background-color: var(--light-blue); color: var(--primary-blue); border-color: var(--primary-blue); }
 
 /* --- GRID DE PRODUCTOS --- */
+/* En src/app/pages/pos/pos.component.css */
 .product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 1.5rem;
-    overflow-y: auto;
-    flex-grow: 1;
-    padding-right: 10px;
+  display: grid;
+  /* CAMBIO: Reducimos el tamaño mínimo de 160px a 140px */
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1.5rem;
+  overflow-y: auto;
+  flex-grow: 1;
+  padding-right: 10px;
 }
+
 .product-card {
     border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem;
     text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer;

@@ -1,226 +1,136 @@
 /* src/app/components/navbar/navbar.component.css */
 
-.navbar {
+.app-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #1e293b; /* Azul oscuro/gris */
   padding: 0.75rem 1.5rem;
-  color: white;
-  position: sticky; /* Se queda pegada arriba */
+  background-color: var(--surface-color);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
   top: 0;
-  z-index: 1000; /* Clave: Asegura que esté por encima de todo */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-
-  }
-
-.navbar-brand a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 1.5rem;
+  z-index: 1010; /* Z-index alto para estar sobre todo */
 }
 
-/* Estilos del botón de hamburguesa */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.app-icon {
+  background-color: var(--primary-color);
+  color: var(--surface-color);
+  font-weight: bold;
+  padding: 0.7rem;
+  border-radius: 8px;
+}
+
+.header-left h1 {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin: 0;
+  margin-right: 1.5rem;
+}
+
+.main-nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-weight: 500;
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+}
+
+.nav-link.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.account-btn {
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none; /* Para que el <a> se vea como botón */
+}
+
+.account-btn i {
+  font-size: 0.9em;
+}
+
+/* --- RESPONSIVIDAD PARA MÓVIL --- */
 .hamburger-button {
-  display: none; /* Oculto por defecto en escritorio */
+  display: none; /* Oculto en escritorio */
   background: none;
   border: none;
-  color: white;
-  font-size: 2rem;
-  cursor: pointer;
-}
-
-.navbar-links a {
-  color: #adb5bd;
-  text-decoration: none;
-  margin: 0 1rem;
-  font-size: 1.1rem;
-  transition: color 0.2s;
-}
-
-.navbar-links a:hover, .navbar-links a.active-link {
-  color: white;
-}
-
-.navbar-actions button {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/* --- ESTILOS PARA MÓVIL (PANTALLAS PEQUEÑAS) --- */
-/* Media Query: Aplica estos estilos si el ancho de la pantalla es 768px o menos */
-@media (max-width: 768px) {
-  .hamburger-button {
-    display: block; /* Hacemos visible el botón de hamburguesa */
-  }
-
-  .navbar-links-container {
-    display: none; /* Ocultamos el contenedor de enlaces por defecto */
-    position: absolute;
-    top: 100%; /* Justo debajo de la navbar */
-    left: 0;
-    right: 0;
-    background-color: #343a40;
-    flex-direction: column;
-    padding: 1rem;
-    border-top: 1px solid #495057;
-  }
-
-  .navbar-links-container.is-active {
-    display: flex; /* Lo mostramos cuando se hace clic */
-  }
-
-  .navbar-links {
-    display: flex;
-    flex-direction: column; /* Enlaces en vertical */
-    align-items: center;
-    width: 100%;
-  }
-
-  .navbar-links a {
-    margin: 0.8rem 0; /* Espaciado vertical */
-    width: 100%;
-    text-align: center;
-  }
-  
-  .navbar-actions {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid #064079;
-    width: 100%;
-    text-align: center;
-    color: #dc3545;
-  }
-}
-
-/* --- ESTILOS PARA ESCRITORIO (PANTALLAS GRANDES) --- */
-/* Media Query: Aplica estos estilos si el ancho de la pantalla es mayor a 768px */
-@media (min-width: 769px) {
-  .navbar-links-container {
-    display: flex; /* Mostramos el contenedor de enlaces */
-    align-items: center;
-  }
-}
-
-/* ... (tus estilos existentes para .navbar, .hamburger-button, etc.) ... */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #343a40;
-  padding: 0.5rem 2rem;
-  color: white;
-  position: relative;
-}
-
-.navbar-brand a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
   font-size: 1.5rem;
+  color: var(--text-primary);
+  cursor: pointer;
 }
 
-.hamburger-button {
+.mobile-menu {
   display: none;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 2rem;
-  cursor: pointer;
+  position: fixed;
+  top: 65px; /* Altura de la navbar */
+  left: 0;
+  width: 100%;
+  background: var(--surface-color);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  z-index: 1000;
+  padding: 1rem;
 }
 
-.navbar-links-container {
+.mobile-menu.is-active {
+  display: block;
+}
+
+.mobile-nav-links {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 1rem;
 }
-
-.navbar-links {
-  display: flex;
-  align-items: center;
-}
-
-.navbar-links a {
-  color: #adb5bd;
+.mobile-nav-links a {
   text-decoration: none;
-  margin: 0 1rem;
+  color: var(--text-primary);
   font-size: 1.1rem;
-  transition: color 0.2s;
-}
-
-.navbar-links a:hover, .navbar-links a.active-link {
-  color: white;
-}
-
-.navbar-actions {
-  margin-left: 1rem;
-}
-
-.navbar-actions button {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem;
   border-radius: 5px;
-  cursor: pointer;
+}
+.mobile-nav-links a:hover {
+  background-color: #f1f5f9;
 }
 
-/* --- ESTILOS NUEVOS Y CORREGIDOS --- */
-/* Estilo para el enlace de Iniciar Sesión que parece un botón */
-.btn-login {
-  background-color: #007bff;
-  color: white !important; /* !important anula el color morado de :visited */
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: background-color 0.2s;
-}
-
-.btn-login:hover {
-  background-color: #0056b3;
-  color: white !important;
-}
-/* ---------------------------------- */
-
-
-@media (max-width: 992px) { /* Ajustamos el breakpoint para que se active antes */
+@media (max-width: 992px) {
+  .main-nav {
+    display: none; /* Ocultamos la navegación de escritorio */
+  }
   .hamburger-button {
-    display: block;
+    display: block; /* Mostramos el botón de hamburguesa */
   }
-  .navbar-links-container {
+  .account-btn {
+    /* Opcional: Ocultar el botón de cuenta con texto en móvil */
     display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background-color: #343a40;
-    flex-direction: column;
-    padding: 1rem;
-    border-top: 1px solid #495057;
-  }
-  .navbar-links-container.is-active {
-    display: flex;
-  }
-  .navbar-links {
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-  }
-  .navbar-links a {
-    margin: 0.8rem 0;
-    width: 100%;
-    text-align: center;
-  }
-  .navbar-actions {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid #495057;
-    width: 100%;
-    text-align: center;
   }
 }

@@ -9,9 +9,14 @@ import { environment } from '../../environments/environments';
   providedIn: 'root'
 })
 export class ProductService {
-  private apiUrl = `${environment.apiUrl}/api`;
+  private apiUrl = `${environment.apiUrl}/api`; 
 
   constructor(private http: HttpClient) { }
+
+  // --- MÉTODO NUEVO PARA OBTENER CATEGORÍAS ---
+  getCategories(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/products/categories`);
+  }
 
   getProducts(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/products`);

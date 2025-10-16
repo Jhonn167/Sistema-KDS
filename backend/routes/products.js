@@ -1,6 +1,9 @@
+// backend/routes/products.js
+
 const express = require('express');
 const pool = require('../db');
 const checkAuth = require('../middleware/check-auth');
+const checkRole = require('../middleware/checkRole');
 
 const router = express.Router();
 
@@ -15,17 +18,25 @@ router.get('/', async (req, res) => {
   }
 });
 
-// OBTENER TODOS LOS PRODUCTOS PARA EL PANEL DE ADMIN (Ruta específica)
-router.get('/admin', checkAuth, async (req, res) => {
-  if (req.userData.rol !== 'admin') {
-    return res.status(403).json({ message: 'Acceso denegado.' });
-  }
+// --- RUTA NUEVA: OBTENER TODAS LAS CATEGORÍAS ---
+router.get('/categories', checkAuth, async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM categorias ORDER BY nombre ASC');
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error("Error al obtener categorías:", error);
+        res.status(500).json({ message: 'Error en el servidor.' });
+    }
+});
+
+// OBTENER TODOS LOS PRODUCTOS PARA EL PANEL DE ADMIN
+router.get('/admin', checkRole(['admin']), async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM productos ORDER BY id_producto ASC');
     res.status(200).json(rows);
   } catch (error) {
     console.error("ERROR DETALLADO EN GET /api/products/admin:", error);
-    res.status(500).json({ message: 'Error al obtener todos los productos para el admin', error: error.message });
+    res.status(500).json({ message: 'Error al obtener todos los productos para el admin' });
   }
 });
 
@@ -33,24 +44,18 @@ router.get('/admin', checkAuth, async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-
         const productQuery = 'SELECT * FROM productos WHERE id_producto = $1';
         const productResult = await pool.query(productQuery, [id]);
-
         if (productResult.rows.length === 0) {
             return res.status(404).json({ message: 'Producto no encontrado' });
         }
         const product = productResult.rows[0];
-
         const modifiersQuery = `
             SELECT 
                 g.id_grupo, g.nombre, g.tipo_seleccion,
                 COALESCE(
-                    json_agg(
-                        json_build_object(
-                            'id_opcion', o.id_opcion, 'nombre', o.nombre, 'precio_adicional', o.precio_adicional
-                        ) ORDER BY o.id_opcion ASC
-                    ) FILTER (WHERE o.id_opcion IS NOT NULL), '[]'
+                    json_agg(json_build_object('id_opcion', o.id_opcion, 'nombre', o.nombre, 'precio_adicional', o.precio_adicional) ORDER BY o.id_opcion ASC) 
+                    FILTER (WHERE o.id_opcion IS NOT NULL), '[]'
                 ) AS opciones
             FROM producto_modificadores pm
             JOIN modificador_grupos g ON pm.id_grupo = g.id_grupo
@@ -59,9 +64,7 @@ router.get('/:id', async (req, res) => {
             GROUP BY g.id_grupo;
         `;
         const modifiersResult = await pool.query(modifiersQuery, [id]);
-        
         product.modificadores = modifiersResult.rows;
-
         res.status(200).json(product);
     } catch (error) {
         console.error(`ERROR DETALLADO EN GET /api/products/${req.params.id}:`, error);

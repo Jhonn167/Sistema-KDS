@@ -1,18 +1,35 @@
+<!-- src/app/pages/pos/pos.component.html -->
 <div class="pos-container">
   
   <div class="product-grid-container">
-    <!-- NUEVO: Encabezado para la cuadrícula -->
     <div class="product-grid-header">
       <h3>Productos Disponibles</h3>
       <button (click)="refreshProducts()" class="btn-refresh">Refrescar</button>
     </div>
+
+    <!-- --- BARRA DE CATEGORÍAS NUEVA --- -->
+    <div class="category-bar">
+      <button 
+        class="category-btn" 
+        [class.active]="selectedCategoryId === null"
+        (click)="filterByCategory(null)">
+        Todos
+      </button>
+      <button 
+        *ngFor="let category of categories" 
+        class="category-btn"
+        [class.active]="selectedCategoryId === category.id_categoria"
+        (click)="filterByCategory(category.id_categoria)">
+        {{ category.nombre }}
+      </button>
+    </div>
+    <!-- ----------------------------------- -->
 
     <div class="product-grid">
       <button *ngFor="let product of products" 
               class="product-card" 
               (click)="handleAddItem(product)"
               [disabled]="product.stock === 0">
-        <!-- Añadimos una clase a la imagen para poder estilizarla -->
         <img [src]="product.imagen_url || 'assets/placeholder.png'" alt="{{ product.nombre }}" class="product-image-pos">
         <div class="product-name">{{ product.nombre }}</div>
         <div class="product-price">{{ product.precio | currency:'MXN' }}</div>

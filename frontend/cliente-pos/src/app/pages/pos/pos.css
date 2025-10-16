@@ -330,4 +330,44 @@
     padding: 12px;
     font-size: 1em;
   }
+  /* src/app/pages/pos/pos.component.css */
+
+/* ... (todos tus estilos existentes) ... */
+
+/* --- ESTILOS NUEVOS PARA LA BARRA DE CATEGORÍAS --- */
+.category-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  overflow-x: auto; /* Permite scroll horizontal si hay muchas categorías */
+  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+}
+
+/* Ocultar la barra de scroll visualmente */
+.category-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.category-btn {
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  font-weight: 500;
+  white-space: nowrap; /* Evita que el texto se parta en dos líneas */
+  transition: all 0.2s ease;
+}
+
+.category-btn:hover {
+  background-color: #ddd;
+}
+
+/* Estilo para el botón de la categoría activa */
+.category-btn.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
 }

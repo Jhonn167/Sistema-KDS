@@ -9,7 +9,7 @@
   <!-- Muestra el contenido del carrito DESPUÉS de seleccionar el tipo -->
   <div class="cart-container" *ngIf="orderType && items.length">
     <h1>{{ orderType === 'inmediato' ? 'Tu Pedido de Hoy' : 'Tu Pedido Programado' }}</h1>
-    <a routerLink="/menu" class="continue-shopping-btn">← Seguir Comprando</a>
+    <a routerLink="/menu" class="continue-shopping-btn"> Seguir Comprando</a>
     
     <div class="cart-content">
       <div class="cart-items">

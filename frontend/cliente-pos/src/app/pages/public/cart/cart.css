@@ -319,7 +319,7 @@ label {
   :host {
     padding: 20px 10px;
   }
-
+}
   .cart-header {
     flex-direction: column;
     align-items: flex-start;
@@ -364,4 +364,3 @@ label {
   h1 {
     font-size: 1.5rem;
   }
-}

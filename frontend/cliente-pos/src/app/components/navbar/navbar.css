@@ -26,13 +26,11 @@
     font-weight: bold;
     padding: 0.7rem;
     border-radius: 8px;
-    /* Agregamos un fondo de imagen para el logo */
-    background-image: url('https://i.imgur.com/your-logo.png'); /* Reemplaza con la URL de tu logo si tienes una */
-    background-size: cover;
-    background-position: center;
-    width: 40px; /* Tamaño del icono */
+    width: 40px;
     height: 40px;
     box-sizing: border-box;
+    background-size: cover;
+    background-position: center;
 }
 
 .header-left h1 {
@@ -56,7 +54,9 @@
   transition: all 0.2s ease;
 }
 
-.nav-link:hover { color: var(--text-primary); }
+.nav-link:hover {
+  color: var(--text-primary);
+}
 
 .nav-link.active { 
   color: var(--primary-color); 
@@ -84,7 +84,9 @@
     text-decoration: none;
 }
 
-.account-btn i { font-size: 0.9em; }
+.account-btn i {
+  font-size: 0.9em;
+}
 
 /* --- Botón de Hamburguesa y Menú Móvil --- */
 .hamburger-button {
@@ -100,7 +102,7 @@
 .mobile-menu {
   display: none;
   position: fixed;
-  top: 68px; /* Ajusta a la altura de tu navbar */
+  top: 68px; /* Altura aproximada de la navbar */
   left: 0;
   width: 100%;
   background: var(--surface-color);
@@ -145,3 +147,4 @@
     display: none; /* Ocultamos el botón de cuenta con texto en móvil */
   }
 }
+

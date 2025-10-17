@@ -1,9 +1,11 @@
 // src/app/pages/admin/reports/reports.component.ts
-import { Component, OnInit } from '@angular/core';
+
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReportService } from '../../../services/report';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subscription } from 'rxjs';
 import { NgxChartsModule, Color, ScaleType } from '@swimlane/ngx-charts';
+import { Socket } from 'ngx-socket-io';
 
 @Component({
   selector: 'app-reports',
@@ -12,26 +14,36 @@ import { NgxChartsModule, Color, ScaleType } from '@swimlane/ngx-charts';
   templateUrl: './reports.html',
   styleUrls: ['./reports.css']
 })
-export class ReportsComponent implements OnInit {
+export class ReportsComponent implements OnInit, OnDestroy {
   salesSummary: any = null;
   topProducts: any[] = [];
   isLoading = true;
   isClosingDay = false;
+  currentDate: Date = new Date(); // Para mostrar la fecha actual
 
-  // Opciones del gráfico (se mantienen igual)
-  view: [number, number] = [700, 400];
+  private reportUpdateSub: Subscription | undefined;
+
+  // Opciones del gráfico
   colorScheme: Color = {
     name: 'kdsScheme',
     selectable: true,
     group: ScaleType.Ordinal,
-    domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
+    domain: ['#0d6efd', '#6c757d', '#198754', '#ffc107', '#dc3545']
   };
-  // ...otras opciones del gráfico...
 
-  constructor(private reportService: ReportService) { }
+  constructor(private reportService: ReportService, private socket: Socket) { }
 
   ngOnInit(): void {
     this.loadReports();
+    this.reportUpdateSub = this.socket.fromEvent('pedido_actualizado_cocina').subscribe(() => {
+      this.loadReports();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.reportUpdateSub) {
+      this.reportUpdateSub.unsubscribe();
+    }
   }
 
   loadReports(): void {
@@ -55,9 +67,8 @@ export class ReportsComponent implements OnInit {
     });
   }
 
-  // --- FUNCIÓN NUEVA: PARA EL BOTÓN "CERRAR DÍA" ---
   onCloseDay(): void {
-    const confirmation = confirm('¿Estás seguro de que quieres realizar el cierre del día? Esto guardará un registro permanente del resumen de ventas de hoy.');
+    const confirmation = confirm('¿Estás seguro de que quieres realizar el cierre del día?');
     if (confirmation) {
       this.isClosingDay = true;
       this.reportService.closeDay().subscribe({
@@ -67,23 +78,20 @@ export class ReportsComponent implements OnInit {
         },
         error: (err) => {
           alert('Error al guardar el cierre del día.');
-          console.error(err);
           this.isClosingDay = false;
         }
       });
     }
   }
 
-  // --- FUNCIÓN NUEVA: PARA EL BOTÓN "EXPORTAR A EXCEL" ---
   onExportExcel(): void {
     this.reportService.exportDailyReport().subscribe(blob => {
-      // Creamos un enlace temporal para descargar el archivo
       const a = document.createElement('a');
       const objectUrl = URL.createObjectURL(blob);
       a.href = objectUrl;
       a.download = `Reporte_Ventas_${new Date().toISOString().slice(0, 10)}.xlsx`;
       a.click();
-      URL.revokeObjectURL(objectUrl); // Limpiamos el enlace temporal
+      URL.revokeObjectURL(objectUrl);
     });
   }
 }

@@ -1,7 +1,11 @@
-<div class="reports-container">
-  <div class="header">
-    <h1>Reportes de Ventas</h1>
-    <!-- NUEVO: Contenedor para los botones de acción -->
+<main class="reports-overview">
+  <h1 class="main-title">Resumen de Reportes</h1>
+
+  <div class="top-filters">
+    <div class="date-picker">
+      <i class="fas fa-calendar-alt"></i>
+      <span>Ventas del Día: {{ currentDate | date:'longDate' }}</span>
+    </div>
     <div class="header-actions">
       <button class="btn btn-secondary" (click)="onCloseDay()" [disabled]="isClosingDay">
         {{ isClosingDay ? 'Guardando...' : 'Cerrar Día' }}
@@ -10,30 +14,31 @@
     </div>
   </div>
 
-  <div *ngIf="isLoading" class="info-message">Cargando reportes...</div>
-
-  <div *ngIf="!isLoading">
-    <!-- Resumen del Día -->
-    <div class="summary-section card">
-      <h2>Resumen del Día</h2>
-      <div class="summary-cards">
-        <div class="summary-card">
-          <span class="value">{{ salesSummary?.ingresos_totales | currency:'MXN' }}</span>
-          <span class="label">Ingresos Totales</span>
-        </div>
-        <div class="summary-card">
-          <span class="value">{{ salesSummary?.numero_pedidos }}</span>
-          <span class="label">Pedidos Completados</span>
-        </div>
-      </div>
+  <section class="kpi-cards">
+    <div class="kpi-card">
+      <p class="kpi-title">Ingresos Totales</p>
+      <p class="kpi-value">{{ salesSummary?.ingresos_totales | currency:'MXN' }}</p>
+      <p class="kpi-comparison">Ventas del día actual</p>
     </div>
+    <div class="kpi-card">
+      <p class="kpi-title">Pedidos Completados</p>
+      <p class="kpi-value">{{ salesSummary?.numero_pedidos }}</p>
+      <p class="kpi-comparison">Pedidos en el sistema</p>
+    </div>
+    <div class="kpi-card">
+      <p class="kpi-title">Ticket Promedio</p>
+      <p class="kpi-value">{{ (salesSummary?.ingresos_totales / (salesSummary?.numero_pedidos || 1)) | currency:'MXN' }}</p>
+      <p class="kpi-comparison">Valor promedio por orden</p>
+    </div>
+  </section>
 
-    <!-- Gráfico de Productos Más Vendidos -->
-    <div class="chart-section card">
-      <h2>Top 10 Productos Más Vendidos (Hoy)</h2>
+  <section class="charts-section">
+    <div class="chart-container">
+      <h3>Top Productos Vendidos (Hoy)</h3>
+      <p>Visualización de los productos más populares del día.</p>
       <div *ngIf="topProducts.length > 0; else noChartData">
         <ngx-charts-bar-vertical
-          [view]="[700, 400]"
+          [view]="[0, 0]"
           [scheme]="colorScheme"
           [results]="topProducts"
           [xAxis]="true"
@@ -46,8 +51,10 @@
         </ngx-charts-bar-vertical>
       </div>
       <ng-template #noChartData>
-        <p class="info-message">No hay suficientes datos de ventas para mostrar el gráfico.</p>
+        <div class="info-message">
+          <p>No hay suficientes datos de ventas para mostrar el gráfico.</p>
+        </div>
       </ng-template>
     </div>
-  </div>
-</div>
+  </section>
+</main>

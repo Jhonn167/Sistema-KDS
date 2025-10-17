@@ -5,7 +5,7 @@
   <div class="header-left">
     <div class="app-icon"></div>
     <h1>Le Boulanger Mexican</h1>
-    
+
     <!-- El menú de navegación ahora es dinámico según el rol -->
     <ng-container *ngIf="authService.isLoggedIn(); else publicNav">
       <!-- NAV ADMIN -->
@@ -13,16 +13,20 @@
         <a routerLink="/pos" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Point of Sale</a>
         <a routerLink="/admin/products" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Products</a>
         <a routerLink="/admin/reports" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Reports</a>
-        <a routerLink="/admin/modifiers" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Modificadores</a>
+        <a routerLink="/admin/modifiers" routerLinkActive="active" class="nav-link"
+          (click)="closeMenu()">Modificadores</a>
         <a routerLink="/kds" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Kitchen</a>
         <a routerLink="/admin/users" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Users</a>
-        <a routerLink="/admin/categories" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Categorías</a>
-        <a routerLink="/admin/confirmations" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Confirmaciones</a>  
+        <a routerLink="/admin/categories" routerLinkActive="active" class="nav-link"
+          (click)="closeMenu()">Categorías</a>
+        <a routerLink="/admin/confirmations" routerLinkActive="active" class="nav-link"
+          (click)="closeMenu()">Confirmaciones</a>
       </nav>
       <!-- NAV EMPLEADO -->
       <nav *ngIf="authService.isEmpleado()" class="main-nav">
         <a routerLink="/pos" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Point of Sale</a>
-        <a routerLink="/admin/confirmations" routerLinkActive="active" class="nav-link" (click)="closeMenu()">Confirmaciones</a>
+        <a routerLink="/admin/confirmations" routerLinkActive="active" class="nav-link"
+          (click)="closeMenu()">Confirmaciones</a>
       </nav>
       <!-- NAV COCINERO -->
       <nav *ngIf="authService.isCocinero()" class="main-nav">
@@ -46,7 +50,7 @@
       </nav>
     </ng-template>
   </div>
-  
+
   <!-- SECCIÓN DERECHA: ACCIONES DE CUENTA Y HAMBURGUESA -->
   <div class="header-right">
     <button *ngIf="authService.isLoggedIn()" (click)="logout()" class="account-btn">
@@ -55,9 +59,7 @@
     <a *ngIf="!authService.isLoggedIn()" routerLink="/login" class="account-btn">
       <i class="fas fa-user"></i> Iniciar Sesión
     </a>
-    <button class="hamburger-button" (click)="toggleMenu()">
-      <i class="fas fa-bars"></i>
-    </button>
+    <button class="hamburger-button" (click)="toggleMenu()">☰</button>
   </div>
 </header>
 
@@ -85,19 +87,19 @@
     </nav>
     <!-- Links Móviles para Clientes -->
     <nav *ngIf="authService.isCliente()" class="mobile-nav-links">
-        <a routerLink="/menu" (click)="closeMenu()">Menú</a>
-        <a routerLink="/mis-pedidos" (click)="closeMenu()">Mis Pedidos</a>
-        <a routerLink="/galeria" (click)="closeMenu()">Galería</a>
-        <a routerLink="/nosotros" (click)="closeMenu()">Nosotros</a>
-        <a routerLink="/contacto" (click)="closeMenu()">Contacto</a>
+      <a routerLink="/menu" (click)="closeMenu()">Menú</a>
+      <a routerLink="/mis-pedidos" (click)="closeMenu()">Mis Pedidos</a>
+      <a routerLink="/galeria" (click)="closeMenu()">Galería</a>
+      <a routerLink="/nosotros" (click)="closeMenu()">Nosotros</a>
+      <a routerLink="/contacto" (click)="closeMenu()">Contacto</a>
     </nav>
   </ng-container>
   <ng-template #publicMobileNav>
-      <nav class="mobile-nav-links">
-        <a routerLink="/menu" (click)="closeMenu()">Menú</a>
-        <a routerLink="/galeria" (click)="closeMenu()">Galería</a>
-        <a routerLink="/nosotros" (click)="closeMenu()">Nosotros</a>
-        <a routerLink="/contacto" (click)="closeMenu()">Contacto</a>
-      </nav>
+    <nav class="mobile-nav-links">
+      <a routerLink="/menu" (click)="closeMenu()">Menú</a>
+      <a routerLink="/galeria" (click)="closeMenu()">Galería</a>
+      <a routerLink="/nosotros" (click)="closeMenu()">Nosotros</a>
+      <a routerLink="/contacto" (click)="closeMenu()">Contacto</a>
+    </nav>
   </ng-template>
 </div>

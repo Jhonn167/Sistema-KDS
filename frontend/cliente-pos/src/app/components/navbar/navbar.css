@@ -69,6 +69,15 @@
   align-items: center;
   gap: 1rem;
 }
+/* Estilos del botón de hamburguesa */
+.hamburger-button {
+  display: none; /* Oculto por defecto en escritorio */
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+}
 
 .account-btn {
     background-color: var(--primary-color);

@@ -1,3 +1,22 @@
+
+  <!-- Filtros de categoría -->
+      <div class="category-filters">
+        <button
+          class="filter-btn"
+          [class.active]="selectedCategoryId === null"
+          (click)="selectCategory(null)"
+        >
+          Todos
+        </button>
+        <button
+          *ngFor="let category of categories"
+          class="filter-btn"
+          [class.active]="selectedCategoryId === category.id_categoria"
+          (click)="selectCategory(category.id_categoria)"
+        >
+          {{ category.nombre }}
+        </button>
+      </div>
 <div class="pos-container">
   
   <div class="product-grid-container">

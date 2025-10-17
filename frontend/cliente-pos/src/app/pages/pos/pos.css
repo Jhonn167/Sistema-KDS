@@ -1,7 +1,6 @@
 /* src/app/pages/pos/pos.component.css */
 
 /* --- FUENTES Y VARIABLES (ADAPTADAS DE TU DISEÑO) --- */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 :host {
   --primary-blue: #0d6efd;
@@ -36,7 +35,7 @@
 .filter-btn { background-color: #f8f9fa; border: 1px solid var(--border-color); border-radius: 20px; padding: 0.6rem 1.2rem; cursor: pointer; font-weight: 500; white-space: nowrap; }
 .filter-btn.active { background-color: var(--light-blue); color: var(--primary-blue); border-color: var(--primary-blue); }
 
-* --- GRID DE PRODUCTOS --- */
+/* --- GRID DE PRODUCTOS --- */
 .product-grid {
     display: grid;
     /* CAMBIO: Reducimos el tamaño mínimo de cada tarjeta */
@@ -82,11 +81,11 @@
     border-bottom: 1px solid #eee;
 }
 .item-info .item-name { font-weight: 600; }
-.item-options { font-size: 0.8em; color: var(--light-text); padding-left: 15px; margin-top: 3px; }
+.item-options { font-size: 0.8em; color: var(--light-text); padding-left: 15px; margin-top: 3px; list-style: none; }
 .item-quantity { display: flex; align-items: center; gap: 8px; }
-.item-quantity button { width: 25px; height: 25px; border: 1px solid var(--border-color); border-radius: 50%; }
+.item-quantity button { width: 25px; height: 25px; border: 1px solid var(--border-color); border-radius: 50%; background-color: var(--white); cursor: pointer; }
 .item-price { font-weight: bold; }
-.remove-item-btn { background: none; border: none; color: #dc3545; font-size: 1.2rem; }
+.remove-item-btn { background: none; border: none; color: #dc3545; font-size: 1.2rem; cursor: pointer;}
 
 .order-total { display: flex; flex-direction: column; gap: 0.8rem; margin: 1.5rem 0; border-top: 1px dashed var(--border-color); padding-top: 1rem; }
 .total-line { display: flex; justify-content: space-between; }

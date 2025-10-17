@@ -1,91 +1,84 @@
-
-  <!-- Filtros de categoría -->
-      <div class="category-filters">
-        <button
-          class="filter-btn"
-          [class.active]="selectedCategoryId === null"
-          (click)="selectCategory(null)"
-        >
-          Todos
-        </button>
-        <button
-          *ngFor="let category of categories"
-          class="filter-btn"
-          [class.active]="selectedCategoryId === category.id_categoria"
-          (click)="selectCategory(category.id_categoria)"
-        >
-          {{ category.nombre }}
-        </button>
-      </div>
-<div class="pos-container">
-  
-  <div class="product-grid-container">
-    <!-- NUEVO: Encabezado para la cuadrícula -->
-    <div class="product-grid-header">
-      <h3>Productos Disponibles</h3>
-      <button (click)="refreshProducts()" class="btn-refresh">Refrescar</button>
-    </div>
-
-    <div class="product-grid">
-      <button *ngFor="let product of products" 
-              class="product-card" 
-              (click)="handleAddItem(product)"
-              [disabled]="product.stock === 0">
-        <!-- Añadimos una clase a la imagen para poder estilizarla -->
-        <img [src]="product.imagen_url || 'assets/placeholder.png'" alt="{{ product.nombre }}" class="product-image-pos">
-        <div class="product-name">{{ product.nombre }}</div>
-        <div class="product-price">{{ product.precio | currency:'MXN' }}</div>
-        <div class="product-stock" [class.out-of-stock]="product.stock === 0">
-          Stock: {{ product.stock }}
-        </div>
+<div class="products-section">
+  <div class="search-bar">
+    <i class="fas fa-search"></i>
+    <input type="text" placeholder="Search products...">
+  </div>
+  <div class="category-filters">
+    <button class="filter-btn active">All</button>
+    <!-- Filtros de categoría -->
+    <div class="category-filters">
+      <button class="filter-btn" [class.active]="selectedCategoryId === null" (click)="selectCategory(null)">
+        Todos
+      </button>
+      <button *ngFor="let category of categories" class="filter-btn"
+        [class.active]="selectedCategoryId === category.id_categoria" (click)="selectCategory(category.id_categoria)">
+        {{ category.nombre }}
       </button>
     </div>
-  </div>
+    <div class="pos-container">
 
-  <div class="ticket">
-    <h2>Orden Actual</h2>
-    <div class="ticket-items" *ngIf="(orderItems$ | async)?.length; else emptyTicket">
-      <div *ngFor="let item of (orderItems$ | async)" class="ticket-item">
-        <div class="item-details">
-            <span class="item-name">{{ item.nombre }}</span>
-            <!-- Mostramos las opciones si existen -->
-            <ul *ngIf="item.selectedOptions.length > 0" class="selected-options-list">
+      <div class="product-grid-container">
+        <!-- NUEVO: Encabezado para la cuadrícula -->
+        <div class="product-grid-header">
+          <h3>Productos Disponibles</h3>
+          <button (click)="refreshProducts()" class="btn-refresh">Refrescar</button>
+        </div>
+
+        <div class="product-grid">
+          <button *ngFor="let product of products" class="product-card" (click)="handleAddItem(product)"
+            [disabled]="product.stock === 0">
+            <!-- Añadimos una clase a la imagen para poder estilizarla -->
+            <img [src]="product.imagen_url || 'assets/placeholder.png'" alt="{{ product.nombre }}"
+              class="product-image-pos">
+            <div class="product-name">{{ product.nombre }}</div>
+            <div class="product-price">{{ product.precio | currency:'MXN' }}</div>
+            <div class="product-stock" [class.out-of-stock]="product.stock === 0">
+              Stock: {{ product.stock }}
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div class="ticket">
+        <h2>Orden Actual</h2>
+        <div class="ticket-items" *ngIf="(orderItems$ | async)?.length; else emptyTicket">
+          <div *ngFor="let item of (orderItems$ | async)" class="ticket-item">
+            <div class="item-details">
+              <span class="item-name">{{ item.nombre }}</span>
+              <!-- Mostramos las opciones si existen -->
+              <ul *ngIf="item.selectedOptions.length > 0" class="selected-options-list">
                 <li *ngFor="let option of item.selectedOptions">+ {{ option.nombre }}</li>
-            </ul>
+              </ul>
+            </div>
+            <div class="item-controls">
+              <!-- Los botones ahora usan el cartItemId único -->
+              <button (click)="orderService.updateItemQuantity(item.cartItemId, -1)">-</button>
+              <span>{{ item.cantidad }}</span>
+              <button (click)="orderService.updateItemQuantity(item.cartItemId, 1)"
+                [disabled]="item.cantidad >= item.stock">+</button>
+            </div>
+            <!-- Usamos precioFinal para el subtotal -->
+            <span class="item-total">{{ (item.precioFinal * item.cantidad) | currency:'MXN' }}</span>
+            <button class="remove-btn" (click)="orderService.removeItem(item.cartItemId)">&times;</button>
+          </div>
         </div>
-        <div class="item-controls">
-          <!-- Los botones ahora usan el cartItemId único -->
-          <button (click)="orderService.updateItemQuantity(item.cartItemId, -1)">-</button>
-          <span>{{ item.cantidad }}</span>
-          <button (click)="orderService.updateItemQuantity(item.cartItemId, 1)" [disabled]="item.cantidad >= item.stock">+</button>
-        </div>
-        <!-- Usamos precioFinal para el subtotal -->
-        <span class="item-total">{{ (item.precioFinal * item.cantidad) | currency:'MXN' }}</span>
-        <button class="remove-btn" (click)="orderService.removeItem(item.cartItemId)">&times;</button>
-      </div>
-    </div>
-    
-    <ng-template #emptyTicket>
-      <p class="empty-message">Seleccione un producto.</p>
-    </ng-template>
 
-    <div class="ticket-summary">
-      <div class="total">
-        <span>TOTAL</span>
-        <strong>{{ (orderTotal$ | async) | currency:'MXN' }}</strong>
+        <ng-template #emptyTicket>
+          <p class="empty-message">Seleccione un producto.</p>
+        </ng-template>
+
+        <div class="ticket-summary">
+          <div class="total">
+            <span>TOTAL</span>
+            <strong>{{ (orderTotal$ | async) | currency:'MXN' }}</strong>
+          </div>
+          <button class="cancel-btn" (click)="orderService.clearOrder()">Cancelar</button>
+          <button class="checkout-btn" [disabled]="(orderItems$ | async)?.length === 0" (click)="onCheckout()">
+            Cobrar
+          </button>
+        </div>
       </div>
-      <button class="cancel-btn" (click)="orderService.clearOrder()">Cancelar</button>
-      <button class="checkout-btn" 
-              [disabled]="(orderItems$ | async)?.length === 0" 
-              (click)="onCheckout()">
-        Cobrar
-      </button>
     </div>
-  </div>
-</div>
-<app-modifier-modal 
-  *ngIf="isModalOpen" 
-  [product]="selectedProduct"
-  (confirm)="onConfirmProduct($event)"
-  (close)="closeModal()">
-</app-modifier-modal>
+    <app-modifier-modal *ngIf="isModalOpen" [product]="selectedProduct" (confirm)="onConfirmProduct($event)"
+      (close)="closeModal()">
+    </app-modifier-modal>

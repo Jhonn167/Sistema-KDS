@@ -2,6 +2,145 @@
 
 /* --- 1. Paleta de Colores y Variables Globales --- */
 
+/* pos.component.css */
+
+/* === ESTILOS BASE (Desktop) === */
+:host {
+    --primary-blue: #0d6efd;
+    /* ...resto de variables */
+}
+
+.pos-main {
+    display: flex;
+    gap: 2rem;
+    padding: 1.5rem;
+    height: calc(100vh - 120px);
+}
+
+.products-section { flex: 3; }
+.order-summary { flex: 1; }
+
+.product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 200px));
+    gap: 1.2rem;
+}
+
+/* === TABLETS === */
+@media (max-width: 968px) {
+    .pos-main {
+        gap: 1.5rem;
+    }
+    
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 180px));
+    }
+}
+
+/* === TABLETS PEQUEÑAS === */
+@media (max-width: 768px) {
+    .pos-main {
+        flex-direction: column;
+        height: auto;
+        padding: 1rem;
+    }
+    
+    .products-section {
+        max-height: 60vh;
+    }
+    
+    .order-summary {
+        position: sticky;
+        bottom: 0;
+        background: white;
+        z-index: 10;
+        max-height: 40vh;
+        overflow-y: auto;
+    }
+    
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 1rem;
+    }
+    
+    .category-filters {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* === MÓVILES === */
+@media (max-width: 480px) {
+    .pos-main {
+        padding: 0.5rem;
+        gap: 0.8rem;
+    }
+    
+    .search-bar {
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columnas fijas en móvil */
+        gap: 0.8rem;
+    }
+    
+    .product-card {
+        padding: 0.6rem;
+    }
+    
+    .product-card img {
+        height: 90px;
+    }
+    
+    .product-card h3 {
+        font-size: 0.9rem;
+        margin: 0.3rem 0;
+    }
+    
+    .product-card .price {
+        font-size: 0.85rem;
+    }
+    
+    .add-to-order-btn {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+    
+    .filter-btn {
+        padding: 0.4rem 0.9rem;
+        font-size: 0.85rem;
+    }
+    
+    .order-summary h2 {
+        font-size: 1.1rem;
+    }
+    
+    .order-actions {
+        gap: 0.5rem;
+    }
+    
+    .clear-btn, .process-btn {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* === MÓVILES MUY PEQUEÑOS === */
+@media (max-width: 360px) {
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .product-card {
+        padding: 0.4rem;
+    }
+    
+    .product-card img {
+        height: 70px;
+    }
+}
+
 :root {
   --primary-color: #0d6efd;
   --primary-hover: #0b5ed7;
@@ -20,7 +159,7 @@
   
   --border-color: #dee2e6;
   
-  --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-family:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 /* --- 2. Reseteo y Estilos Base --- */

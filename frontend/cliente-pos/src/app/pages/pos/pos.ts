@@ -55,7 +55,14 @@ export class PosComponent implements OnInit {
       this.selectedCategoryId = null;
     });
   }
-
+  loadProducts(): void {
+    this.productService.getProducts().subscribe(data => {
+      this.products = data;
+    });
+  }
+ refreshProducts(): void {
+    this.loadProducts();
+  }
   // Nueva función para filtrar por búsqueda Y categoría
   applyFilters(): void {
     let filtered = this.allProducts;

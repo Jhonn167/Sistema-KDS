@@ -1,77 +1,69 @@
-<!-- src/app/pages/pos/pos.component.html -->
-<div class="pos-main">
-  <div class="products-section">
-    <div class="search-bar">
-      <i class="fas fa-search"></i>
-      <input type="text" placeholder="Buscar productos..." [(ngModel)]="searchTerm" (keyup)="onSearchKeyUp()">
-    </div>
-    <div class="category-filters">
-      <button class="filter-btn" [class.active]="selectedCategoryId === null" (click)="selectCategory(null)">
-        Todos
-      </button>
-      <button *ngFor="let category of categories" class="filter-btn" [class.active]="selectedCategoryId === category.id_categoria" (click)="selectCategory(category.id_categoria)">
-        {{ category.nombre }}
-      </button>
+<div class="pos-container">
+  
+  <div class="product-grid-container">
+    <!-- NUEVO: Encabezado para la cuadrícula -->
+    <div class="product-grid-header">
+      <h3>Productos Disponibles</h3>
+      <button (click)="refreshProducts()" class="btn-refresh">Refrescar</button>
     </div>
 
     <div class="product-grid">
-      <div *ngFor="let product of products" class="product-card" (click)="handleAddItem(product)" [class.disabled]="product.stock === 0">
-        <img [src]="product.imagen_url || 'assets/placeholder.png'" [alt]="product.nombre">
-        <h3>{{ product.nombre }}</h3>
-        <p class="price">{{ product.precio | currency:'MXN' }}</p>
-        <button class="add-to-order-btn" [disabled]="product.stock === 0">
-          {{ product.stock > 0 ? 'Añadir a la Orden' : 'Agotado' }}
-        </button>
-      </div>
+      <button *ngFor="let product of products" 
+              class="product-card" 
+              (click)="handleAddItem(product)"
+              [disabled]="product.stock === 0">
+        <!-- Añadimos una clase a la imagen para poder estilizarla -->
+        <img [src]="product.imagen_url || 'assets/placeholder.png'" alt="{{ product.nombre }}" class="product-image-pos">
+        <div class="product-name">{{ product.nombre }}</div>
+        <div class="product-price">{{ product.precio | currency:'MXN' }}</div>
+        <div class="product-stock" [class.out-of-stock]="product.stock === 0">
+          Stock: {{ product.stock }}
+        </div>
+      </button>
     </div>
   </div>
 
-  <aside class="order-summary">
+  <div class="ticket">
     <h2>Orden Actual</h2>
-    <div class="order-items" *ngIf="(orderItems$ | async)?.length; else emptyTicket">
-      <div *ngFor="let item of (orderItems$ | async)" class="order-item">
-        <div class="item-info">
-          <span class="item-name">{{ item.nombre }}</span>
-          <ul *ngIf="item.selectedOptions.length > 0" class="item-options">
-            <li *ngFor="let option of item.selectedOptions">+ {{ option.nombre }}</li>
-          </ul>
+    <div class="ticket-items" *ngIf="(orderItems$ | async)?.length; else emptyTicket">
+      <div *ngFor="let item of (orderItems$ | async)" class="ticket-item">
+        <div class="item-details">
+            <span class="item-name">{{ item.nombre }}</span>
+            <!-- Mostramos las opciones si existen -->
+            <ul *ngIf="item.selectedOptions.length > 0" class="selected-options-list">
+                <li *ngFor="let option of item.selectedOptions">+ {{ option.nombre }}</li>
+            </ul>
         </div>
-        <div class="item-quantity">
+        <div class="item-controls">
+          <!-- Los botones ahora usan el cartItemId único -->
           <button (click)="orderService.updateItemQuantity(item.cartItemId, -1)">-</button>
           <span>{{ item.cantidad }}</span>
-          <button (click)="orderService.updateItemQuantity(item.cartItemId, 1)">+</button>
+          <button (click)="orderService.updateItemQuantity(item.cartItemId, 1)" [disabled]="item.cantidad >= item.stock">+</button>
         </div>
-        <span class="item-price">{{ (item.precioFinal * item.cantidad) | currency:'MXN' }}</span>
-        <button class="remove-item-btn" (click)="orderService.removeItem(item.cartItemId)">&times;</button>
+        <!-- Usamos precioFinal para el subtotal -->
+        <span class="item-total">{{ (item.precioFinal * item.cantidad) | currency:'MXN' }}</span>
+        <button class="remove-btn" (click)="orderService.removeItem(item.cartItemId)">&times;</button>
       </div>
     </div>
+    
     <ng-template #emptyTicket>
-      <div class="no-items-message">
-        <p>No hay productos en la orden.</p>
-      </div>
+      <p class="empty-message">Seleccione un producto.</p>
     </ng-template>
 
-    <div class="order-total">
-      <div class="total-line">
-        <span>Subtotal:</span>
-        <span>{{ (orderTotal$ | async) | currency:'MXN' }}</span>
+    <div class="ticket-summary">
+      <div class="total">
+        <span>TOTAL</span>
+        <strong>{{ (orderTotal$ | async) | currency:'MXN' }}</strong>
       </div>
-      <div class="total-line">
-        <span>Impuestos (IVA 16%):</span>
-        <span>{{ ((orderTotal$ | async) ?? 0) * 0.16 | currency:'MXN' }}</span>
-      </div>
-      <div class="total-line grand-total">
-        <span>Total:</span>
-        <span>{{ ((orderTotal$ | async) ?? 0) * 1.16 | currency:'MXN' }}</span>
-      </div>
+      <button class="cancel-btn" (click)="orderService.clearOrder()">Cancelar</button>
+      <button class="checkout-btn" 
+              [disabled]="(orderItems$ | async)?.length === 0" 
+              (click)="onCheckout()">
+        Cobrar
+      </button>
     </div>
-    <div class="order-actions">
-      <button class="clear-btn" (click)="orderService.clearOrder()">Limpiar Orden</button>
-      <button class="process-btn" [disabled]="(orderItems$ | async)?.length === 0" (click)="onCheckout()">Procesar Pago</button>
-    </div>
-  </aside>
+  </div>
 </div>
-
 <app-modifier-modal 
   *ngIf="isModalOpen" 
   [product]="selectedProduct"

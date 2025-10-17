@@ -1,5 +1,6 @@
 /* src/app/components/navbar/navbar.component.css */
 
+/* --- Estilos del Contenedor Principal de la Navbar --- */
 .app-header {
   display: flex;
   justify-content: space-between;
@@ -9,10 +10,15 @@
   border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
-  z-index: 1010;
+  z-index: 1010; /* Z-index alto para estar sobre todo */
 }
 
-.header-left { display: flex; align-items: center; gap: 1rem; }
+/* --- Sección Izquierda: Logo y Navegación de Escritorio --- */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 
 .app-icon {
     background-color: var(--light-blue);
@@ -20,15 +26,30 @@
     font-weight: bold;
     padding: 0.7rem;
     border-radius: 8px;
+    /* Agregamos un fondo de imagen para el logo */
+    background-image: url('https://i.imgur.com/your-logo.png'); /* Reemplaza con la URL de tu logo si tienes una */
+    background-size: cover;
+    background-position: center;
+    width: 40px; /* Tamaño del icono */
+    height: 40px;
+    box-sizing: border-box;
 }
 
-.header-left h1 { font-size: 1.5rem; color: var(--dark-text); margin: 0; margin-right: 1.5rem; }
+.header-left h1 {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin: 0;
+  margin-right: 1.5rem;
+}
 
-.main-nav { display: flex; gap: 1.5rem; }
+.main-nav {
+  display: flex; /* Visible en escritorio */
+  gap: 1.5rem;
+}
 
 .nav-link { 
   text-decoration: none; 
-  color: var(--light-text); 
+  color: var(--text-secondary); 
   font-weight: 500; 
   padding-bottom: 4px;
   border-bottom: 2px solid transparent;
@@ -42,7 +63,12 @@
   border-bottom-color: var(--primary-color);
 }
 
-.header-right { display: flex; align-items: center; gap: 1rem; }
+/* --- Sección Derecha: Botones de Cuenta y Hamburguesa --- */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 
 .account-btn {
     background-color: var(--primary-color);
@@ -60,7 +86,7 @@
 
 .account-btn i { font-size: 0.9em; }
 
-/* --- RESPONSIVIDAD PARA MÓVIL --- */
+/* --- Botón de Hamburguesa y Menú Móvil --- */
 .hamburger-button {
   display: none; /* Oculto en escritorio por defecto */
   background: none;
@@ -74,7 +100,7 @@
 .mobile-menu {
   display: none;
   position: fixed;
-  top: 68px; /* Altura aproximada de la navbar */
+  top: 68px; /* Ajusta a la altura de tu navbar */
   left: 0;
   width: 100%;
   background: var(--surface-color);
@@ -107,6 +133,7 @@
   background-color: #f1f5f9;
 }
 
+/* --- Media Query para Responsividad (Punto de quiebre) --- */
 @media (max-width: 992px) {
   .main-nav {
     display: none; /* Ocultamos la navegación de escritorio */
@@ -115,7 +142,6 @@
     display: block; /* Mostramos el botón de hamburguesa */
   }
   .account-btn {
-    /* Opcional: Ocultar el botón de cuenta con texto en móvil */
-    display: none;
+    display: none; /* Ocultamos el botón de cuenta con texto en móvil */
   }
 }

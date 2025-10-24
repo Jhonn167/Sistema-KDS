@@ -1,10 +1,11 @@
+<!-- src/app/pages/kds/kds.component.html -->
 <div class="kds-container">
   <div class="kds-header">
     <h1>KDS - Pedidos para Cocina</h1>
   </div>
   <div *ngIf="isLoading" class="info-message">Cargando pedidos...</div>
   <div *ngIf="!isLoading && pedidos.length === 0" class="info-message">No hay pedidos pendientes.</div>
-
+  
   <div class="pedidos-grid">
     <div *ngFor="let pedido of pedidos" class="pedido-card" [ngClass]="pedido.estatus.toLowerCase().replace(' ', '-')">
       <div class="card-header">
@@ -12,9 +13,16 @@
           <h3>#{{ pedido.id_pedido }} - {{ pedido.nombre_cliente }}</h3>
           <span class="pedido-status">{{ pedido.estatus }}</span>
         </div>
-        <div class="time-elapsed" *ngIf="pedido.estatus !== 'Programado' && pedido.tiempo_transcurrido">
-          <span>{{ pedido.cronometroLabel }}:</span>
-          <strong>{{ pedido.tiempo_transcurrido }}</strong>
+        <div class="time-info">
+          <!-- CORRECCIÓN: Se usa fecha_recogida (que es el nombre de la columna en la BD) -->
+          <div *ngIf="pedido.estatus === 'Programado' && pedido.fecha_recogida" class="pickup-time">
+            <span>Para el</span>
+            <strong>{{ pedido.fecha_recogida | date:'short' }}</strong>
+          </div>
+          <div *ngIf="pedido.estatus !== 'Programado'" class="time-elapsed">
+            <span>Tiempo:</span>
+            <strong>{{ pedido.tiempo_transcurrido }}</strong>
+          </div>
         </div>
       </div>
       <div class="card-body">
@@ -25,7 +33,10 @@
               <span class="nombre">{{ item.producto }}</span>
             </div>
             <ul *ngIf="item.opciones && item.opciones.length > 0" class="options-sublist">
-              <li *ngFor="let option of item.opciones">+ {{ option.nombre }}</li>
+              <!-- MODIFICADO: Muestra la cantidad si existe -->
+              <li *ngFor="let option of item.opciones">
+                + {{ option.cantidad > 1 ? option.cantidad + 'x ' : '' }}{{ option.nombre }}
+              </li>
             </ul>
           </li>
         </ul>

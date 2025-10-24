@@ -8,15 +8,17 @@ const checkRole = require('../middleware/checkRole');
 module.exports = function (io, getOnlineUsers) {
   const router = express.Router();
 
-  // --- RUTA PARA CREAR UN NUEVO PEDIDO (SE MANTIENE IGUAL) ---
+  // --- RUTA PARA CREAR UN NUEVO PEDIDO (UNIFICADA) ---
   router.post('/', checkAuth, async (req, res) => {
-    const { items, fecha_recogida, estatus, tipo_pedido = 'inmediato' } = req.body;
+    // CORRECCIÓN: Tu archivo tenía 'fecha_recogida' pero también 'hora_recogida'. Se estandariza a 'fecha_recogida' y se añade 'telefono_contacto'.
+    const { items, fecha_recogida, estatus, tipo_pedido = 'inmediato', telefono_contacto } = req.body;
     const usuario_id = req.userData.userId;
 
     if (!items || items.length === 0) {
       return res.status(400).json({ message: 'El pedido debe contener al menos un producto.' });
     }
 
+    // Validación de cantidad para pedidos futuros
     if (tipo_pedido === 'futuro') {
       for (const item of items) {
         if (item.cantidad > 50) {
@@ -31,13 +33,14 @@ module.exports = function (io, getOnlineUsers) {
 
       let calculatedTotal = 0;
       for (const item of items) {
+        // Usamos el precio final que ya incluye modificadores, enviado desde el frontend
         calculatedTotal += parseFloat(item.precioFinal) * item.cantidad;
       }
 
       const estatusPedido = estatus || (tipo_pedido === 'futuro' ? 'Programado' : 'Pendiente');
       
-      const pedidoQuery = 'INSERT INTO pedidos (usuario_id, total, estatus, fecha_recogida, tipo_pedido) VALUES ($1, $2, $3, $4, $5) RETURNING id_pedido';
-      const pedidoResult = await connection.query(pedidoQuery, [usuario_id, calculatedTotal, estatusPedido, fecha_recogida || null, tipo_pedido]);
+      const pedidoQuery = 'INSERT INTO pedidos (usuario_id, total, estatus, fecha_recogida, tipo_pedido, telefono_contacto) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id_pedido';
+      const pedidoResult = await connection.query(pedidoQuery, [usuario_id, calculatedTotal, estatusPedido, fecha_recogida || null, tipo_pedido, telefono_contacto || null]);
       const nuevoPedidoId = pedidoResult.rows[0].id_pedido;
 
       const shouldUpdateStockNow = (tipo_pedido === 'inmediato' && estatusPedido !== 'Esperando Pago' && estatusPedido !== 'Esperando Comprobante');
@@ -51,16 +54,19 @@ module.exports = function (io, getOnlineUsers) {
           }
           await connection.query('UPDATE productos SET stock = stock - $1 WHERE id_producto = $2', [item.cantidad, item.producto_id]);
         }
+        // Esta lógica ya es correcta para guardar el JSON de opciones, sea simple o complejo (con cantidad)
         const detalleQuery = 'INSERT INTO detalles_pedido (pedido_id, producto_id, cantidad, opciones_seleccionadas) VALUES ($1, $2, $3, $4)';
         await connection.query(detalleQuery, [nuevoPedidoId, item.producto_id, item.cantidad, JSON.stringify(item.selectedOptions || [])]);
       }
 
       await connection.query('COMMIT');
+      
       if (estatusPedido === 'Pendiente' || estatusPedido === 'Programado') {
         io.emit('nuevo_pedido_cocina');
       }
+      
       res.status(201).json({ message: 'Pedido creado exitosamente', pedidoId: nuevoPedidoId });
-
+    
     } catch (error) {
       await connection.query('ROLLBACK');
       console.error("ERROR DETALLADO EN POST /api/pedidos:", error);
@@ -70,7 +76,7 @@ module.exports = function (io, getOnlineUsers) {
     }
   });
 
-  // --- RUTA KDS (ACTUALIZADA) ---
+  // --- RUTA KDS (CON NOMBRE DE CLIENTE) ---
   router.get('/cocina', checkRole(['admin', 'cocinero']), async (req, res) => {
     try {
       const query = `
@@ -108,6 +114,17 @@ module.exports = function (io, getOnlineUsers) {
       }
 
       await pool.query(query, values);
+      
+      // Notificar al cliente si está conectado
+      const userResult = await pool.query('SELECT usuario_id FROM pedidos WHERE id_pedido = $1', [id]);
+      if (userResult.rows.length > 0) {
+        const targetUserId = userResult.rows[0].usuario_id;
+        const onlineUsers = getOnlineUsers();
+        const targetSocketId = onlineUsers[targetUserId];
+        if (targetSocketId) {
+          io.to(targetSocketId).emit('estatus_actualizado', { pedidoId: id, nuevoEstatus: estatus });
+        }
+      }
 
       io.emit('pedido_actualizado_cocina'); 
       res.status(200).json({ message: `Pedido #${id} actualizado a ${estatus}` });

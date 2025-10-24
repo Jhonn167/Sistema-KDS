@@ -1,3 +1,4 @@
+<!-- src/app/pages/admin/modifier-list/modifier-list.component.html -->
 <div class="list-container">
   <div class="header">
     <h1>Gestión de Modificadores</h1>
@@ -5,11 +6,20 @@
   <div class="form-card">
     <h2>Crear Nuevo Grupo</h2>
     <form [formGroup]="newGroupForm" (ngSubmit)="onAddNewGroup()" class="group-form">
-      <input type="text" formControlName="nombre" placeholder="Nombre del Grupo (ej. Elige tu salsa)">
+      <input type="text" formControlName="nombre" placeholder="Nombre del Grupo (ej. Elige 4 Muffins)">
       <select formControlName="tipo_seleccion">
-        <option value="seleccionar_uno">Seleccionar solo uno</option>
-        <option value="seleccionar_varios">Seleccionar varios</option>
+        <option value="seleccionar_uno">Selección Única (Radio)</option>
+        <option value="seleccionar_varios">Selección Múltiple (Checkbox)</option>
+        <option value="seleccionar_cantidad">Selección por Cantidad (Paquete)</option>
       </select>
+      
+      <!-- --- NUEVO --- Input condicional para el límite del paquete -->
+      <input 
+        *ngIf="newGroupForm.get('tipo_seleccion')?.value === 'seleccionar_cantidad'"
+        type="number"
+        formControlName="limite_seleccion"
+        placeholder="Límite del paquete (ej. 4)">
+
       <button type="submit" [disabled]="newGroupForm.invalid" class="btn btn-primary">Crear Grupo</button>
     </form>
   </div>
@@ -18,8 +28,12 @@
       <div class="group-header">
         <h3>{{ group.nombre }}</h3>
         <div class="group-actions">
-          <span class="group-type">{{ group.tipo_seleccion === 'seleccionar_uno' ? 'Selección Única' : 'Múltiples Opciones' }}</span>
-          <!-- BOTÓN NUEVO PARA ELIMINAR GRUPO -->
+          <!-- --- MODIFICADO --- Muestra el tipo de grupo de forma más clara -->
+          <span class="group-type">
+            {{ group.tipo_seleccion === 'seleccionar_uno' ? 'Única' : 
+               (group.tipo_seleccion === 'seleccionar_varios' ? 'Múltiple' : 
+               'Paquete de ' + group.limite_seleccion) }}
+          </span>
           <button class="delete-group-btn" (click)="onDeleteGroup(group.id_grupo)" title="Eliminar Grupo Completo">&times;</button>
         </div>
       </div>

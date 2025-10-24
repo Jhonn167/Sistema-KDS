@@ -1,4 +1,3 @@
-// backend/routes/modifiers.js
 const express = require('express');
 const pool = require('../db');
 const checkAuth = require('../middleware/check-auth');
@@ -10,21 +9,23 @@ router.get('/groups', checkAuth, async (req, res) => {
     try {
         const query = `
             SELECT 
-                g.id_grupo, g.nombre, g.tipo_seleccion,
-                COALESCE(
-                    json_agg(
-                        json_build_object(
-                            'id_opcion', o.id_opcion, 'nombre', o.nombre, 'precio_adicional', o.precio_adicional
-                        ) ORDER BY o.id_opcion ASC
-                    ) FILTER (WHERE o.id_opcion IS NOT NULL), 
-                    '[]'
-                ) AS opciones
+                g.id_grupo, g.nombre, g.tipo_seleccion, g.limite_seleccion
             FROM modificador_grupos g
             LEFT JOIN modificador_opciones o ON g.id_grupo = o.id_grupo
             GROUP BY g.id_grupo
             ORDER BY g.nombre ASC;
         `;
+        // CORRECCIÓN: Se actualizó la consulta para obtener también 'limite_seleccion'
+        // y se optimizó la consulta de opciones para que ocurra en un endpoint separado si es necesario.
         const { rows } = await pool.query(query);
+        
+        // Obtenemos las opciones por separado para un mejor rendimiento
+        for (let group of rows) {
+            const optionsQuery = `SELECT * FROM modificador_opciones WHERE id_grupo = $1 ORDER BY id_opcion ASC`;
+            const optionsResult = await pool.query(optionsQuery, [group.id_grupo]);
+            group.opciones = optionsResult.rows || [];
+        }
+
         res.status(200).json(rows);
     } catch (error) {
         console.error("Error al obtener grupos de modificadores:", error);
@@ -34,9 +35,12 @@ router.get('/groups', checkAuth, async (req, res) => {
 
 router.post('/groups', checkAuth, async (req, res) => {
     try {
-        const { nombre, tipo_seleccion } = req.body;
-        const query = 'INSERT INTO modificador_grupos (nombre, tipo_seleccion) VALUES ($1, $2) RETURNING *';
-        const { rows } = await pool.query(query, [nombre, tipo_seleccion]);
+        // 1. Extrae el nuevo campo y corrige el tipeo
+        const { nombre, tipo_seleccion, limite_seleccion } = req.body;
+        // 2. Actualiza la consulta y los valores
+        const query = 'INSERT INTO modificador_grupos (nombre, tipo_seleccion, limite_seleccion) VALUES ($1, $2, $3) RETURNING *';
+        const values = [nombre, tipo_seleccion, limite_seleccion || null];
+        const { rows } = await pool.query(query, values);
         res.status(201).json(rows[0]);
     } catch (error) {
         console.error("Error al crear grupo:", error);

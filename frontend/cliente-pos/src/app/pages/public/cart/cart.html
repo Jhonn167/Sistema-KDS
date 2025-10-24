@@ -1,3 +1,4 @@
+<!-- src/app/pages/public/cart/cart.component.html -->
 <!-- Muestra un loader o mensaje de espera mientras Angular obtiene datos -->
 <div *ngIf="orderItems$ | async as items; else loading">
   <!-- Muestra el modal solo si el tipo de orden no ha sido seleccionado Y el carrito no está vacío -->
@@ -8,15 +9,27 @@
 
   <!-- Muestra el contenido del carrito DESPUÉS de seleccionar el tipo -->
   <div class="cart-container" *ngIf="orderType && items.length">
-    <h1>{{ orderType === 'inmediato' ? 'Tu Pedido de Hoy' : 'Tu Pedido Programado' }}</h1>
-    <a routerLink="/menu" class="continue-shopping-btn"> Seguir Comprando</a>
+    <div class="cart-header">
+      <h1>{{ orderType === 'inmediato' ? 'Tu Pedido de Hoy' : 'Tu Pedido Programado' }}</h1>
+      <a routerLink="/menu" class="continue-shopping-btn">← Seguir Comprando</a>
+    </div>
     
     <div class="cart-content">
       <div class="cart-items">
-        <button (click)="orderService.clearOrder()">Vaciar Carrito</button>
+        <button class="clear-cart-btn" (click)="orderService.clearOrder()">Vaciar Carrito</button>
         <div *ngFor="let item of items" class="cart-item">
+          <!-- CORRECCIÓN: Sección de detalles del item restaurada -->
+          <div class="item-details">
+            <h4>{{ item.nombre }}</h4>
+            <p>{{ item.precioFinal | currency:'MXN' }} (Precio unitario)</p>
+            <ul *ngIf="item.selectedOptions.length > 0" class="selected-options-list">
+              <!-- MODIFICADO: Muestra la cantidad si existe -->
+              <li *ngFor="let option of item.selectedOptions">
+                + {{ option.cantidad > 1 ? option.cantidad + 'x ' : '' }}{{ option.nombre }} ({{ option.precio_adicional | currency:'MXN' }})
+              </li>
+            </ul>
+          </div>
           <div class="item-controls">
-            <strong>{{ item.nombre }}</strong>
             <button (click)="orderService.updateItemQuantity(item.cartItemId, -1)">-</button>
             <span>{{ item.cantidad }}</span>
             <button 
@@ -33,6 +46,14 @@
       
       <div class="cart-summary">
         <h3>Resumen</h3>
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span>{{ (orderTotal$ | async) | currency:'MXN' }}</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total</span>
+          <span>{{ (orderTotal$ | async) | currency:'MXN' }}</span>
+        </div>
 
         <div class="pickup-time-section">
           <label for="pickupDate">{{ orderType === 'inmediato' ? 'Hora de recogida:' : 'Fecha y hora de recogida:' }}</label>

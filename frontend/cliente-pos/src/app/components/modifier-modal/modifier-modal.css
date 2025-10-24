@@ -1,154 +1,147 @@
-/* === Fondo oscuro y contenedor === */
+/* src/app/components/modifier-modal/modifier-modal.component.css */
+
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1050;
 }
 
-/* === Cuerpo del modal === */
 .modal-content {
-  background-color: #fff;
-  border-radius: 10px;
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
   width: 90%;
   max-width: 500px;
-  max-height: 85vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-  overflow: hidden;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.2);
 }
 
-/* === Encabezado === */
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
   border-bottom: 1px solid #eee;
-  background-color: #f8fafc;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .modal-header h2 {
   margin: 0;
-  font-size: 1.4rem;
-  color: #1e293b;
-  font-weight: 600;
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 1.8rem;
+  font-size: 2rem;
+  color: #aaa;
   cursor: pointer;
-  color: #64748b;
-  transition: color 0.2s ease;
 }
 
-.close-btn:hover {
-  color: #ef4444;
-}
-
-/* === Cuerpo del modal === */
 .modal-body {
-  padding: 20px;
+  max-height: 60vh;
   overflow-y: auto;
 }
 
-/* === Grupos de modificadores === */
 .modifier-group {
-  margin-bottom: 22px;
+  margin-bottom: 1.5rem;
 }
 
-.modifier-group h4 {
-  margin: 0 0 12px 0;
-  font-size: 1.1rem;
-  color: #334155;
-  font-weight: 600;
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 4px;
+.group-title {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
 }
 
-/* === Opciones === */
+/* --- ESTILOS NUEVOS --- */
+.group-limit {
+  font-size: 0.9rem;
+  font-weight: normal;
+  color: #555;
+  margin-left: 10px;
+}
+
+.group-limit.invalid {
+  color: #dc3545; /* Rojo de error si no se cumple el límite */
+}
+/* ----------------------- */
+
 .option-item {
   display: flex;
   align-items: center;
-  gap: 10px; /* 🔹 Uniforma el espacio entre input y texto */
-  margin-bottom: 8px;
-  padding: 6px 10px;
-  border-radius: 6px;
-  transition: background-color 0.15s ease;
-}
-
-.option-item:hover {
-  background-color: #f1f5f9; /* Sutil hover para mejorar lectura */
-}
-
-.option-item input {
-  margin: 0;
-  width: 18px;
-  height: 18px;
-  accent-color: #007bff; /* 🔹 color moderno para los inputs */
-  flex-shrink: 0;
+  margin-bottom: 0.75rem;
 }
 
 .option-item label {
-  font-size: 0.95rem;
-  color: #1e293b;
-  line-height: 1.4;
+  flex-grow: 1;
   display: flex;
   align-items: center;
-  gap: 6px;
   cursor: pointer;
-  user-select: none;
 }
 
-.option-item .price {
-  color: #64748b;
-  font-size: 0.9rem;
-  font-weight: 500;
+.option-item input {
+  margin-right: 10px;
 }
 
-/* === Pie del modal === */
+.price {
+  color: #6c757d;
+  margin-left: 8px;
+  font-size: 0.9em;
+}
+
+/* --- ESTILOS NUEVOS PARA CONTADORES --- */
+.quantity-item {
+  justify-content: space-between;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quantity-controls span {
+  font-weight: bold;
+  min-width: 20px;
+  text-align: center;
+}
+
+.quantity-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.quantity-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+/* --------------------------------- */
+
 .modal-footer {
-  padding: 15px 20px;
-  border-top: 1px solid #eee;
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  background-color: #f8fafc;
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+  margin-top: 1rem;
 }
 
-/* === Botones === */
 .btn {
   padding: 10px 20px;
-  border-radius: 6px;
-  font-weight: 600;
+  border-radius: 5px;
+  font-weight: bold;
   cursor: pointer;
   border: none;
-  transition: all 0.2s ease;
 }
-
-.btn-primary {
-  background-color: #007bff;
-  color: #fff;
-}
-
-.btn-primary:hover {
-  background-color: #0056d2;
-}
-
-.btn-secondary {
-  background-color: #6c757d;
-  color: #fff;
-}
-
-.btn-secondary:hover {
-  background-color: #565e64;
-}
+.btn-primary { background-color: #007bff; color: white; }
+.btn-secondary { background-color: #6c757d; color: white; }
+.btn:disabled { background-color: #aaa; }

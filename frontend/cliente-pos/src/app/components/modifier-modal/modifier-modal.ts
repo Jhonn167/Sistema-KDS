@@ -1,4 +1,3 @@
-// src/app/components/modifier-modal/modifier-modal.component.ts
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -45,40 +44,37 @@ export class ModifierModalComponent implements OnChanges {
         });
         this.modifierForm.addControl(groupIdStr, groupControl);
       } else if (group.tipo_seleccion === 'seleccionar_cantidad') {
-        // --- NUEVO --- Lógica para el grupo de cantidad
         const groupControl = this.fb.group({});
         group.opciones.forEach((option: any) => {
           groupControl.addControl(option.id_opcion.toString(), new FormControl(0));
         });
         this.modifierForm.addControl(groupIdStr, groupControl);
         
-        // Inicializa contadores y límites
         this.totalSeleccionado[groupIdStr] = 0;
         this.limites[groupIdStr] = group.limite_seleccion;
         
-        // Escucha los cambios en las cantidades de este grupo
         groupControl.valueChanges.subscribe(values => {
-          const total = Object.values(values).reduce((acc: number, val: any) => acc + (Number(val) || 0), 0);
+          // --- CORRECCIÓN CLAVE ---
+          // Convertimos 'val' a un número antes de sumarlo.
+          const total = Object.values(values).reduce((acc: number, val: unknown) => acc + (Number(val) || 0), 0);
           this.totalSeleccionado[groupIdStr] = total;
         });
       }
     });
   }
 
-  // --- NUEVO --- Funciones para los botones + y -
   changeQuantity(groupId: string, optionId: string, change: number): void {
     const groupControl = this.modifierForm.get(groupId) as FormGroup;
     const currentControl = groupControl.get(optionId) as FormControl;
-    let newValue = currentControl.value + change;
+    let newValue = (currentControl.value || 0) + change;
 
     if (newValue < 0) {
       newValue = 0;
     }
     
-    const currentTotal = this.totalSeleccionado[groupId];
-    const limit = this.limites[groupId];
+    const currentTotal = this.totalSeleccionado[groupId] || 0;
+    const limit = this.limites[groupId] || 0;
 
-    // No permite añadir más si ya se alcanzó el límite
     if (change > 0 && currentTotal >= limit) {
       return; 
     }
@@ -86,14 +82,13 @@ export class ModifierModalComponent implements OnChanges {
     currentControl.setValue(newValue);
   }
 
-  // --- NUEVO --- Deshabilita el botón de confirmar si algún paquete no está completo
   isConfirmDisabled(): boolean {
     for (const groupId in this.limites) {
       if (this.totalSeleccionado[groupId] !== this.limites[groupId]) {
-        return true; // Deshabilitado si el total no es igual al límite
+        return true;
       }
     }
-    return false; // Habilitado
+    return false;
   }
 
   onConfirm(): void {
@@ -107,7 +102,7 @@ export class ModifierModalComponent implements OnChanges {
       if (group.tipo_seleccion === 'seleccionar_uno' && selection) {
         const option = group.opciones.find((o: any) => o.id_opcion == selection);
         if (option) {
-          selectedOptions.push({ ...option, cantidad: 1 }); // Añadimos cantidad 1
+          selectedOptions.push({ ...option, cantidad: 1 });
           additionalPrice += parseFloat(option.precio_adicional);
         }
       } else if (group.tipo_seleccion === 'seleccionar_varios') {
@@ -115,19 +110,18 @@ export class ModifierModalComponent implements OnChanges {
           if (selection[optionId]) {
             const option = group.opciones.find((o: any) => o.id_opcion == optionId);
             if (option) {
-              selectedOptions.push({ ...option, cantidad: 1 }); // Añadimos cantidad 1
+              selectedOptions.push({ ...option, cantidad: 1 });
               additionalPrice += parseFloat(option.precio_adicional);
             }
           }
         }
       } else if (group.tipo_seleccion === 'seleccionar_cantidad') {
-        // --- NUEVO --- Lógica de confirmación para el paquete
         for (const optionId in selection) {
-          const quantity = selection[optionId];
+          const quantity = Number(selection[optionId] || 0); // Convertimos a número
           if (quantity > 0) {
             const option = group.opciones.find((o: any) => o.id_opcion == optionId);
             if (option) {
-              selectedOptions.push({ ...option, cantidad: quantity }); // Añade la cantidad seleccionada
+              selectedOptions.push({ ...option, cantidad: quantity });
               additionalPrice += parseFloat(option.precio_adicional) * quantity;
             }
           }
@@ -144,3 +138,4 @@ export class ModifierModalComponent implements OnChanges {
     this.confirm.emit(configuredProduct);
   }
 }
+

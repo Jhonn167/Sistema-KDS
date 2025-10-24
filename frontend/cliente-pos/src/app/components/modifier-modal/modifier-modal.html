@@ -12,6 +12,7 @@
         <!-- Título del grupo con contador (si aplica) -->
         <h4 class="group-title">
           {{ group.nombre }}
+          <!-- CORRECCIÓN: Muestra el límite y el total correctamente -->
           <span *ngIf="group.tipo_seleccion === 'seleccionar_cantidad'" 
                 class="group-limit"
                 [class.invalid]="totalSeleccionado[group.id_grupo] !== group.limite_seleccion">
@@ -50,7 +51,7 @@
               <span>{{ modifierForm.get(group.id_grupo.toString())?.get(option.id_opcion.toString())?.value }}</span>
               <button type="button" class="quantity-btn" 
                       (click)="changeQuantity(group.id_grupo.toString(), option.id_opcion.toString(), 1)"
-                      [disabled]="totalSeleccionado[group.id_grupo] >= group.limite_seleccion">
+                      [disabled]="(totalSeleccionado[group.id_grupo] || 0) >= group.limite_seleccion">
                 +
               </button>
             </div>

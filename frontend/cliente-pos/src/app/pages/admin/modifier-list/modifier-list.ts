@@ -2,14 +2,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { ModifierService } from '../../../services/modifier'; // CORRECCIÓN: Añadido .service
+import { ModifierService } from '../../../services/modifier';
 
 @Component({
   selector: 'app-modifier-list',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './modifier-list.html', // CORRECCIÓN: .component.html
-  styleUrls: ['./modifier-list.css'] // CORRECCIÓN: .component.css
+  templateUrl: './modifier-list.html',
+  styleUrls: ['./modifier-list.css']
 })
 export class ModifierListComponent implements OnInit {
   modifierGroups: any[] = [];
@@ -23,7 +23,7 @@ export class ModifierListComponent implements OnInit {
     this.newGroupForm = this.fb.group({
       nombre: ['', Validators.required],
       tipo_seleccion: ['seleccionar_uno', Validators.required],
-      limite_seleccion: [null] // --- NUEVO --- Campo para el límite del paquete
+      limite_seleccion: [null] // <-- CAMPO AÑADIDO
     });
   }
 
@@ -32,7 +32,6 @@ export class ModifierListComponent implements OnInit {
   loadModifierGroups(): void {
     this.modifierService.getModifierGroups().subscribe(groups => {
       this.modifierGroups = groups;
-      // Inicializa un formulario para añadir opciones a cada grupo
       this.modifierGroups.forEach(group => {
         this.optionForms[group.id_grupo] = this.fb.group({
           nombre: ['', Validators.required],
@@ -46,10 +45,10 @@ export class ModifierListComponent implements OnInit {
 
   onAddNewGroup(): void {
     if (this.newGroupForm.invalid) return;
-
+    
     const formData = this.newGroupForm.value;
     
-    // --- NUEVO --- Si el tipo no es 'seleccionar_cantidad', nos aseguramos de enviar null
+    // Si el tipo no es 'seleccionar_cantidad', nos aseguramos de enviar null
     if (formData.tipo_seleccion !== 'seleccionar_cantidad') {
       formData.limite_seleccion = null;
     }
@@ -66,7 +65,7 @@ export class ModifierListComponent implements OnInit {
     const optionData = { id_grupo: groupId, ...form.value };
     this.modifierService.createModifierOption(optionData).subscribe(() => {
       this.loadModifierGroups();
-      form.reset({ precio_adicional: 0 }); // Resetea el formulario de opción
+      form.reset({ precio_adicional: 0 });
     });
   }
 

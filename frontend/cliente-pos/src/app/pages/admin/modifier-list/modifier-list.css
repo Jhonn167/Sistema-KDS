@@ -1,10 +1,10 @@
+/* src/app/pages/admin/modifier-list/modifier-list.component.css */
 :host {
   display: block;
   padding: 40px;
   background-color: #f4f7f6;
   min-height: 100vh;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .list-container {
@@ -12,66 +12,56 @@
   margin: 0 auto;
 }
 
-.header, .form-card {
+.header {
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: var(--text-primary);
+}
+
+.form-card {
   padding: 25px;
-  background-color: white;
+  background-color: var(--surface-color);
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.06);
   margin-bottom: 30px;
 }
 
-.header {
-  padding: 0;
-  background: none;
-  box-shadow: none;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 20px;
-}
-
-.header h1, .form-card h2 {
-  margin: 0;
-  font-size: 1.8rem;
-  color: #333;
-}
-
 .form-card h2 {
-  font-size: 1.5rem;
+  margin-top: 0;
   margin-bottom: 20px;
+  font-size: 1.5rem;
 }
 
 .group-form {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto auto;
   gap: 15px;
   align-items: center;
-}
-
-.group-form input, .group-form select {
-  flex: 1 1 200px;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1rem;
 }
 
 .groups-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 25px;
-
-  /* Al eliminarlo, las tarjetas en la misma fila volverán a tener la misma altura. */
 }
 
 .group-card {
-  background-color: white;
+  background-color: var(--surface-color);
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.06);
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
 }
 
 .group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 15px 20px;
   background-color: #f8f9fa;
   border-bottom: 1px solid #e0e0e0;
@@ -79,53 +69,76 @@
 
 .group-header h3 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
+}
+
+.group-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.group-type {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background-color: #e9ecef;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.delete-group-btn {
+  background: none;
+  border: none;
+  color: var(--danger-color);
+  font-size: 1.8em;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+.delete-group-btn:hover {
+  color: #a71d2a;
 }
 
 .options-list {
   list-style: none;
-  padding: 0;
+  padding: 20px;
   margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .option-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 20px;
-  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.option-item:last-child {
+  border-bottom: none;
 }
 
 .no-options {
-  padding: 30px 20px;
+  color: var(--text-secondary);
+  font-style: italic;
   text-align: center;
-  color: #888;
 }
 
 .delete-btn {
   background: none;
   border: none;
-  color: #dc3545;
-  font-size: 1.5em;
+  color: var(--danger-color);
   cursor: pointer;
+  font-size: 1.2rem;
 }
 
 .option-form {
   display: flex;
   gap: 10px;
-  padding: 15px 20px;
-  background-color: #b9c2ca;
+  padding: 20px;
+  background-color: #f8f9fa;
   border-top: 1px solid #e0e0e0;
-  /* =====> CAMBIO CLAVE #2: La Magia del Margen Automático <===== */
-  /* 'margin-top: auto;' actúa como un resorte, empujando este formulario
-     hacia la parte inferior de la tarjeta, sin importar la altura de la lista de opciones. */
-  margin-top: auto;
-}
-
-.option-form input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
 }
 
 .option-name-input {
@@ -133,56 +146,29 @@
 }
 
 .option-price-input {
-  width: 50px;
-  text-align: right;
+  max-width: 100px;
 }
 
-.btn {
+/* Estilos globales de botones y formularios (si no están en styles.css) */
+input[type="text"], input[type="number"], select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+button {
   padding: 10px 15px;
   border-radius: 5px;
   font-weight: bold;
   cursor: pointer;
-  border: 1px solid transparent;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-primary {
-  background-color: #047504;
+  border: none;
   color: white;
+  transition: background-color 0.2s;
 }
 
-.btn-secondary {
-  background-color: #0b5495;
-  color: white;
-  font-size: 0.9em;
-}
-
-/* ... (estilos existentes) ... */
-.group-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.delete-group-btn {
-    background: none;
-    border: none;
-    color: #dc3545;
-    font-size: 1.8em;
-    cursor: pointer;
-    line-height: 1;
-    padding: 0;
-}
-.delete-group-btn:hover {
-    color: #a71d2a;
-}
-/* Reutilizamos el estilo para el botón de eliminar opción */
-.option-item .delete-btn {
-    line-height: 1;
-}
+.btn-primary { background-color: var(--primary-color); }
+.btn-primary:hover { background-color: var(--primary-hover); }
+.btn-secondary { background-color: var(--secondary-color); }
+.btn-secondary:hover { background-color: var(--secondary-hover); }
+button:disabled { background-color: #aaa; cursor: not-allowed; }

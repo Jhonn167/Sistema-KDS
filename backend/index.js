@@ -15,9 +15,12 @@ const server = http.createServer(app);
 // --- 4. Cargar el archivo de Swagger ---
 const swaggerDocument = yaml.load(path.join(__dirname, 'swagger.yaml'));
 
+// --- CORRECCIÓN DE SINTAXIS ---
+// Se eliminaron los caracteres de Markdown '[]()' de las URLs
 const allowedOrigins = [
   "http://localhost:4200",
-  "https://sistema-kds.vercel.app", // Tu URL de Vercel
+  "[https://sistema-kds.vercel.app](https://sistema-kds.vercel.app)", // Tu URL de Vercel
+  "[https://spontaneous-selkie-fb61b4.netlify.app](https://spontaneous-selkie-fb61b4.netlify.app)" // Tu URL de Netlify
 ];
 const corsOptions = {
   origin: function (origin, callback) {
@@ -32,7 +35,14 @@ const corsOptions = {
 const io = new Server(server, { cors: corsOptions });
 
 let onlineUsers = {};
-io.on('connection', (socket) => { /* ... (tu lógica de socket) ... */ });
+io.on('connection', (socket) => { 
+  socket.on('join', (userId) => { onlineUsers[userId] = socket.id; });
+  socket.on('disconnect', () => {
+    for (let userId in onlineUsers) {
+      if (onlineUsers[userId] === socket.id) { delete onlineUsers[userId]; break; }
+    }
+  });
+});
 
 const PORT = process.env.PORT || 3000;
 
@@ -41,11 +51,9 @@ app.use('/api/payments/webhook', express.raw({type: 'application/json'}));
 app.use(express.json());
 
 // --- 5. Configurar la Ruta de la Documentación ---
-// Esta es la página interactiva
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // --- 6. Redirigir la Raíz a la Documentación ---
-// Esto soluciona el 'CANNOT GET /'
 app.get('/', (req, res) => {
   res.redirect('/api-docs');
 });

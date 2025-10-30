@@ -17,8 +17,7 @@ const swaggerDocument = yaml.load(path.join(__dirname, 'swagger.yaml'));
 
 const allowedOrigins = [
   "http://localhost:4200",
-  "[https://sistema-kds.vercel.app](https://sistema-kds.vercel.app)", // Tu URL de Vercel
-  "[https://spontaneous-selkie-fb61b4.netlify.app](https://spontaneous-selkie-fb61b4.netlify.app)" // Tu URL de Netlify
+  "https://sistema-kds.vercel.app" // Tu URL de Vercel
 ];
 const corsOptions = {
   origin: function (origin, callback) {

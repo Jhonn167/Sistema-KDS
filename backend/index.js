@@ -5,19 +5,24 @@ const cors = require('cors');
 require('dotenv').config();
 const http = require('http');
 const { Server } = require("socket.io");
+const swaggerUi = require('swagger-ui-express'); // --- 1. Importar Swagger
+const yaml = require('yamljs'); // --- 2. Importar YAML
+const path = require('path'); // --- 3. Importar Path
 
 const app = express();
 const server = http.createServer(app);
 
-// --- CONFIGURACIÓN DE CORS FINAL Y ROBUSTA ---
+// --- 4. Cargar el archivo de Swagger ---
+const swaggerDocument = yaml.load(path.join(__dirname, 'swagger.yaml'));
+
 const allowedOrigins = [
   "http://localhost:4200",
-  "https://sistema-kds.vercel.app" // URL de Vercel
+  "[https://sistema-kds.vercel.app](https://sistema-kds.vercel.app)", // Tu URL de Vercel
+  "[https://spontaneous-selkie-fb61b4.netlify.app](https://spontaneous-selkie-fb61b4.netlify.app)" // Tu URL de Netlify
 ];
 const corsOptions = {
   origin: function (origin, callback) {
-    // Permite las peticiones si el origen está en la lista o si no hay origen (como en Postman)
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -25,27 +30,26 @@ const corsOptions = {
   },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
 };
-
-const io = new Server(server, {
-  cors: corsOptions // Usamos la misma configuración para Socket.IO
-});
-// ---------------------------------------------
+const io = new Server(server, { cors: corsOptions });
 
 let onlineUsers = {};
-io.on('connection', (socket) => {
-  socket.on('join', (userId) => { onlineUsers[userId] = socket.id; });
-  socket.on('disconnect', () => {
-    for (let userId in onlineUsers) {
-      if (onlineUsers[userId] === socket.id) { delete onlineUsers[userId]; break; }
-    }
-  });
-});
+io.on('connection', (socket) => { /* ... (tu lógica de socket) ... */ });
 
 const PORT = process.env.PORT || 3000;
 
-app.use(cors(corsOptions)); // Usamos la configuración de CORS para Express
+app.use(cors(corsOptions));
 app.use('/api/payments/webhook', express.raw({type: 'application/json'}));
 app.use(express.json());
+
+// --- 5. Configurar la Ruta de la Documentación ---
+// Esta es la página interactiva
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// --- 6. Redirigir la Raíz a la Documentación ---
+// Esto soluciona el 'CANNOT GET /'
+app.get('/', (req, res) => {
+  res.redirect('/api-docs');
+});
 
 // Importar y usar todas tus rutas
 const authRoutes = require('./routes/auth');

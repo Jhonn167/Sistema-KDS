@@ -1,0 +1,119 @@
+# backend/swagger.yaml
+openapi: 3.0.0
+info:
+  title: API del Sistema KDS
+  description: Documentación oficial de la API para el Sistema KDS (Kitchen Display System).
+  version: 1.0.0
+servers:
+  - url: [https://sistema-kds.onrender.com](https://sistema-kds.onrender.com)
+    description: Servidor de Producción (Render)
+  - url: http://localhost:3000
+    description: Servidor de Desarrollo Local
+
+paths:
+  /api/auth/register:
+    post:
+      summary: Registra un nuevo usuario (cliente).
+  /api/auth/login:
+    post:
+      summary: Inicia sesión con email/teléfono y contraseña.
+  /api/auth/forgot-password:
+    post:
+      summary: Solicita un correo de recuperación de contraseña.
+  /api/auth/reset-password/{token}:
+    post:
+      summary: Restablece la contraseña usando un token.
+  
+  /api/users:
+    get:
+      summary: (Admin) Obtiene la lista de todos los usuarios.
+  /api/users/{id}/role:
+    put:
+      summary: (Admin) Actualiza el rol de un usuario.
+      
+  /api/categories:
+    get:
+      summary: (Staff) Obtiene todas las categorías.
+    post:
+      summary: (Admin) Crea una nueva categoría.
+  /api/categories/{id}:
+    delete:
+      summary: (Admin) Elimina una categoría.
+
+  /api/products:
+    get:
+      summary: Obtiene todos los productos activos.
+    post:
+      summary: (Admin) Crea un nuevo producto.
+  /api/products/admin:
+    get:
+      summary: (Admin) Obtiene todos los productos (activos e inactivos).
+  /api/products/{id}:
+    get:
+      summary: Obtiene un producto por su ID (con modificadores).
+    put:
+      summary: (Admin) Actualiza un producto completo.
+  /api/products/{id}/modifiers:
+    post:
+      summary: (Admin) Asigna modificadores a un producto.
+      
+  /api/modifiers/groups:
+    get:
+      summary: (Admin) Obtiene todos los grupos de modificadores.
+    post:
+      summary: (Admin) Crea un nuevo grupo de modificadores (incluye tipo "cantidad").
+  /api/modifiers/groups/{id}:
+    delete:
+      summary: (Admin) Elimina un grupo de modificadores.
+  /api/modifiers/options:
+    post:
+      summary: (Admin) Añade una opción a un grupo.
+  /api/modifiers/options/{id}:
+    delete:
+      summary: (Admin) Elimina una opción de un grupo.
+
+  /api/pedidos:
+    post:
+      summary: (Autenticado) Crea un nuevo pedido.
+  /api/pedidos/cocina:
+    get:
+      summary: (Cocinero/Admin) Obtiene los pedidos para el KDS.
+  /api/pedidos/mis-pedidos:
+    get:
+      summary: (Cliente) Obtiene su historial de pedidos.
+  /api/pedidos/cocina/{id}:
+    put:
+      summary: (Cocinero/Admin) Actualiza el estatus de un pedido.
+  /api/pedidos/pending-confirmation:
+    get:
+      summary: (Empleado/Admin) Obtiene pedidos esperando confirmación de transferencia.
+  /api/pedidos/confirm-transfer/{orderId}:
+    post:
+      summary: (Empleado/Admin) Confirma un pago por transferencia.
+
+  /api/payments/create-checkout-session:
+    post:
+      summary: (Autenticado) Crea una sesión de pago en Stripe.
+  /api/payments/webhook:
+    post:
+      summary: (Público/Stripe) Escucha los eventos de pago de Stripe.
+      
+  /api/upload:
+    post:
+      summary: (Admin) Sube una imagen de producto a Cloudinary.
+  /api/upload/receipt/{orderId}:
+    post:
+      summary: (Cliente) Sube un comprobante de pago.
+      
+  /api/reports/sales-summary:
+    get:
+      summary: (Admin) Obtiene el resumen de ventas del día.
+  /api/reports/top-products:
+    get:
+      summary: (Admin) Obtiene los productos más vendidos del día.
+  /api/reports/close-day:
+    post:
+      summary: (Admin) Realiza el cierre de caja del día.
+  /api/reports/export-daily:
+    get:
+      summary: (Admin) Exporta el reporte de ventas a Excel.

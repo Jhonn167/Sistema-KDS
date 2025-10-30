@@ -1,4 +1,3 @@
-# backend/swagger.yaml
 openapi: 3.0.0
 info:
   title: API del Sistema KDS
@@ -10,110 +9,285 @@ servers:
   - url: http://localhost:3000
     description: Servidor de Desarrollo Local
 
+# Definición de esquemas de seguridad (Autenticación JWT)
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Error en el servidor."
+
+# Seguridad global: la mayoría de las rutas la requerirán
+security:
+  - bearerAuth: []
+
 paths:
+  # --- Auth ---
   /api/auth/register:
     post:
       summary: Registra un nuevo usuario (cliente).
+      security: [] # Esta ruta es pública
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: "Juan Garcia"
+                email:
+                  type: string
+                  example: "juan@correo.com"
+                password:
+                  type: string
+                  example: "contraseña123"
+                telefono:
+                  type: string
+                  example: "8112345678"
+      responses:
+        '201':
+          description: Usuario registrado exitosamente.
+        '409':
+          description: El correo o teléfono ya está en uso.
+
   /api/auth/login:
     post:
       summary: Inicia sesión con email/teléfono y contraseña.
+      security: [] # Esta ruta es pública
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "admin@kds.com"
+                password:
+                  type: string
+                  example: "admin1234"
+      responses:
+        '200':
+          description: Login exitoso. Devuelve un token JWT.
+        '401':
+          description: Credenciales inválidas.
+
   /api/auth/forgot-password:
     post:
       summary: Solicita un correo de recuperación de contraseña.
+      security: [] # Esta ruta es pública
+      tags: [Auth]
+
   /api/auth/reset-password/{token}:
     post:
       summary: Restablece la contraseña usando un token.
-  
+      security: [] # Esta ruta es pública
+      tags: [Auth]
+
+  # --- Users ---
   /api/users:
     get:
       summary: (Admin) Obtiene la lista de todos los usuarios.
+      tags: [Admin - Usuarios]
+      responses:
+        '200':
+          description: Lista de usuarios.
   /api/users/{id}/role:
     put:
       summary: (Admin) Actualiza el rol de un usuario.
-      
+      tags: [Admin - Usuarios]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rol:
+                  type: string
+                  example: "empleado"
+      responses:
+        '200':
+          description: Rol actualizado.
+
+  # --- Categories ---
   /api/categories:
     get:
       summary: (Staff) Obtiene todas las categorías.
+      tags: [Staff - Categorías]
     post:
       summary: (Admin) Crea una nueva categoría.
-  /api/categories/{id}:
-    delete:
-      summary: (Admin) Elimina una categoría.
+      tags: [Admin - Categorías]
 
+  # --- Products ---
   /api/products:
     get:
       summary: Obtiene todos los productos activos.
+      security: [] # Ruta pública para el menú
+      tags: [Productos]
     post:
       summary: (Admin) Crea un nuevo producto.
+      tags: [Admin - Productos]
+
   /api/products/admin:
     get:
       summary: (Admin) Obtiene todos los productos (activos e inactivos).
+      tags: [Admin - Productos]
+
   /api/products/{id}:
     get:
       summary: Obtiene un producto por su ID (con modificadores).
-    put:
-      summary: (Admin) Actualiza un producto completo.
-  /api/products/{id}/modifiers:
-    post:
-      summary: (Admin) Asigna modificadores a un producto.
-      
+      security: [] # Ruta pública para el menú
+      tags: [Productos]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+
+  # --- Modifiers ---
   /api/modifiers/groups:
     get:
       summary: (Admin) Obtiene todos los grupos de modificadores.
+      tags: [Admin - Modificadores]
     post:
-      summary: (Admin) Crea un nuevo grupo de modificadores (incluye tipo "cantidad").
-  /api/modifiers/groups/{id}:
-    delete:
-      summary: (Admin) Elimina un grupo de modificadores.
-  /api/modifiers/options:
-    post:
-      summary: (Admin) Añade una opción a un grupo.
-  /api/modifiers/options/{id}:
-    delete:
-      summary: (Admin) Elimina una opción de un grupo.
+      summary: (Admin) Crea un nuevo grupo de modificadores.
+      tags: [Admin - Modificadores]
 
+  # --- Pedidos ---
   /api/pedidos:
     post:
       summary: (Autenticado) Crea un nuevo pedido.
+      tags: [Pedidos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  example: "[{...}, {...}]"
+                tipo_pedido:
+                  type: string
+                  example: "futuro"
+                fecha_recogida:
+                  type: string
+                  format: date-time
+                  example: "2025-10-31T14:30:00.000Z"
+                telefono_contacto:
+                  type: string
+                  example: "8112345678"
+                estatus:
+                  type: string
+                  example: "Esperando Comprobante"
+
   /api/pedidos/cocina:
     get:
       summary: (Cocinero/Admin) Obtiene los pedidos para el KDS.
-  /api/pedidos/mis-pedidos:
-    get:
-      summary: (Cliente) Obtiene su historial de pedidos.
+      tags: [Staff - KDS y Confirmaciones]
+
   /api/pedidos/cocina/{id}:
     put:
       summary: (Cocinero/Admin) Actualiza el estatus de un pedido.
+      tags: [Staff - KDS y Confirmaciones]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+
+  /api/pedidos/mis-pedidos:
+    get:
+      summary: (Cliente) Obtiene su historial de pedidos.
+      tags: [Pedidos]
+
   /api/pedidos/pending-confirmation:
     get:
       summary: (Empleado/Admin) Obtiene pedidos esperando confirmación de transferencia.
+      tags: [Staff - KDS y Confirmaciones]
+
   /api/pedidos/confirm-transfer/{orderId}:
     post:
       summary: (Empleado/Admin) Confirma un pago por transferencia.
+      tags: [Staff - KDS y Confirmaciones]
 
+  # --- Payments ---
   /api/payments/create-checkout-session:
     post:
       summary: (Autenticado) Crea una sesión de pago en Stripe.
+      tags: [Pagos]
+  
   /api/payments/webhook:
     post:
-      summary: (Público/Stripe) Escucha los eventos de pago de Stripe.
-      
+      summary: (Público) Escucha los eventos de pago de Stripe.
+      security: []
+      tags: [Pagos]
+
+  # --- Upload ---
   /api/upload:
     post:
       summary: (Admin) Sube una imagen de producto a Cloudinary.
+      tags: [Admin - Productos]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+
   /api/upload/receipt/{orderId}:
     post:
       summary: (Cliente) Sube un comprobante de pago.
-      
+      tags: [Pedidos]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                receipt:
+                  type: string
+                  format: binary
+
+  # --- Reports ---
   /api/reports/sales-summary:
     get:
       summary: (Admin) Obtiene el resumen de ventas del día.
+      tags: [Admin - Reportes]
   /api/reports/top-products:
     get:
       summary: (Admin) Obtiene los productos más vendidos del día.
+      tags: [Admin - Reportes]
   /api/reports/close-day:
     post:
       summary: (Admin) Realiza el cierre de caja del día.
+      tags: [Admin - Reportos]
   /api/reports/export-daily:
     get:
       summary: (Admin) Exporta el reporte de ventas a Excel.
+      tags: [Admin - Reportes]

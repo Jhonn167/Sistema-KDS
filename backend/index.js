@@ -5,23 +5,21 @@ const cors = require('cors');
 require('dotenv').config();
 const http = require('http');
 const { Server } = require("socket.io");
-const swaggerUi = require('swagger-ui-express'); // --- 1. Importar Swagger
-const yaml = require('yamljs'); // --- 2. Importar YAML
-const path = require('path'); // --- 3. Importar Path
+const swaggerUi = require('swagger-ui-express');
+const yaml = require('yamljs');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
 
-// --- 4. Cargar el archivo de Swagger ---
 const swaggerDocument = yaml.load(path.join(__dirname, 'swagger.yaml'));
 
-// --- CORRECCIÓN DE SINTAXIS ---
-// Se eliminaron los caracteres de Markdown '[]()' de las URLs
+// --- CONFIGURACIÓN DE CORS CORREGIDA (SOLO VERCEL) ---
 const allowedOrigins = [
-  "http://localhost:4200",
-  "https://sistema-kds.vercel.app", // Tu URL de Vercel
-
+  "http://localhost:4200", // Para tu desarrollo local
+  "https://sistema-kds-git-main-jhonn167s-projects.vercel.app" // Tu URL de Vercel
 ];
+
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -32,10 +30,12 @@ const corsOptions = {
   },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
 };
+
 const io = new Server(server, { cors: corsOptions });
+// ---------------------------------------------
 
 let onlineUsers = {};
-io.on('connection', (socket) => { 
+io.on('connection', (socket) => {
   socket.on('join', (userId) => { onlineUsers[userId] = socket.id; });
   socket.on('disconnect', () => {
     for (let userId in onlineUsers) {
@@ -50,13 +50,8 @@ app.use(cors(corsOptions));
 app.use('/api/payments/webhook', express.raw({type: 'application/json'}));
 app.use(express.json());
 
-// --- 5. Configurar la Ruta de la Documentación ---
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-// --- 6. Redirigir la Raíz a la Documentación ---
-app.get('/', (req, res) => {
-  res.redirect('/api-docs');
-});
+app.get('/', (req, res) => { res.redirect('/api-docs'); });
 
 // Importar y usar todas tus rutas
 const authRoutes = require('./routes/auth');
@@ -82,3 +77,4 @@ app.use('/api/categories', categoryRoutes);
 server.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
+

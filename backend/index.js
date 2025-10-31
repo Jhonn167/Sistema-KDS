@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
 app.use(cors(corsOptions));
 app.use('/api/payments/webhook', express.raw({type: 'application/json'}));

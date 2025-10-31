@@ -9,6 +9,7 @@ import { authInterceptor } from './interceptors/auth-interceptor';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxStripeModule } from 'ngx-stripe';
+import { loadingInterceptor } from './interceptors/loading-interceptor';
 import { environment } from '../environments/environments';
 
 // Define la configuración de la conexión para WebSockets
@@ -17,7 +18,7 @@ const config: SocketIoConfig = { url: environment.apiUrl, options: {} };
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, loadingInterceptor])),
     provideAnimations(),
     importProvidersFrom(
       SocketIoModule.forRoot(config),

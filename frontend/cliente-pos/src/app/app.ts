@@ -6,11 +6,12 @@ import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './components/navbar/navbar';
 import { AuthService } from './services/auth.service';
 import { NotificationComponent } from './components/notification/notification';
+import { GlobalLoaderComponent } from './components/global-loader/global-loader';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, NavbarComponent, NotificationComponent],
+  imports: [CommonModule, RouterOutlet, NavbarComponent, NotificationComponent, GlobalLoaderComponent],
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })

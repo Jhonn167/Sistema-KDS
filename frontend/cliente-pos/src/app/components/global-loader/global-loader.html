@@ -1,0 +1,7 @@
+<div *ngIf="isLoading$ | async" class="loader-overlay">
+  <div class="loader-content">
+    <div class="spinner"></div>
+    <p>Conectando con el servidor...</p>
+    <small>Esto puede tardar hasta 50 segundos si el servidor está en reposo.</small>
+  </div>
+</div>

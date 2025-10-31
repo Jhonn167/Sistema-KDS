@@ -17,7 +17,7 @@ const swaggerDocument = yaml.load(path.join(__dirname, 'swagger.yaml'));
 // --- CONFIGURACIÓN DE CORS CORREGIDA (SOLO VERCEL) ---
 const allowedOrigins = [
   "http://localhost:4200", // Para tu desarrollo local
-  "https://sistema-kds-git-main-jhonn167s-projects.vercel.app" // Tu URL de Vercel
+  "https://sistema-kds.vercel.app" // Tu URL de Vercel
 ];
 
 const corsOptions = {

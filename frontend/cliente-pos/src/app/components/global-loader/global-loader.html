@@ -1,7 +1,16 @@
+<!-- src/app/components/global-loader/global-loader.component.html -->
+
 <div *ngIf="isLoading$ | async" class="loader-overlay">
   <div class="loader-content">
-    <div class="spinner"></div>
-    <p>Conectando con el servidor...</p>
+    
+    <!-- INICIO DE LA ANIMACIÓN "LE BOULANGER" -->
+    <div class="baking-animation">
+      <div class="rolling-pin"></div>
+      <div class="dough"></div>
+    </div>
+    <!-- FIN DE LA ANIMACIÓN -->
+    
+    <p>Preparando la cocina...</p>
     <small>Esto puede tardar hasta 50 segundos si el servidor está en reposo.</small>
   </div>
 </div>

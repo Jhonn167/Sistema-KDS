@@ -9,7 +9,7 @@ servers:
   - url: http://localhost:3000
     description: Servidor de Desarrollo Local
 
-# Definición de esquemas de seguridad (Autenticación JWT)
+# --- 1. Definición de Esquemas de Seguridad (Autenticación JWT) ---
 components:
   securitySchemes:
     bearerAuth:
@@ -24,16 +24,17 @@ components:
           type: string
           example: "Error en el servidor."
 
-# Seguridad global: la mayoría de las rutas la requerirán
+# --- 2. Seguridad Global ---
+# La mayoría de las rutas requerirán esta autenticación.
 security:
   - bearerAuth: []
 
 paths:
-  # --- Auth ---
+  # --- Auth (Rutas Públicas) ---
   /api/auth/register:
     post:
       summary: Registra un nuevo usuario (cliente).
-      security: [] # Esta ruta es pública
+      security: [] # Anula la seguridad global, esta ruta es pública.
       tags: [Auth]
       requestBody:
         required: true
@@ -59,11 +60,13 @@ paths:
           description: Usuario registrado exitosamente.
         '409':
           description: El correo o teléfono ya está en uso.
+        '500':
+          description: Error interno del servidor (probablemente de base de datos).
 
   /api/auth/login:
     post:
       summary: Inicia sesión con email/teléfono y contraseña.
-      security: [] # Esta ruta es pública
+      security: [] # Ruta pública
       tags: [Auth]
       requestBody:
         required: true
@@ -80,23 +83,27 @@ paths:
                   example: "admin1234"
       responses:
         '200':
-          description: Login exitoso. Devuelve un token JWT.
+          description: Login exitoso. Devuelve un token JWT, rol y ID.
         '401':
           description: Credenciales inválidas.
+        '500':
+          description: Error interno del servidor.
 
   /api/auth/forgot-password:
     post:
       summary: Solicita un correo de recuperación de contraseña.
-      security: [] # Esta ruta es pública
+      security: [] # Ruta pública
       tags: [Auth]
+      # ... (puedes añadir requestBody si lo deseas)
 
   /api/auth/reset-password/{token}:
     post:
       summary: Restablece la contraseña usando un token.
-      security: [] # Esta ruta es pública
+      security: [] # Ruta pública
       tags: [Auth]
+      # ... (puedes añadir parámetros y requestBody)
 
-  # --- Users ---
+  # --- Users (Rutas de Admin) ---
   /api/users:
     get:
       summary: (Admin) Obtiene la lista de todos los usuarios.
@@ -104,6 +111,9 @@ paths:
       responses:
         '200':
           description: Lista de usuarios.
+        '401':
+          description: No autorizado (falta token o no es admin).
+
   /api/users/{id}/role:
     put:
       summary: (Admin) Actualiza el rol de un usuario.
@@ -136,6 +146,13 @@ paths:
     post:
       summary: (Admin) Crea una nueva categoría.
       tags: [Admin - Categorías]
+      # ... (puedes añadir requestBody)
+
+  /api/categories/{id}:
+    delete:
+      summary: (Admin) Elimina una categoría.
+      tags: [Admin - Categorías]
+      # ... (puedes añadir parámetros)
 
   # --- Products ---
   /api/products:
@@ -146,6 +163,7 @@ paths:
     post:
       summary: (Admin) Crea un nuevo producto.
       tags: [Admin - Productos]
+      # ... (puedes añadir requestBody)
 
   /api/products/admin:
     get:
@@ -163,6 +181,12 @@ paths:
           required: true
           schema:
             type: integer
+            
+  /api/products/{id}/modifiers:
+    post:
+      summary: (Admin) Asigna modificadores a un producto.
+      tags: [Admin - Productos]
+      # ... (puedes añadir parámetros y requestBody)
 
   # --- Modifiers ---
   /api/modifiers/groups:
@@ -172,6 +196,9 @@ paths:
     post:
       summary: (Admin) Crea un nuevo grupo de modificadores.
       tags: [Admin - Modificadores]
+      # ... (puedes añadir requestBody)
+
+  # ... (puedes añadir el resto de rutas de modifiers)
 
   # --- Pedidos ---
   /api/pedidos:
@@ -194,7 +221,6 @@ paths:
                 fecha_recogida:
                   type: string
                   format: date-time
-                  example: "2025-10-31T14:30:00.000Z"
                 telefono_contacto:
                   type: string
                   example: "8112345678"
@@ -286,7 +312,7 @@ paths:
   /api/reports/close-day:
     post:
       summary: (Admin) Realiza el cierre de caja del día.
-      tags: [Admin - Reportos]
+      tags: [Admin - Reportes]
   /api/reports/export-daily:
     get:
       summary: (Admin) Exporta el reporte de ventas a Excel.

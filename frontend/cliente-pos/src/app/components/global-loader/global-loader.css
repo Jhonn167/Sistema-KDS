@@ -33,7 +33,7 @@
 
 .baking-animation {
   width: 200px;
-  height: 100px;
+  height: 150px; /* Aumentamos la altura para el movimiento vertical */
   margin: 0 auto 20px;
   position: relative;
   display: flex;
@@ -43,25 +43,26 @@
 
 /* La masa que está siendo amasada */
 .dough {
-  width: 80px;
-  height: 80px;
+  width: 100px; /* Anchura inicial */
+  height: 50px;  /* Altura inicial */
   background-color: #f7e4c3; /* Color de la masa */
-  border-radius: 50%;
+  border-radius: 50px / 25px; /* Forma ovalada */
   position: absolute;
-  animation: knead 1.5s ease-in-out infinite;
+  animation: expand-dough 2s ease-in-out infinite alternate; /* Nueva animación */
 }
 
 /* El rodillo */
 .rolling-pin {
-  width: 150px;
-  height: 30px;
+  width: 120px; /* Más corto */
+  height: 25px; /* Más delgado */
   background-color: #d1a37c; /* Color madera */
-  border-radius: 15px;
+  border-radius: 12px;
   position: absolute;
-  border: 4px solid #b38860;
+  border: 3px solid #b38860;
   box-sizing: border-box;
   z-index: 10;
-  animation: roll 1.5s ease-in-out infinite;
+  top: 30%; /* Posición inicial */
+  animation: roll-vertical 2s ease-in-out infinite alternate; /* Nueva animación */
 }
 
 /* Los mangos del rodillo */
@@ -70,46 +71,43 @@
   content: '';
   position: absolute;
   width: 15px;
-  height: 40px;
+  height: 35px;
   background-color: #b38860;
   border-radius: 5px;
   top: 50%;
   transform: translateY(-50%);
 }
-.rolling-pin::before { left: -20px; }
-.rolling-pin::after { right: -20px; }
+.rolling-pin::before { left: -18px; }
+.rolling-pin::after { right: -18px; }
 
-/* --- KEYFRAMES (La Animación) --- */
+/* --- KEYFRAMES (Las Nuevas Animaciones) --- */
 
-/* Animación del rodillo (moviéndose de lado a lado) */
-@keyframes roll {
+/* Animación del rodillo (moviéndose de arriba hacia abajo) */
+@keyframes roll-vertical {
   0% {
-    transform: translateX(-60px) rotate(-15deg);
+    transform: translateY(-20px) rotateZ(0deg); /* Empieza arriba */
   }
   50% {
-    transform: translateX(60px) rotate(15deg);
+    transform: translateY(20px) rotateZ(3deg); /* Baja y rota un poco */
   }
   100% {
-    transform: translateX(-60px) rotate(-15deg);
+    transform: translateY(-20px) rotateZ(0deg); /* Vuelve a subir */
   }
 }
 
-/* Animación de la masa (aplastándose y estirándose) */
-@keyframes knead {
+/* Animación de la masa (expandirse) */
+@keyframes expand-dough {
   0% {
-    transform: scale(1, 1);
-  }
-  25% {
-    transform: scale(1.3, 0.7); /* Se aplasta y estira */
+    width: 100px;
+    height: 50px;
   }
   50% {
-    transform: scale(1, 1);
-  }
-  75% {
-    transform: scale(0.7, 1.3); /* Se encoge y crece */
+    width: 150px; /* Se expande */
+    height: 35px; /* Se aplana */
   }
   100% {
-    transform: scale(1, 1);
+    width: 100px;
+    height: 50px;
   }
 }
 /* --- FIN DE LOS ESTILOS DE ANIMACIÓN --- */

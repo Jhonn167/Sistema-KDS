@@ -1,26 +1,28 @@
-// src/app/pages/public/menu/menu.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../services/product';
 import { OrderService } from '../../../services/order';
 import { Observable } from 'rxjs';
 import { ModifierModalComponent } from '../../../components/modifier-modal/modifier-modal';
-import { NotificationService } from '../../../services/notification';
+import { NotificationService } from '../../../services/notification'; 
 
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule, RouterModule, ModifierModalComponent],
-  templateUrl: './menu.html',
-  styleUrls: ['./menu.css']
+  imports: [CommonModule, RouterModule, ModifierModalComponent, FormsModule],
+  templateUrl: './menu.component.html',
+  styleUrls: ['./menu.component.css']
 })
 export class MenuComponent implements OnInit {
-  products: any[] = [];
+  allProducts: any[] = []; // Copia original de todos los productos
+  products: any[] = [];    // Productos que se muestran (filtrados)
   isLoading = true;
   cartItemCount$: Observable<number>;
   isModalOpen = false;
   selectedProduct: any | null = null;
+  searchTerm: string = ''; // Aquí guardamos lo que escribas
 
   constructor(
     private productService: ProductService,
@@ -30,13 +32,34 @@ export class MenuComponent implements OnInit {
     this.cartItemCount$ = this.orderService.totalItemCount$;
   }
 
-  ngOnInit(): void { this.loadProducts(); }
+  ngOnInit(): void {
+    this.loadProducts();
+  }
 
   loadProducts(): void {
     this.productService.getProducts().subscribe({
-      next: (data) => { this.products = data; this.isLoading = false; },
-      error: (err) => { console.error('Error al cargar el menú:', err); this.isLoading = false; }
+      next: (data) => {
+        this.allProducts = data;
+        this.products = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.isLoading = false;
+      }
     });
+  }
+
+  // Función que filtra cuando escribes
+  filterProducts(): void {
+    if (!this.searchTerm) {
+      this.products = this.allProducts; // Si borras, muestra todo
+    } else {
+      const term = this.searchTerm.toLowerCase();
+      this.products = this.allProducts.filter(product =>
+        product.nombre.toLowerCase().includes(term)
+      );
+    }
   }
 
   handleAddItem(product: any): void {
@@ -47,7 +70,7 @@ export class MenuComponent implements OnInit {
       } else {
         const configuredProduct = { ...fullProduct, finalPrice: fullProduct.precio, selectedOptions: [] };
         this.orderService.addItem(configuredProduct);
-        this.showAddedToCartNotification(configuredProduct);
+        this.showAddedNotification(configuredProduct);
       }
     });
   }
@@ -60,14 +83,11 @@ export class MenuComponent implements OnInit {
   onConfirmProduct(configuredProduct: any): void {
     this.orderService.addItem(configuredProduct);
     this.closeModal();
-    this.showAddedToCartNotification(configuredProduct);
+    this.showAddedNotification(configuredProduct);
   }
 
-  // --- FUNCIÓN MEJORADA PARA NOTIFICACIONES ---
-  private showAddedToCartNotification(product: any): void {
-    const cartItems = this.orderService.getCurrentOrderItems();
-    const itemInCart = cartItems.find(item => item.producto_id === product.id_producto && JSON.stringify(item.selectedOptions) === JSON.stringify(product.selectedOptions || []));
-    const quantity = itemInCart ? itemInCart.cantidad : 0;
-    this.notificationService.add(`${quantity}x ${product.nombre} añadido(s) al carrito`, 'success');
+  private showAddedNotification(product: any): void {
+     this.notificationService.add(`${product.nombre} añadido al carrito`, 'success');
   }
 }
+

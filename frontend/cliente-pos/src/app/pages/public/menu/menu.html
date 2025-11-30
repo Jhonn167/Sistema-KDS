@@ -1,51 +1,42 @@
-<!-- src/app/pages/public/menu/menu.component.html -->
-
-<a routerLink="/carrito" class="cart-fab">
-  <span class="cart-icon">🛒</span>
-  <span *ngIf="(cartItemCount$ | async) as count" [class.visible]="count > 0" class="cart-badge">{{ count }}</span>
-</a>
-
 <div class="menu-container">
   <h1>Nuestro Menú</h1>
-  <p>Elige tus postres favoritos y recógelos en nuestro local.</p>
+  <p>Busca y selecciona tus platillos favoritos</p>
 
-  <div *ngIf="isLoading" class="loading-message">
-    Cargando menú...
+  <div class="search-container">
+    <input
+      type="text"
+      placeholder="🔍 Buscar (ej. Torta, Refresco...)"
+      [(ngModel)]="searchTerm"
+      (input)="filterProducts()"
+      class="search-input"
+    >
   </div>
 
-  <div *ngIf="!isLoading && products.length === 0" class="info-message">
-    Parece que no hay productos disponibles en este momento.
-  </div>
+  <div *ngIf="isLoading" class="loading-spinner">Cargando...</div>
 
-  <div class="menu-grid">
+  <div class="menu-grid" *ngIf="!isLoading">
     <div *ngFor="let product of products" class="product-card">
-      <img [src]="product.imagen_url || 'assets/placeholder.png'" 
-           alt="Imagen de {{ product.nombre }}" 
-           class="product-image">
+      <img [src]="product.imagen_url || 'assets/placeholder.png'" [alt]="product.nombre" class="product-image">
       <div class="product-info">
         <h3>{{ product.nombre }}</h3>
         <p class="product-description">{{ product.descripcion }}</p>
         <div class="product-footer">
           <span class="product-price">{{ product.precio | currency:'MXN' }}</span>
-          
-          <!-- =====> BOTÓN CORREGIDO CON LÓGICA DE STOCK <===== -->
-          <button (click)="handleAddItem(product)" 
-                  class="add-to-cart-btn" 
-                  [disabled]="product.stock === 0">
-            <span *ngIf="product.stock > 0">Añadir</span>
-            <span *ngIf="product.stock === 0">Agotado</span>
+          <button class="add-to-cart-btn" [disabled]="product.stock === 0" (click)="handleAddItem(product)">
+            {{ product.stock > 0 ? 'Añadir' : 'Agotado' }}
           </button>
-          <!-- =============================================== -->
-
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- El modal de modificadores se queda igual -->
-<app-modifier-modal 
-  *ngIf="isModalOpen" 
+<a routerLink="/carrito" class="cart-fab" *ngIf="(cartItemCount$ | async) as count">
+  🛒 <span class="cart-badge" *ngIf="count > 0">{{ count }}</span>
+</a>
+
+<app-modifier-modal
+  *ngIf="isModalOpen"
   [product]="selectedProduct"
   (confirm)="onConfirmProduct($event)"
   (close)="closeModal()">

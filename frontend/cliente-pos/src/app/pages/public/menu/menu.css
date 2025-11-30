@@ -1,139 +1,20 @@
-/* src/app/pages/public/menu/menu.component.css */
-
-.menu-container {
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 1rem;
+/* Estilos del buscador */
+.search-container {
+  max-width: 500px;
+  margin: 0 auto 30px auto;
+  padding: 0 15px;
 }
-
-h1 {
-  text-align: center;
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-  color: var(--text-primary);
-}
-
-p {
-  text-align: center;
-  color: var(--text-secondary);
-  margin-bottom: 2.5rem;
-  font-size: 1.1rem;
-}
-
-.menu-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-.product-card {
-  background-color: var(--surface-color);
-  border-radius: 0.75rem;
-  overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  /* =====> CAMBIO CLAVE #1: Convertimos la tarjeta en un contenedor flexible vertical <===== */
-  display: flex;
-  flex-direction: column;
-}
-
-.product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
-}
-
-.product-image {
+.search-input {
   width: 100%;
-  height: 180px;
-  object-fit: cover;
+  padding: 12px 20px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  font-size: 1rem;
+  outline: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.search-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0,123,255,0.2);
 }
 
-.product-info {
-  padding: 1.25rem;
-  /* =====> CAMBIO CLAVE #2: Hacemos que esta sección sea flexible y crezca <===== */
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1; /* Esta es la propiedad mágica que empuja el footer hacia abajo */
-}
-
-.product-info h3 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.25rem;
-  min-height: 2.5em; /* Aprox. para dos líneas de texto, asegurando alineación */
-}
-
-.product-description {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  /* =====> CAMBIO CLAVE #3: Hacemos que la descripción ocupe el espacio sobrante <===== */
-  flex-grow: 1; 
-  margin-bottom: 1rem;
-  text-align: left;
-  line-height: 1.5;
-}
-
-.product-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid var(--border-color);
-  padding-top: 1rem;
-}
-
-.product-price {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: var(--text-primary);
-}
-
-.add-to-cart-btn {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s;
-}
-
-.add-to-cart-btn:hover:not(:disabled) {
-  background-color: var(--primary-hover);
-}
-
-.add-to-cart-btn:disabled {
-  background-color: var(--secondary-color);
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-/* --- ESTILOS DEL CARRITO FLOTANTE (SIN CAMBIOS) --- */
-.cart-fab {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 60px;
-  height: 60px;
-  background-color: var(--success-color);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  text-decoration: none;
-  z-index: 1000;
-}
-
-.cart-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: var(--danger-color);
-  color: white;
-  border-radius: 50%;
-  padding: 2px 8px;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
